@@ -23,9 +23,12 @@
       --border:#e2e8f0;
       --card:#ffffff;
       --soft:#f1f5f9;
+      --success:#10b981;
+      --warning:#f59e0b;
+      --danger:#ef4444;
     }
     *{ box-sizing:border-box; }
-    body{ margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; background:var(--bg); color:var(--text); }
+    body{ margin:0; font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif; background:var(--bg); color:var(--text); }
     button{ font-family:inherit; }
     
     /* Login Page Styles */
@@ -37,25 +40,28 @@
       background:#fff; border-radius:28px; padding:40px;
       box-shadow:0 20px 60px rgba(0,0,0,.3);
       width:100%; max-width:420px;
+      animation: slideUp 0.5s ease-out;
     }
+    @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
     .loginLogo{
       width:64px; height:64px; border-radius:20px; background:var(--primary);
       display:grid; place-items:center; font-weight:900; font-size:32px;
       color:#fff; margin:0 auto 24px;
     }
     .loginTitle{ font-size:28px; font-weight:900; text-align:center; margin-bottom:8px; }
-    .loginSubtitle{ text-align:center; color:var(--muted); font-weight:900; font-size:14px; margin-bottom:32px; }
+    .loginSubtitle{ text-align:center; color:var(--muted); font-weight:700; font-size:14px; margin-bottom:32px; }
     .loginForm{ display:grid; gap:20px; }
     .loginField{ display:grid; gap:8px; }
-    .loginLabel{ font-size:12px; font-weight:900; color:var(--muted); text-transform:uppercase; }
+    .loginLabel{ font-size:12px; font-weight:800; color:var(--muted); text-transform:uppercase; }
     .loginInput{
       width:100%; padding:14px; border-radius:14px; border:2px solid var(--border);
-      font-weight:800; font-size:15px; outline:none; transition:all .2s;
+      font-weight:600; font-size:15px; outline:none; transition:all .2s;
     }
     .loginInput:focus{ border-color:var(--primary); background:#fff; }
     .loginButton{
       width:100%; padding:16px; border-radius:14px; border:0;
-      background:var(--primary); color:#fff; font-weight:900; font-size:16px;
+      background:var(--primary); color:#fff; font-weight:800; font-size:16px;
       cursor:pointer; transition:all .2s;
     }
     .loginButton:hover{ background:var(--accent); transform:translateY(-2px); }
@@ -64,19 +70,18 @@
       margin-top:24px; padding:16px; background:#f8fafc; border-radius:16px;
       border:1px dashed var(--border);
     }
-    .demoTitle{ font-size:11px; font-weight:900; color:var(--muted); text-transform:uppercase; margin-bottom:12px; }
+    .demoTitle{ font-size:11px; font-weight:800; color:var(--muted); text-transform:uppercase; margin-bottom:12px; }
     .demoAccount{
       display:flex; justify-content:space-between; align-items:center;
       padding:10px; background:#fff; border-radius:12px; margin-bottom:8px;
       cursor:pointer; transition:all .2s; border:1px solid var(--border);
     }
     .demoAccount:hover{ border-color:var(--primary); transform:translateX(4px); }
-    .demoAccount:last-child{ margin-bottom:0; }
-    .demoRole{ font-weight:900; font-size:13px; }
-    .demoCredentials{ font-size:11px; color:var(--muted); font-weight:900; }
+    .demoRole{ font-weight:800; font-size:13px; }
+    .demoCredentials{ font-size:11px; color:var(--muted); font-weight:600; }
     .errorMsg{
       padding:12px; background:#fee2e2; color:#991b1b; border-radius:12px;
-      font-weight:900; font-size:13px; text-align:center;
+      font-weight:700; font-size:13px; text-align:center; margin-bottom:16px;
     }
     
     /* Main App Layout */
@@ -84,163 +89,174 @@
     .sidebar{
       width:280px; background:var(--secondary); color:#fff;
       padding:20px; display:flex; flex-direction:column;
-      transition:transform .3s ease;
+      transition:transform .3s ease; flex-shrink:0;
     }
-    .brand{ display:flex; align-items:center; gap:10px; margin-bottom:18px; }
-    .logo{ width:34px; height:34px; border-radius:12px; background:var(--primary); display:grid; place-items:center; font-weight:900; }
+    .brand{ display:flex; align-items:center; gap:10px; margin-bottom:24px; }
+    .logo{ width:34px; height:34px; border-radius:10px; background:var(--primary); display:grid; place-items:center; font-weight:900; }
     .navbtn{
-      width:100%; display:flex; align-items:center; gap:10px;
-      padding:12px 14px; border-radius:14px; border:0; cursor:pointer;
-      background:transparent; color:rgba(255,255,255,.75);
-      font-weight:900; text-transform:uppercase; font-size:12px; letter-spacing:.5px;
-      margin-bottom:8px; transition:all .2s;
+      width:100%; display:flex; align-items:center; gap:12px;
+      padding:12px 14px; border-radius:12px; border:0; cursor:pointer;
+      background:transparent; color:rgba(255,255,255,.7);
+      font-weight:700; text-transform:uppercase; font-size:12px; letter-spacing:.5px;
+      margin-bottom:4px; transition:all .2s;
     }
-    .navbtn:hover{ background:rgba(255,255,255,.1); }
-    .navbtn.active{ background:var(--primary); color:#fff; }
-    .main{ flex:1; display:flex; flex-direction:column; min-width:0; }
+    .navbtn:hover{ background:rgba(255,255,255,.1); color:#fff; }
+    .navbtn.active{ background:var(--primary); color:#fff; box-shadow:0 4px 12px rgba(0,0,0,.2); }
+    .main{ flex:1; display:flex; flex-direction:column; min-width:0; background:#f1f5f9; }
     .header{
       height:64px; background:#fff; border-bottom:1px solid var(--border);
-      display:flex; align-items:center; justify-content:space-between; padding:0 18px;
-      flex-shrink:0;
+      display:flex; align-items:center; justify-content:space-between; padding:0 24px;
+      flex-shrink:0; position: sticky; top: 0; z-index: 10;
     }
     .hamburger{
       display:none; width:40px; height:40px; border:0; background:var(--soft);
       border-radius:12px; cursor:pointer; font-size:20px; align-items:center;
       justify-content:center;
     }
-    .content{ padding:18px; overflow:auto; flex:1; }
-    .grid4{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+    .content{ padding:24px; overflow:auto; flex:1; }
+    .grid4{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; }
     .card{
-      background:var(--card); border:1px solid var(--border); border-radius:22px;
-      padding:16px; box-shadow:0 8px 24px rgba(15,23,42,.06);
+      background:var(--card); border:1px solid var(--border); border-radius:20px;
+      padding:20px; box-shadow:0 4px 12px rgba(15,23,42,.03);
+      transition:transform 0.2s;
     }
-    .cardTitle{ font-size:12px; font-weight:900; color:var(--muted); text-transform:uppercase; }
-    .cardValue{ font-size:26px; font-weight:900; margin-top:6px; }
-    .row{ display:flex; gap:12px; flex-wrap:wrap; }
-    .half{ flex:1 1 420px; }
+    .cardTitle{ font-size:12px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing: 0.5px; }
+    .cardValue{ font-size:28px; font-weight:800; margin-top:8px; color:var(--text); }
+    .row{ display:flex; gap:16px; flex-wrap:wrap; margin-top:16px; }
+    .half{ flex:1 1 400px; }
     .btnPrimary{
-      background:var(--primary); color:#fff; border:0; padding:10px 14px;
-      border-radius:14px; font-weight:900; cursor:pointer; transition:all .2s;
+      background:var(--primary); color:#fff; border:0; padding:10px 16px;
+      border-radius:10px; font-weight:700; cursor:pointer; transition:all .2s;
+      display: inline-flex; align-items: center; gap: 8px; font-size: 13px;
     }
-    .btnPrimary:hover{ background:var(--accent); }
-    .btnPrimary:disabled{ opacity:.5; cursor:not-allowed; }
+    .btnPrimary:hover{ background:var(--accent); box-shadow:0 4px 12px rgba(167,44,50,.3); }
+    .btnPrimary:disabled{ opacity:.5; cursor:not-allowed; box-shadow:none; }
     .btnSoft{
-      background:var(--soft); color:#334155; border:1px solid var(--border);
-      padding:10px 14px; border-radius:14px; font-weight:900; cursor:pointer; transition:all .2s;
+      background:var(--soft); color:#475569; border:1px solid var(--border);
+      padding:10px 16px; border-radius:10px; font-weight:700; cursor:pointer; transition:all .2s;
+      display: inline-flex; align-items: center; gap: 8px; font-size: 13px;
     }
-    .btnSoft:hover{ background:#e2e8f0; }
-    .pill{ display:inline-block; padding:4px 10px; border-radius:999px; font-size:11px; font-weight:900; }
-    .pill.gray{ background:#e2e8f0; color:#334155; }
+    .btnSoft:hover{ background:#e2e8f0; color:#1e293b; }
+    .pill{ display:inline-flex; align-items: center; padding:4px 10px; border-radius:99px; font-size:11px; font-weight:800; letter-spacing: 0.3px; }
+    .pill.gray{ background:#f1f5f9; color:#475569; }
     .pill.green{ background:#dcfce7; color:#166534; }
     .pill.yellow{ background:#fef9c3; color:#854d0e; }
     .pill.red{ background:#fee2e2; color:#991b1b; }
     .pill.blue{ background:#dbeafe; color:#1e40af; }
-    table{ width:100%; border-collapse:collapse; }
+    table{ width:100%; border-collapse:separate; border-spacing: 0; }
     th{
       text-align:left; font-size:11px; color:var(--muted);
-      text-transform:uppercase; letter-spacing:.6px; padding:12px;
+      text-transform:uppercase; letter-spacing:.8px; padding:16px;
       background:#f8fafc; border-bottom:1px solid var(--border);
+      font-weight: 800; position: sticky; top: 0;
     }
-    td{ padding:12px; border-bottom:1px solid var(--border); font-size:13px; vertical-align:top; }
+    td{ padding:16px; border-bottom:1px solid var(--border); font-size:13px; vertical-align:middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f8fafc; }
+    
     .modalOverlay{
-      position:fixed; inset:0; background:rgba(0,0,0,.75);
-      display:grid; place-items:center; padding:16px; z-index:999;
+      position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter: blur(4px);
+      display:grid; place-items:center; padding:16px; z-index:2000;
+      animation: fadeIn 0.2s ease-out;
     }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
     .modal{
-      width:min(1100px,96vw); max-height:92vh; background:#fff; border-radius:28px;
+      width:min(1100px,96vw); max-height:92vh; background:#fff; border-radius:24px;
       overflow:hidden; display:flex; flex-direction:column;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
+    @keyframes scaleUp { from { transform:scale(0.95); opacity:0; } to { transform:scale(1); opacity:1; } }
+    
     .modalHead{
-      padding:18px; background:#f8fafc; border-bottom:1px solid var(--border);
+      padding:20px 24px; background:#fff; border-bottom:1px solid var(--border);
       display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
     }
-    .modalBody{ padding:18px; overflow:auto; }
-    .label{ font-size:11px; font-weight:900; color:var(--muted); text-transform:uppercase; letter-spacing:.6px; margin-bottom:6px; }
+    .modalBody{ padding:24px; overflow:auto; }
+    .label{ font-size:11px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.6px; margin-bottom:8px; }
     input, select, textarea{
-      width:100%; padding:12px; border-radius:14px; border:1px solid var(--border);
-      background:#f8fafc; font-weight:800; outline:none; font-size:14px;
+      width:100%; padding:12px; border-radius:12px; border:1px solid var(--border);
+      background:#fff; font-weight:600; outline:none; font-size:14px;
+      transition: all 0.2s; color: var(--text);
     }
-    textarea{ min-height:90px; resize:vertical; }
-    .muted{ color:var(--muted); font-weight:900; font-size:12px; }
-    .dividerL{ padding-left:12px; border-left:4px solid var(--border); }
-    .danger{ color:#b91c1c; font-weight:900; display:flex; gap:6px; align-items:center; }
+    input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(167,44,50,0.1); }
+    textarea{ min-height:100px; resize:vertical; line-height: 1.5; }
+    .muted{ color:var(--muted); font-weight:600; font-size:12px; }
+    .dividerL{ padding-left:16px; border-left:3px solid var(--border); margin-left: 4px; }
+    .danger{ color:var(--danger); font-weight:700; display:flex; gap:6px; align-items:center; font-size: 12px; }
     .ellipsis{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .checkboxWrapper{ display:flex; align-items:center; gap:8px; cursor:pointer; padding:8px; border-radius:8px; }
     .checkboxWrapper:hover{ background:#f1f5f9; }
     .checkbox{ width:18px; height:18px; cursor:pointer; accent-color:var(--primary); }
     .selectionInfo{
-      background:#eff6ff; border:1px solid #dbeafe; border-radius:16px; padding:12px;
+      background:#eff6ff; border:1px solid #dbeafe; border-radius:16px; padding:16px;
       display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
     }
     .userInfo{
-      display:flex; align-items:center; gap:10px; padding:12px; background:rgba(255,255,255,.05);
+      display:flex; align-items:center; gap:12px; padding:12px; background:rgba(255,255,255,.08);
       border-radius:12px; margin-bottom:10px;
     }
     .userAvatar{
-      width:38px; height:38px; border-radius:999px; background:var(--primary);
-      display:grid; place-items:center; font-weight:900; flex-shrink:0;
+      width:40px; height:40px; border-radius:999px; background:var(--primary);
+      display:grid; place-items:center; font-weight:800; flex-shrink:0; font-size: 18px;
     }
     .roleBadge{
-      padding:4px 8px; border-radius:8px; font-size:10px; font-weight:900;
+      padding:4px 8px; border-radius:6px; font-size:10px; font-weight:800;
       text-transform:uppercase; letter-spacing:.5px;
     }
-    .roleBadge.admin{ background:#ef4444; color:#fff; }
+    .roleBadge.admin{ background:var(--danger); color:#fff; }
     .roleBadge.user{ background:#3b82f6; color:#fff; }
     
-    /* Responsive Design - Mobile First */
+    /* Notification Toast */
+    .toast-container {
+      position: fixed; bottom: 24px; right: 24px; z-index: 3000;
+      display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+    }
+    .toast {
+      background: #fff; padding: 16px; border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-left: 4px solid var(--primary);
+      display: flex; align-items: center; gap: 12px; width: 320px;
+      pointer-events: auto; animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .toast.error { border-color: var(--danger); }
+    .toast.success { border-color: var(--success); }
+    @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    /* Responsive Design */
     @media (max-width: 768px) {
       .sidebar{
-        position:fixed; left:0; top:0; bottom:0; z-index:1000;
+        position:fixed; left:0; top:0; bottom:0; z-index:1001;
         transform:translateX(-100%); width:280px;
+        box-shadow:none;
       }
-      .sidebar.open{ transform:translateX(0); box-shadow:4px 0 20px rgba(0,0,0,.3); }
+      .sidebar.open{ transform:translateX(0); box-shadow:4px 0 40px rgba(0,0,0,.5); }
       .hamburger{ display:flex !important; }
-      .header{ padding:0 12px; }
-      .content{ padding:12px; }
+      .header{ padding:0 16px; }
+      .content{ padding:16px; }
       .grid4{ grid-template-columns:1fr; }
       .row{ flex-direction:column; }
       .half{ flex:1 1 100%; }
-      .card{ padding:14px; border-radius:18px; }
-      .cardValue{ font-size:22px; }
-      .loginCard{ padding:28px; }
-      .modal{ width:100vw; height:100vh; max-height:100vh; border-radius:0; }
-      .modalHead{ padding:14px; }
-      .modalBody{ padding:14px; }
-      table{ font-size:12px; }
-      th, td{ padding:8px; }
-      .selectionInfo{ flex-direction:column; align-items:stretch; }
-      .btnPrimary, .btnSoft{ font-size:14px; padding:12px; }
-    }
-    
-    @media (max-width: 480px) {
-      .content{ padding:8px; }
-      .card{ padding:12px; }
-      .cardTitle{ font-size:10px; }
-      .cardValue{ font-size:18px; }
-      .loginCard{ padding:20px; }
+      .card{ padding:16px; }
+      .cardValue{ font-size:24px; }
+      .loginCard{ padding:24px; border-radius: 20px; }
       .loginTitle{ font-size:24px; }
-      input, select, textarea{ font-size:16px; } /* Prevent zoom on iOS */
+      .modal{ width:100vw; height:100vh; max-height:100vh; border-radius:0; }
+      table{ display:block; overflow-x:auto; white-space:nowrap; }
+      .selectionInfo{ flex-direction:column; align-items:stretch; text-align: center; }
     }
     
-    /* Tablet */
-    @media (min-width: 769px) and (max-width: 1024px) {
-      .sidebar{ width:240px; padding:16px; }
-      .grid4{ grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); }
-    }
-    
-    /* Overlay for mobile sidebar */
     .sidebarOverlay{
-      display:none; position:fixed; inset:0; background:rgba(0,0,0,.5);
-      z-index:999;
+      display:none; position:fixed; inset:0; background:rgba(0,0,0,.6);
+      z-index:1000; opacity: 0; transition:opacity .3s ease;
     }
-    .sidebarOverlay.show{ display:block; }
+    .sidebarOverlay.show{ display:block; opacity: 1; }
   </style>
 </head>
 <body>
   <div id="root"></div>
 
   <script>
-  const { useMemo, useState, useCallback } = React;
+  const { useMemo, useState, useCallback, useEffect, useRef } = React;
 
   const THEME = { primary:"#a72c32", accent:"#de3e46" };
 
@@ -249,28 +265,49 @@
     { id:"U2", username:"user", password:"123", name:"User Viewer", role:"user" },
   ];
 
+  // Updated Data to include all 4 Missions
   const INITIAL_DATA = [
     {
-      id:"PT1", name:"พันธกิจการเรียนการสอน", sapa_approved:21104500, rolling_2568:881276, progress:0,
+      id:"PT1", name:"พันธกิจด้านการจัดการเรียนการสอน (Teaching)", sapa_approved:21104500, rolling_2568:881276, progress:0,
       main_projects:[
         {
-          id:"PT1-2569-001", name:"โครงการรับนักศึกษาเชิงรุกระดับระดับปริญญาตรี", fiscal_year:"2569", responsible:"คุณปทิตตา",
+          id:"PT1-2569-001", name:"โครงการรับนักศึกษาเชิงรุกระดับปริญญาตรี", fiscal_year:"2569", responsible:"คุณปทิตตา",
           sapa_approved:2310000, rolling:0, proposed_budget:2370000,
           q1_plan:0,q2_plan:0,q3_plan:0,q4_plan:0, actual_spent:0,
-          progress:0, problem:"",
-          sub_projects:[]
+          progress:0, problem:"", sub_projects:[]
         }
       ]
     },
     {
-      id:"PT2", name:"พันธกิจวิจัย", sapa_approved:9090000, rolling_2568:813000, progress:0,
+      id:"PT2", name:"พันธกิจด้านการวิจัยและนวัตกรรม (Research)", sapa_approved:9090000, rolling_2568:813000, progress:0,
       main_projects:[
         {
-          id:"PT2-2569-001", name:"โครงการสนับสนุนงบประมาณการทำวิจัยในรูปแบบเครดิตฯ", fiscal_year:"2569", responsible:"คุณเอมอร",
+          id:"PT2-2569-001", name:"โครงการสนับสนุนงบประมาณการทำวิจัย", fiscal_year:"2569", responsible:"คุณเอมอร",
           sapa_approved:7090000, rolling:0, proposed_budget:12552000,
           q1_plan:0,q2_plan:0,q3_plan:0,q4_plan:0, actual_spent:0,
-          progress:0, problem:"",
-          sub_projects:[]
+          progress:0, problem:"", sub_projects:[]
+        }
+      ]
+    },
+    {
+      id:"PT3", name:"พันธกิจด้านการบริการวิชาการ (Academic Service)", sapa_approved:5000000, rolling_2568:0, progress:0,
+      main_projects:[
+         {
+          id:"PT3-2569-001", name:"โครงการบริการวิชาการสู่ชุมชนเข้มแข็ง", fiscal_year:"2569", responsible:"คุณสมชาย",
+          sapa_approved:5000000, rolling:0, proposed_budget:5000000,
+          q1_plan:0,q2_plan:0,q3_plan:0,q4_plan:0, actual_spent:0,
+          progress:0, problem:"", sub_projects:[]
+        }
+      ]
+    },
+    {
+      id:"PT4", name:"พันธกิจด้านทำนุบำรุงศิลปวัฒนธรรม (Arts & Culture)", sapa_approved:2000000, rolling_2568:0, progress:0,
+      main_projects:[
+         {
+          id:"PT4-2569-001", name:"โครงการสืบสานวัฒนธรรมไทย", fiscal_year:"2569", responsible:"คุณวิไล",
+          sapa_approved:2000000, rolling:0, proposed_budget:2000000,
+          q1_plan:0,q2_plan:0,q3_plan:0,q4_plan:0, actual_spent:0,
+          progress:0, problem:"", sub_projects:[]
         }
       ]
     }
@@ -327,28 +364,60 @@
     return `${prefix}-${Date.now()}-${Math.floor(Math.random()*1000)}`;
   }
 
+  // Toast System
+  const ToastContext = React.createContext(null);
+  
+  function ToastProvider({children}){
+    const [toasts, setToasts] = useState([]);
+    
+    const addToast = (msg, type="error") => {
+      const id = Date.now();
+      setToasts(prev => [...prev, {id, msg, type}]);
+      setTimeout(() => {
+        setToasts(prev => prev.filter(t => t.id !== id));
+      }, 3000);
+    };
+
+    return React.createElement(ToastContext.Provider, {value: addToast},
+      children,
+      React.createElement("div", {className: "toast-container"},
+        toasts.map(t => 
+          React.createElement("div", {
+            key: t.id, 
+            className: `toast ${t.type}`
+          }, 
+            React.createElement("div", {style:{fontSize:20}}, t.type === 'error' ? '🚫' : '✅'),
+            React.createElement("div", {style:{fontWeight:600, fontSize:14}}, t.msg)
+          )
+        )
+      )
+    );
+  }
+  
+  const useToast = () => React.useContext(ToastContext);
+
   function SemiGauge({ value=0, label="" }){
     const v = clamp(value);
-    const radius=48, stroke=10, cx=60, cy=60;
+    const radius=40, stroke=8, cx=50, cy=50;
     const startX=cx-radius, startY=cy, endX=cx+radius, endY=cy;
     const arcLength=Math.PI*radius;
     const dash=(arcLength*v)/100;
 
-    return React.createElement("div", { style:{ display:"flex", flexDirection:"column", alignItems:"center"} },
-      React.createElement("svg", { width:120, height:72, viewBox:"0 0 120 72" },
+    return React.createElement("div", { style:{ display:"flex", flexDirection:"column", alignItems:"center", position:"relative"} },
+      React.createElement("svg", { width:100, height:60, viewBox:"0 0 100 60" },
         React.createElement("path", {
           d:`M ${startX} ${startY} A ${radius} ${radius} 0 0 1 ${endX} ${endY}`,
           fill:"none", stroke:"#e2e8f0", strokeWidth:stroke, strokeLinecap:"round"
         }),
         React.createElement("path", {
           d:`M ${startX} ${startY} A ${radius} ${radius} 0 0 1 ${endX} ${endY}`,
-          fill:"none", stroke:(v===100?THEME.primary:THEME.accent),
+          fill:"none", stroke:(v===100?"#10b981": v > 50 ? THEME.primary : THEME.accent),
           strokeWidth:stroke, strokeLinecap:"round",
           strokeDasharray:`${dash} ${arcLength}`
         })
       ),
-      React.createElement("div", { style:{ fontSize:18, fontWeight:900, marginTop:-8 } }, `${v}%`),
-      label ? React.createElement("div", { style:{ fontSize:10, fontWeight:900, color:"#64748b" } }, label) : null
+      React.createElement("div", { style:{ fontSize:16, fontWeight:900, marginTop:-10 } }, `${v}%`),
+      label ? React.createElement("div", { style:{ fontSize:10, fontWeight:700, color:"#94a3b8", marginTop:2 } }, label) : null
     );
   }
 
@@ -358,7 +427,6 @@
     return React.createElement("span",{className:"pill gray"},"รอเริ่ม");
   }
 
-  // FIXED: Use React.memo() to prevent re-creation and maintain input focus
   const FieldInput = React.memo(function FieldInput({ label, value, onChange, colSpan, placeholder }){
     return React.createElement("div",{style: colSpan ? {gridColumn:`span ${colSpan}`} : null},
       React.createElement("div",{className:"label"},label),
@@ -409,12 +477,7 @@
     });
 
     const [projectModal,setProjectModal]=useState({ open:false, missionId:"", projectId:"" });
-
-    const [simpleAddModal,setSimpleAddModal]=useState({
-      open:false, level:0, missionId:"", projectId:"", parentId:"",
-      name:"", title:""
-    });
-
+    const [simpleAddModal,setSimpleAddModal]=useState({ open:false, level:0, missionId:"", projectId:"", parentId:"", name:"", title:"" });
     const [activityModal,setActivityModal]=useState({
       open:false, mode:"create",
       missionId:"", projectId:"", parentTopicId:"",
@@ -424,13 +487,15 @@
     });
 
     const [selectedProjects, setSelectedProjects] = useState({});
+    
+    const toast = useToast();
 
     const overallProgress = useMemo(()=>{
       const arr=data.map(m=>clamp(m.progress));
       return arr.length ? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length) : 0;
     },[data]);
 
-    // Authentication handlers
+    // Authentication
     function handleLogin(e){
       e.preventDefault();
       const foundUser = INITIAL_USERS.find(u => 
@@ -440,14 +505,16 @@
         setUser(foundUser);
         setLoginForm({ username:"", password:"", error:"" });
       } else {
-        setLoginForm({ ...loginForm, error:"Invalid username or password" });
+        setLoginForm({ ...loginForm, error:"❌ Invalid username or password" });
       }
     }
 
     function handleDemoLogin(username, password){
-      setLoginForm({ username, password, error:"" });
       const foundUser = INITIAL_USERS.find(u => u.username === username && u.password === password);
-      if(foundUser) setUser(foundUser);
+      if(foundUser){
+        setLoginForm({ username:"", password:"", error:"" });
+        setUser(foundUser);
+      }
     }
 
     function handleLogout(){
@@ -456,18 +523,20 @@
       setSidebarOpen(false);
     }
 
-    function toggleSidebar(){
-      setSidebarOpen(!sidebarOpen);
-    }
+    function toggleSidebar(){ setSidebarOpen(!sidebarOpen); }
+    function closeSidebar(){ setSidebarOpen(false); }
 
-    function closeSidebar(){
-      setSidebarOpen(false);
-    }
-
-    // Permission checks
     const canEdit = user?.role === "admin";
     const canCreate = user?.role === "admin";
-    const canDelete = user?.role === "admin";
+
+    // Resize handler
+    useEffect(() => {
+      function handleResize() {
+        if (window.innerWidth > 768 && sidebarOpen) setSidebarOpen(false);
+      }
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, [sidebarOpen]);
 
     const toggleProjectSelection = useCallback((missionId, projectId) => {
       setSelectedProjects(prev => {
@@ -489,31 +558,23 @@
 
     function exportComprehensiveExcel() {
       if (Object.keys(selectedProjects).length === 0) {
-        alert("กรุณาเลือกโครงการที่ต้องการ Export อย่างน้อย 1 โครงการ");
+        toast("กรุณาเลือกโครงการที่ต้องการ Export อย่างน้อย 1 โครงการ");
         return;
       }
-
       const wb = XLSX.utils.book_new();
-
       const summaryData = [
         ["MIS BUDGET SYSTEM - SUMMARY DASHBOARD"],
         ["Generated:", new Date().toLocaleString('th-TH')],
         [],
         ["Mission", "Total Budget", "Actual Spent", "KPI Progress %", "Total KPI Points"],
       ];
-
       data.forEach(m => {
         const totalBudget = Number(m.sapa_approved || 0);
         const actualSpent = m.main_projects.reduce((s,p)=>s+Number(p.actual_spent||0), 0);
         summaryData.push([
-          `${m.id} - ${m.name}`,
-          totalBudget,
-          actualSpent,
-          m.progress || 0,
-          m.kpi_total_points || 0
+          `${m.id} - ${m.name}`, totalBudget, actualSpent, m.progress || 0, m.kpi_total_points || 0
         ]);
       });
-
       summaryData.push([]);
       summaryData.push(["OVERALL PROGRESS:", "", "", overallProgress + "%"]);
 
@@ -524,14 +585,11 @@
         mission.main_projects.forEach(project => {
           const key = `${mission.id}::${project.id}`;
           if (!selectedProjects[key]) return;
-
           const projectData = [];
-          
           projectData.push([`PROJECT: ${project.name}`]);
           projectData.push([`ID: ${project.id}`, `Mission: ${mission.name}`]);
           projectData.push([`Responsible: ${project.responsible || "N/A"}`]);
           projectData.push([]);
-
           projectData.push(["BUDGET INFORMATION"]);
           projectData.push(["Sapa Approved", Number(project.sapa_approved || 0)]);
           projectData.push(["Rolling 2568", Number(project.rolling || 0)]);
@@ -543,77 +601,35 @@
           projectData.push(["Q4 Plan", Number(project.q4_plan || 0)]);
           projectData.push(["Actual Spent", Number(project.actual_spent || 0)]);
           projectData.push([]);
-
           projectData.push(["KPI INFORMATION"]);
           projectData.push(["Total KPI Points", project.kpi_total_points || 0]);
           projectData.push(["Progress %", project.progress || 0]);
-          if (project.problem) {
-            projectData.push(["Problem/Obstacle", project.problem]);
-          }
+          if (project.problem) projectData.push(["Problem/Obstacle", project.problem]);
           projectData.push([]);
-
           projectData.push(["HIERARCHY & ACTIVITIES"]);
           projectData.push([]);
-
           (project.sub_projects || []).forEach((sub, subIdx) => {
             projectData.push([`[Lv.3] Sub Project ${subIdx + 1}: ${sub.name}`]);
             projectData.push([]);
-
             (sub.topics || []).forEach((topic, topicIdx) => {
               projectData.push([`  [Lv.4] Topic ${topicIdx + 1}: ${topic.name}`]);
               projectData.push(["    Activity Name", "Description", "Status", "Progress %", "KPI Points", "Problem"]);
-
               (topic.details || []).forEach(activity => {
                 projectData.push([
-                  `    ${activity.name}`,
-                  activity.description || "",
-                  activity.status || "pending",
-                  activity.progress || 0,
-                  activity.points || 0,
-                  activity.problem || ""
+                  `    ${activity.name}`, activity.description || "", activity.status || "pending",
+                  activity.progress || 0, activity.points || 0, activity.problem || ""
                 ]);
               });
-
               projectData.push([]);
             });
           });
-
           const projectWS = XLSX.utils.aoa_to_sheet(projectData);
           const sheetName = `${project.id}`.substring(0, 31);
           XLSX.utils.book_append_sheet(wb, projectWS, sheetName);
         });
       });
-
-      const budgetData = [
-        ["ALL PROJECTS - BUDGET SUMMARY"],
-        ["Mission", "Project ID", "Project Name", "Responsible", "Net Sapa", "Sapa Approved", "Rolling", "Proposed", "Q1", "Q2", "Q3", "Q4", "KPI Progress %"]
-      ];
-
-      data.forEach(m => {
-        m.main_projects.forEach(p => {
-          const net = Number(p.sapa_approved || 0) + Number(p.rolling || 0);
-          budgetData.push([
-            m.id,
-            p.id,
-            p.name,
-            p.responsible || "",
-            net,
-            p.sapa_approved || 0,
-            p.rolling || 0,
-            p.proposed_budget || 0,
-            p.q1_plan || 0,
-            p.q2_plan || 0,
-            p.q3_plan || 0,
-            p.q4_plan || 0,
-            p.progress || 0
-          ]);
-        });
-      });
-
-      const budgetWS = XLSX.utils.aoa_to_sheet(budgetData);
-      XLSX.utils.book_append_sheet(wb, budgetWS, "Budget Summary");
-
-      XLSX.writeFile(wb, `MIS_Comprehensive_Report_${new Date().toISOString().split('T')[0]}.xlsx`);
+      XLSX.writeFile(wb, `MIS_Report_${new Date().toISOString().split('T')[0]}.xlsx`);
+      toast("Export เสร็จสมบูรณ์", "success");
     }
 
     function openCreateProject(missionId="PT1"){
@@ -629,10 +645,8 @@
     function openEditProject(missionId, p){
       setProjectForm({
         mode:"edit", missionId, id:p.id,
-        fiscal_year:p.fiscal_year||"2569",
-        name:p.name||"", responsible:p.responsible||"",
-        sapa_approved:Number(p.sapa_approved||0),
-        rolling:Number(p.rolling||0),
+        fiscal_year:p.fiscal_year||"2569", name:p.name||"", responsible:p.responsible||"",
+        sapa_approved:Number(p.sapa_approved||0), rolling:Number(p.rolling||0),
         proposed_budget:Number(p.proposed_budget||0),
         q1_plan:Number(p.q1_plan||0), q2_plan:Number(p.q2_plan||0),
         q3_plan:Number(p.q3_plan||0), q4_plan:Number(p.q4_plan||0)
@@ -642,77 +656,49 @@
 
     function saveProject(){
       if(!projectForm.name.trim()) return;
-
       const net = Number(projectForm.sapa_approved||0)+Number(projectForm.rolling||0);
       const qsum = Number(projectForm.q1_plan)+Number(projectForm.q2_plan)+Number(projectForm.q3_plan)+Number(projectForm.q4_plan);
       if(qsum>net){
-        alert("ยอดรวมรายไตรมาสเกินงบสภาอนุมัติสุทธิ!");
+        toast("ยอดรวมรายไตรมาสเกินงบสุทธิ!", "error");
         return;
       }
-
       const newData = data.map(m=>{
         if(m.id!==projectForm.missionId) return m;
         const idx = m.main_projects.findIndex(p=>p.id===projectForm.id);
         const newId = projectForm.mode==="create"
           ? `${m.id}-${projectForm.fiscal_year}-` + String(m.main_projects.length+1).padStart(3,"0")
           : projectForm.id;
-
         const baseOld = idx>=0 ? m.main_projects[idx] : null;
-
         const obj = {
           ...(baseOld||{}),
-          id:newId,
-          fiscal_year:projectForm.fiscal_year,
-          name:projectForm.name,
-          responsible:projectForm.responsible,
-          sapa_approved:Number(projectForm.sapa_approved||0),
-          rolling:Number(projectForm.rolling||0),
+          id:newId, fiscal_year:projectForm.fiscal_year, name:projectForm.name, responsible:projectForm.responsible,
+          sapa_approved:Number(projectForm.sapa_approved||0), rolling:Number(projectForm.rolling||0),
           proposed_budget:Number(projectForm.proposed_budget||0),
-          q1_plan:Number(projectForm.q1_plan||0),
-          q2_plan:Number(projectForm.q2_plan||0),
-          q3_plan:Number(projectForm.q3_plan||0),
-          q4_plan:Number(projectForm.q4_plan||0),
-          actual_spent:Number(baseOld?.actual_spent||0),
-          problem:baseOld?.problem||"",
-          sub_projects:baseOld?.sub_projects||[],
-          progress:Number(baseOld?.progress||0),
+          q1_plan:Number(projectForm.q1_plan||0), q2_plan:Number(projectForm.q2_plan||0),
+          q3_plan:Number(projectForm.q3_plan||0), q4_plan:Number(projectForm.q4_plan||0),
+          actual_spent:Number(baseOld?.actual_spent||0), problem:baseOld?.problem||"",
+          sub_projects:baseOld?.sub_projects||[], progress:Number(baseOld?.progress||0),
         };
-
         const arr=[...m.main_projects];
         if(idx>=0) arr[idx]=obj; else arr.push(obj);
         return { ...m, main_projects:arr };
       });
-
       setData(recomputeAll(newData));
       setProjectFormOpen(false);
+      toast("บันทึกข้อมูลสำเร็จ", "success");
     }
 
     function openProjectModal(missionId, projectId){
       setProjectModal({ open:true, missionId, projectId });
     }
-
     const currentMission = useMemo(()=>data.find(m=>m.id===projectModal.missionId),[data,projectModal.missionId]);
     const currentProject = useMemo(()=>currentMission?.main_projects?.find(p=>p.id===projectModal.projectId),[currentMission,projectModal.projectId]);
 
     function openAddLv3(){
-      setSimpleAddModal({
-        open:true, level:3,
-        missionId:projectModal.missionId,
-        projectId:projectModal.projectId,
-        parentId:projectModal.projectId,
-        name:"",
-        title:"Sub Project (Lv.3)"
-      });
+      setSimpleAddModal({ open:true, level:3, missionId:projectModal.missionId, projectId:projectModal.projectId, parentId:projectModal.projectId, name:"", title:"Sub Project (Lv.3)" });
     }
     function openAddLv4(subId){
-      setSimpleAddModal({
-        open:true, level:4,
-        missionId:projectModal.missionId,
-        projectId:projectModal.projectId,
-        parentId:subId,
-        name:"",
-        title:"Topic (Lv.4)"
-      });
+      setSimpleAddModal({ open:true, level:4, missionId:projectModal.missionId, projectId:projectModal.projectId, parentId:subId, name:"", title:"Topic (Lv.4)" });
     }
     function saveSimpleAdd(){
       if(!simpleAddModal.name.trim()) return;
@@ -720,12 +706,10 @@
         if(m.id!==simpleAddModal.missionId) return m;
         const main_projects = m.main_projects.map(p=>{
           if(p.id!==simpleAddModal.projectId) return p;
-
           if(simpleAddModal.level===3){
             const sp = { id:uid("SUB"), name:simpleAddModal.name, topics:[] };
             return { ...p, sub_projects:[...(p.sub_projects||[]), sp] };
           }
-
           if(simpleAddModal.level===4){
             const subs = (p.sub_projects||[]).map(sp=>{
               if(sp.id!==simpleAddModal.parentId) return sp;
@@ -734,94 +718,59 @@
             });
             return { ...p, sub_projects:subs };
           }
-
           return p;
         });
         return { ...m, main_projects };
       });
-
       setData(recomputeAll(newData));
       setSimpleAddModal({ ...simpleAddModal, open:false, name:"" });
+      toast("เพิ่มรายการสำเร็จ", "success");
     }
 
     function openCreateActivity(topicId){
-      setActivityModal({
-        open:true, mode:"create",
-        missionId:projectModal.missionId,
-        projectId:projectModal.projectId,
-        parentTopicId:topicId,
-        activityId:"",
-        name:"", description:"", problem:"",
-        points:10, progress:0, status:"pending"
-      });
+      setActivityModal({ open:true, mode:"create", missionId:projectModal.missionId, projectId:projectModal.projectId, parentTopicId:topicId, activityId:"", name:"", description:"", problem:"", points:10, progress:0, status:"pending" });
     }
     function openEditActivity(topicId, d){
-      setActivityModal({
-        open:true, mode:"edit",
-        missionId:projectModal.missionId,
-        projectId:projectModal.projectId,
-        parentTopicId:topicId,
-        activityId:d.id,
-        name:d.name||"",
-        description:d.description||"",
-        problem:d.problem||"",
-        points:Number(d.points||10),
-        progress:Number(d.progress||0),
-        status:d.status||"pending"
-      });
+      setActivityModal({ open:true, mode:"edit", missionId:projectModal.missionId, projectId:projectModal.projectId, parentTopicId:topicId, activityId:d.id, name:d.name||"", description:d.description||"", problem:d.problem||"", points:Number(d.points||10), progress:Number(d.progress||0), status:d.status||"pending" });
     }
     function saveActivity(){
       if(!activityModal.name.trim()) return;
       const norm = normalizeStatusProgress(activityModal.status, activityModal.progress);
-
       const newData = data.map(m=>{
         if(m.id!==activityModal.missionId) return m;
         const main_projects = m.main_projects.map(p=>{
           if(p.id!==activityModal.projectId) return p;
-
           const sub_projects = (p.sub_projects||[]).map(sp=>{
             const topics = (sp.topics||[]).map(tp=>{
               if(tp.id!==activityModal.parentTopicId) return tp;
-
               const details=[...(tp.details||[])];
-
               if(activityModal.mode==="create"){
                 details.push({
-                  id:uid("ACT"),
-                  name:activityModal.name,
-                  description:activityModal.description,
-                  problem:activityModal.problem,
-                  points:Number(activityModal.points||0),
-                  progress:Number(norm.progress),
-                  status:norm.status
+                  id:uid("ACT"), name:activityModal.name, description:activityModal.description,
+                  problem:activityModal.problem, points:Number(activityModal.points||0),
+                  progress:Number(norm.progress), status:norm.status
                 });
               }else{
                 const idx=details.findIndex(x=>x.id===activityModal.activityId);
                 if(idx>=0){
                   details[idx]={
-                    ...details[idx],
-                    name:activityModal.name,
-                    description:activityModal.description,
-                    problem:activityModal.problem,
-                    points:Number(activityModal.points||0),
-                    progress:Number(norm.progress),
-                    status:norm.status
+                    ...details[idx], name:activityModal.name, description:activityModal.description,
+                    problem:activityModal.problem, points:Number(activityModal.points||0),
+                    progress:Number(norm.progress), status:norm.status
                   };
                 }
               }
-
               return { ...tp, details };
             });
             return { ...sp, topics };
           });
-
           return { ...p, sub_projects };
         });
         return { ...m, main_projects };
       });
-
       setData(recomputeAll(newData));
       setActivityModal({ ...activityModal, open:false });
+      toast("บันทึกกิจกรรมสำเร็จ", "success");
     }
 
     function exportBudgetCSV(){
@@ -844,6 +793,7 @@
       a.download="budget_export.csv";
       a.click();
       URL.revokeObjectURL(a.href);
+      toast("CSV Downloaded", "success");
     }
 
     function Sidebar(){
@@ -860,7 +810,7 @@
           React.createElement("div",{className:"userInfo"},
             React.createElement("div",{className:"userAvatar"},user.name.charAt(0)),
             React.createElement("div",{style:{flex:1,minWidth:0}},
-              React.createElement("div",{style:{fontSize:12,fontWeight:900,opacity:.92,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},user.name),
+              React.createElement("div",{style:{fontSize:12,fontWeight:700,opacity:.92,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},user.name),
               React.createElement("span",{className:"roleBadge " + user.role},user.role)
             )
           ),
@@ -882,23 +832,19 @@
             React.createElement("div",{className:"loginField"},
               React.createElement("label",{className:"loginLabel"},"Username"),
               React.createElement("input",{
-                className:"loginInput",
-                type:"text",
+                className:"loginInput", type:"text",
                 value:loginForm.username,
                 onChange:(e)=>setLoginForm({...loginForm,username:e.target.value}),
-                placeholder:"Enter username",
-                required:true
+                placeholder:"Enter username", required:true
               })
             ),
             React.createElement("div",{className:"loginField"},
               React.createElement("label",{className:"loginLabel"},"Password"),
               React.createElement("input",{
-                className:"loginInput",
-                type:"password",
+                className:"loginInput", type:"password",
                 value:loginForm.password,
                 onChange:(e)=>setLoginForm({...loginForm,password:e.target.value}),
-                placeholder:"Enter password",
-                required:true
+                placeholder:"Enter password", required:true
               })
             ),
             React.createElement("button",{className:"loginButton",type:"submit"},"🔐 Login")
@@ -907,24 +853,22 @@
           React.createElement("div",{className:"demoAccounts"},
             React.createElement("div",{className:"demoTitle"},"📋 Demo Accounts (Click to Auto-fill)"),
             React.createElement("div",{
-              className:"demoAccount",
-              onClick:()=>handleDemoLogin("admin","123")
+              className:"demoAccount", onClick:()=>handleDemoLogin("admin","123")
             },
               React.createElement("div",null,
                 React.createElement("div",{className:"demoRole"},"👑 Administrator"),
                 React.createElement("div",{className:"demoCredentials"},"Full access • Create/Edit/Delete")
               ),
-              React.createElement("div",{style:{fontSize:11,fontWeight:900,color:"#64748b"}},"admin / 123")
+              React.createElement("div",{style:{fontSize:11,fontWeight:700,color:"#64748b"}},"admin")
             ),
             React.createElement("div",{
-              className:"demoAccount",
-              onClick:()=>handleDemoLogin("user","123")
+              className:"demoAccount", onClick:()=>handleDemoLogin("user","123")
             },
               React.createElement("div",null,
                 React.createElement("div",{className:"demoRole"},"👤 User (Read-Only)"),
                 React.createElement("div",{className:"demoCredentials"},"View only • No edit permissions")
               ),
-              React.createElement("div",{style:{fontSize:11,fontWeight:900,color:"#64748b"}},"user / 123")
+              React.createElement("div",{style:{fontSize:11,fontWeight:700,color:"#64748b"}},"user")
             )
           )
         )
@@ -934,15 +878,14 @@
     function NavButton(key,label){
       return React.createElement("button",{
         className:"navbtn"+(view===key?" active":""),
-        onClick:()=>setView(key)
+        onClick:()=>{ setView(key); closeSidebar(); }
       }, label);
     }
 
     function Dashboard(){
       const totalBudget = data.reduce((s,m)=>s+Number(m.sapa_approved||0),0);
       const actualSpent = data.flatMap(m=>m.main_projects).reduce((s,p)=>s+Number(p.actual_spent||0),0);
-
-      return React.createElement("div",{style:{display:"grid",gap:12}},
+      return React.createElement("div",{style:{display:"grid",gap:16}},
         React.createElement("div",{className:"grid4"},
           CardStat("Total Budget","฿"+totalBudget.toLocaleString()),
           CardStat("Actual Spent","฿"+actualSpent.toLocaleString()),
@@ -952,22 +895,23 @@
         React.createElement("div",{className:"row"},
           React.createElement("div",{className:"card half"},
             React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
-              React.createElement("div",{style:{fontWeight:900}},"Mission KPI (Semi Gauge)"),
-              React.createElement("span",{className:"pill red"},"100% = เสร็จแล้ว")
+              React.createElement("div",{style:{fontWeight:800}},"Mission KPI Overview"),
+              React.createElement("span",{className:"pill red"},"100% Target")
             ),
-            React.createElement("div",{style:{marginTop:12,display:"grid",gap:10}},
-              data.map(m=>React.createElement("div",{key:m.id,style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:12,border:"1px solid var(--border)",borderRadius:16}},
+            React.createElement("div",{style:{marginTop:16,display:"grid",gap:12}},
+              data.map(m=>React.createElement("div",{key:m.id,style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:16,border:"1px solid var(--border)",borderRadius:16, background:"#fff"}},
                 React.createElement("div",null,
-                  React.createElement("div",{style:{fontWeight:900}},m.name),
+                  React.createElement("div",{style:{fontWeight:700,color:"var(--primary)",fontSize:12}}, m.id),
+                  React.createElement("div",{style:{fontWeight:800,marginBottom:4}},m.name.split(" (")[0]),
                   React.createElement("div",{className:"muted"},(m.kpi_total_points||0)+" KPI pts")
                 ),
-                React.createElement(SemiGauge,{value:m.progress,label:m.id})
+                React.createElement(SemiGauge,{value:m.progress})
               ))
             )
           ),
           React.createElement("div",{className:"card half"},
             React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
-              React.createElement("div",{style:{fontWeight:900}},"Quick Actions"),
+              React.createElement("div",{style:{fontWeight:800}},"Quick Actions"),
               React.createElement("button",{className:"btnPrimary",onClick:()=>setView("explorer")},"↗ Open Explorer")
             ),
             React.createElement("div",{style:{marginTop:14,display:"grid",gap:10}},
@@ -975,19 +919,19 @@
               React.createElement("button",{className:"btnSoft",onClick:()=>setView("budget")},"💰 Go to Budget"),
               React.createElement("button",{className:"btnSoft",onClick:()=>setView("reports")},"📈 Reports & KPI")
             ),
-            !canCreate ? React.createElement("div",{style:{marginTop:10,padding:12,background:"#fef9c3",borderRadius:12,fontSize:12,fontWeight:900,color:"#854d0e"}},"ℹ️ Read-only mode - Login as Admin to create/edit") : null
+            !canCreate ? React.createElement("div",{style:{marginTop:10,padding:12,background:"#fef9c3",borderRadius:12,fontSize:12,fontWeight:700,color:"#854d0e"}},"ℹ️ Read-only mode - Login as Admin to create/edit") : null
           )
         )
       );
     }
 
     function Explorer(){
-      return React.createElement("div",{style:{display:"grid",gap:12}},
+      return React.createElement("div",{style:{display:"grid",gap:16}},
         React.createElement("div",{className:"card",style:{background:"var(--secondary)",color:"#fff",borderColor:"transparent"}},
           React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}},
             React.createElement("div",null,
               React.createElement("div",{style:{fontSize:20,fontWeight:900}},"Hierarchy Explorer"),
-              React.createElement("div",{style:{fontSize:12,fontWeight:900,opacity:.6}},"Manage Lv.1 to Lv.5 Activities")
+              React.createElement("div",{style:{fontSize:12,fontWeight:700,opacity:.6}},"Manage Lv.1 to Lv.5 Activities")
             ),
             canCreate ? React.createElement("button",{className:"btnPrimary",style:{background:"#fff",color:"#111827"},onClick:()=>openCreateProject("PT1")},"＋ Create Project") : null
           )
@@ -995,7 +939,8 @@
         data.map(m=>React.createElement("div",{key:m.id,className:"card"},
           React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}},
             React.createElement("div",null,
-              React.createElement("div",{style:{fontWeight:900,fontSize:16}},`${m.id} • ${m.name}`),
+              React.createElement("div",{style:{fontWeight:800,fontSize:16,color:"var(--primary)"}}, m.id),
+              React.createElement("div",{style:{fontWeight:800,fontSize:18}}, m.name),
               React.createElement("div",{className:"muted"},`${m.main_projects.length} projects`)
             ),
             React.createElement("div",{style:{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}},
@@ -1003,27 +948,27 @@
               React.createElement(SemiGauge,{value:m.progress,label:"Mission"})
             )
           ),
-          React.createElement("div",{style:{marginTop:12,display:"grid",gap:10}},
-            m.main_projects.map(p=>React.createElement("div",{key:p.id,style:{padding:12,border:"1px solid var(--border)",borderRadius:16,display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,flexWrap:"wrap"}},
+          React.createElement("div",{style:{marginTop:16,display:"grid",gap:12}},
+            m.main_projects.map(p=>React.createElement("div",{key:p.id,style:{padding:16,border:"1px solid var(--border)",borderRadius:16,display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,flexWrap:"wrap", background:"#f8fafc"}},
               React.createElement("div",{style:{minWidth:0,flex:"1 1 200px"}},
-                React.createElement("div",{style:{fontSize:12,fontWeight:900,color:"var(--primary)"}},p.id),
-                React.createElement("div",{style:{fontSize:14,fontWeight:900},className:"ellipsis"},p.name),
+                React.createElement("div",{style:{fontSize:12,fontWeight:800,color:"var(--primary)"}},p.id),
+                React.createElement("div",{style:{fontSize:15,fontWeight:800},className:"ellipsis"},p.name),
                 React.createElement("div",{className:"muted"},`${p.responsible||"N/A"} • ${(p.kpi_total_points||0)} pts`)
               ),
-              React.createElement("div",{style:{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}},
+              React.createElement("div",{style:{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}},
                 canEdit ? React.createElement("button",{className:"btnSoft",onClick:()=>openEditProject(m.id,p)},"✎") : null,
-                React.createElement("button",{className:"btnPrimary",onClick:()=>openProjectModal(m.id,p.id)},"Open Detail"),
+                React.createElement("button",{className:"btnPrimary",onClick:()=>openProjectModal(m.id,p.id)},"Detail"),
                 React.createElement(SemiGauge,{value:p.progress,label:"Project"})
               )
             )),
-            m.main_projects.length===0 ? React.createElement("div",{style:{padding:14,color:"#94a3b8",fontWeight:900,fontSize:12}},"No projects") : null
+            m.main_projects.length===0 ? React.createElement("div",{style:{padding:14,color:"#94a3b8",fontWeight:700,fontSize:12,textAlign:"center",border:"1px dashed var(--border)",borderRadius:12}},"No projects yet") : null
           )
         ))
       );
     }
 
     function Budget(){
-      return React.createElement("div",{style:{display:"grid",gap:12}},
+      return React.createElement("div",{style:{display:"grid",gap:16}},
         React.createElement("div",{className:"card"},
           React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}},
             React.createElement("div",null,
@@ -1036,7 +981,7 @@
             )
           )
         ),
-        React.createElement("div",{className:"card",style:{overflowX:"auto"}},
+        React.createElement("div",{className:"card",style:{overflowX:"auto",padding:0}},
           React.createElement("table",null,
             React.createElement("thead",null,
               React.createElement("tr",null,
@@ -1052,17 +997,17 @@
                 const net = Number(p.sapa_approved||0)+Number(p.rolling||0);
                 return React.createElement("tr",{key:p.id},
                   React.createElement("td",null,
-                    React.createElement("div",{style:{fontSize:12,fontWeight:900,color:"var(--primary)"}},p.id),
-                    React.createElement("div",{style:{fontWeight:900}},p.name),
+                    React.createElement("div",{style:{fontSize:12,fontWeight:800,color:"var(--primary)"}},p.id),
+                    React.createElement("div",{style:{fontWeight:700}},p.name),
                     p.problem ? React.createElement("div",{className:"danger",style:{marginTop:6}},"⚠ ",p.problem) : null
                   ),
                   React.createElement("td",null,p.responsible||"-"),
-                  React.createElement("td",{style:{textAlign:"right",fontWeight:900}},"฿"+net.toLocaleString()),
+                  React.createElement("td",{style:{textAlign:"right",fontWeight:700}},"฿"+net.toLocaleString()),
                   React.createElement("td",{style:{textAlign:"center"}},
                     React.createElement("span",{className:"pill gray"},(p.progress||0)+"%")
                   ),
                   React.createElement("td",{style:{textAlign:"center"}},
-                    React.createElement("div",{style:{display:"flex",justifyContent:"center",gap:10,flexWrap:"wrap"}},
+                    React.createElement("div",{style:{display:"flex",justifyContent:"center",gap:8,flexWrap:"wrap"}},
                       canEdit ? React.createElement("button",{className:"btnSoft",onClick:()=>openEditProject(p.missionId,p)},"✎") : null,
                       React.createElement("button",{className:"btnPrimary",onClick:()=>openProjectModal(p.missionId,p.id)},"Detail")
                     )
@@ -1078,8 +1023,7 @@
     function Reports(){
       const selectedCount = Object.values(selectedProjects).filter(Boolean).length;
       const totalProjects = data.flatMap(m => m.main_projects).length;
-
-      return React.createElement("div",{style:{display:"grid",gap:12}},
+      return React.createElement("div",{style:{display:"grid",gap:16}},
         React.createElement("div",{className:"card"},
           React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
             React.createElement("div",null,
@@ -1089,27 +1033,17 @@
             React.createElement("span",{className:"pill red"},"Overall "+overallProgress+"%")
           )
         ),
-
         React.createElement("div",{className:"selectionInfo"},
           React.createElement("div",null,
             React.createElement("span",{className:"pill blue",style:{marginRight:8}},`เลือกแล้ว ${selectedCount} / ${totalProjects}`),
-            React.createElement("button",{
-              className:"btnSoft",
-              style:{marginLeft:8},
-              onClick:toggleSelectAll
-            }, selectedCount === totalProjects ? "✕ ยกเลิกทั้งหมด" : "✓ เลือกทั้งหมด")
+            React.createElement("button",{className:"btnSoft",style:{marginLeft:8},onClick:toggleSelectAll}, selectedCount === totalProjects ? "✕ ยกเลิกทั้งหมด" : "✓ เลือกทั้งหมด")
           ),
-          React.createElement("button",{
-            className:"btnPrimary",
-            onClick:exportComprehensiveExcel,
-            disabled:selectedCount === 0
-          }, `📥 Export Excel (${selectedCount} โครงการ)`)
+          React.createElement("button",{className:"btnPrimary",onClick:exportComprehensiveExcel,disabled:selectedCount === 0}, `📥 Export Excel (${selectedCount} โครงการ)`)
         ),
-
         data.map(m=>React.createElement("div",{key:m.id,className:"card"},
           React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
             React.createElement("div",null,
-              React.createElement("div",{style:{fontWeight:900}},`${m.id} • ${m.name}`),
+              React.createElement("div",{style:{fontWeight:800}},`${m.id} • ${m.name}`),
               React.createElement("div",{className:"muted"},`${m.main_projects.length} projects`)
             ),
             React.createElement(SemiGauge,{value:m.progress,label:"Mission KPI"})
@@ -1118,37 +1052,26 @@
             m.main_projects.map(p=>{
               const key = `${m.id}::${p.id}`;
               const isSelected = selectedProjects[key];
-              
               return React.createElement("div",{
                 key:p.id,
                 style:{
-                  padding:12,
-                  border:isSelected ? "2px solid var(--primary)" : "1px solid var(--border)",
-                  borderRadius:16,
-                  display:"flex",
-                  justifyContent:"space-between",
-                  alignItems:"center",
-                  gap:12,
-                  background: isSelected ? "#fef2f2" : "transparent"
+                  padding:12, border:isSelected ? "2px solid var(--primary)" : "1px solid var(--border)",
+                  borderRadius:16, display:"flex", justifyContent:"space-between", alignItems:"center",
+                  gap:12, background: isSelected ? "#fff1f2" : "#fff", transition:"all 0.2s"
                 }
               },
                 React.createElement("div",{style:{display:"flex",alignItems:"center",gap:12,minWidth:0}},
-                  React.createElement("input",{
-                    type:"checkbox",
-                    className:"checkbox",
-                    checked:isSelected||false,
-                    onChange:()=>toggleProjectSelection(m.id, p.id)
-                  }),
+                  React.createElement("div",{className:"checkboxWrapper", onClick:()=>toggleProjectSelection(m.id, p.id)},
+                    React.createElement("input",{type:"checkbox", className:"checkbox", checked:isSelected||false, readOnly:true})
+                  ),
                   React.createElement("div",{style:{minWidth:0}},
-                    React.createElement("div",{style:{fontSize:12,fontWeight:900,color:"var(--primary)"}},p.id),
-                    React.createElement("div",{style:{fontSize:14,fontWeight:900},className:"ellipsis"},p.name),
-                    React.createElement("div",{className:"muted"},
-                      `Net Sapa: ฿${(Number(p.sapa_approved||0)+Number(p.rolling||0)).toLocaleString()} • KPI pts: ${p.kpi_total_points||0}`
-                    )
+                    React.createElement("div",{style:{fontSize:12,fontWeight:800,color:"var(--primary)"}},p.id),
+                    React.createElement("div",{style:{fontSize:14,fontWeight:700},className:"ellipsis"},p.name),
+                    React.createElement("div",{className:"muted"},`Net: ฿${(Number(p.sapa_approved||0)+Number(p.rolling||0)).toLocaleString()} • KPI: ${p.kpi_total_points||0}`)
                   )
                 ),
                 React.createElement("div",{style:{display:"flex",gap:10,alignItems:"center"}},
-                  React.createElement("button",{className:"btnPrimary",onClick:()=>openProjectModal(m.id,p.id)},"Open Detail"),
+                  React.createElement("button",{className:"btnPrimary",onClick:()=>openProjectModal(m.id,p.id)},"Detail"),
                   React.createElement(SemiGauge,{value:p.progress,label:"Project KPI"})
                 )
               );
@@ -1169,8 +1092,7 @@
       return React.createElement("div",{className:"header"},
         React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10}},
           React.createElement("button",{className:"hamburger",onClick:toggleSidebar}, "☰"),
-          React.createElement("div",{style:{fontSize:16,fontWeight:900,textTransform:"uppercase"}}, view),
-          React.createElement("span",{className:"roleBadge " + user.role,style:{marginLeft:8}},user.role)
+          React.createElement("div",{style:{fontSize:16,fontWeight:800,textTransform:"uppercase",letterSpacing:1}}, view),
         ),
         React.createElement("div",{className:"muted"},"FY 2569")
       );
@@ -1178,10 +1100,8 @@
 
     function ProjectFormModal(){
       if(!projectFormOpen) return null;
-
       const net = Number(projectForm.sapa_approved||0)+Number(projectForm.rolling||0);
       const qsum = Number(projectForm.q1_plan)+Number(projectForm.q2_plan)+Number(projectForm.q3_plan)+Number(projectForm.q4_plan);
-
       return React.createElement("div",{className:"modalOverlay"},
         React.createElement("div",{className:"modal",style:{width:"min(900px,96vw)"}},
           React.createElement("div",{className:"modalHead"},
@@ -1194,88 +1114,49 @@
             React.createElement("button",{className:"btnSoft",onClick:()=>setProjectFormOpen(false)},"✕")
           ),
           React.createElement("div",{className:"modalBody"},
-            React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}},
+            React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}},
               React.createElement(FieldSelect, {
-                label: "Mission",
-                value: projectForm.missionId,
+                label: "Mission", value: projectForm.missionId,
                 onChange: (v) => setProjectForm({...projectForm, missionId:v}),
                 options: data.map(m => ({value:m.id, label:`${m.id} - ${m.name}`}))
               }),
               React.createElement(FieldSelect, {
-                label: "Fiscal Year",
-                value: projectForm.fiscal_year,
+                label: "Fiscal Year", value: projectForm.fiscal_year,
                 onChange: (v) => setProjectForm({...projectForm, fiscal_year:v}),
                 options: [{value:"2569",label:"2569"},{value:"2570",label:"2570"}]
               }),
               React.createElement(FieldInput, {
-                label: "Project Name",
-                value: projectForm.name,
+                label: "Project Name", value: projectForm.name,
                 onChange: (v) => setProjectForm({...projectForm, name:v}),
-                colSpan: 2,
-                placeholder: "ชื่อโครงการ..."
+                colSpan: 2, placeholder: "ชื่อโครงการ..."
               }),
               React.createElement(FieldInput, {
-                label: "Responsible",
-                value: projectForm.responsible,
+                label: "Responsible", value: projectForm.responsible,
                 onChange: (v) => setProjectForm({...projectForm, responsible:v}),
-                colSpan: 2,
-                placeholder: "ผู้รับผิดชอบ..."
+                colSpan: 2, placeholder: "ผู้รับผิดชอบ..."
               })
             ),
-
-            React.createElement("div",{className:"card",style:{marginTop:14}},
-              React.createElement("div",{style:{fontWeight:900,marginBottom:10}},"Financial Fields"),
-              React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}},
-                React.createElement(FieldNumber, {
-                  label: "Sapa Approved",
-                  value: projectForm.sapa_approved,
-                  onChange: (v) => setProjectForm({...projectForm, sapa_approved:v})
-                }),
-                React.createElement(FieldNumber, {
-                  label: "Proposed",
-                  value: projectForm.proposed_budget,
-                  onChange: (v) => setProjectForm({...projectForm, proposed_budget:v})
-                }),
-                React.createElement(FieldNumber, {
-                  label: "Rolling 2568",
-                  value: projectForm.rolling,
-                  onChange: (v) => setProjectForm({...projectForm, rolling:v})
-                })
+            React.createElement("div",{className:"card",style:{marginTop:20, background:"#f8fafc", border:"none"}},
+              React.createElement("div",{style:{fontWeight:800,marginBottom:12}},"Financial Fields"),
+              React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(150px, 1fr))",gap:16}},
+                React.createElement(FieldNumber, { label: "Sapa Approved", value: projectForm.sapa_approved, onChange: (v) => setProjectForm({...projectForm, sapa_approved:v}) }),
+                React.createElement(FieldNumber, { label: "Proposed", value: projectForm.proposed_budget, onChange: (v) => setProjectForm({...projectForm, proposed_budget:v}) }),
+                React.createElement(FieldNumber, { label: "Rolling 2568", value: projectForm.rolling, onChange: (v) => setProjectForm({...projectForm, rolling:v}) })
               ),
-              React.createElement("div",{style:{marginTop:12,display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}},
-                React.createElement(FieldNumber, {
-                  label: "Q1",
-                  value: projectForm.q1_plan,
-                  onChange: (v) => setProjectForm({...projectForm, q1_plan:v})
-                }),
-                React.createElement(FieldNumber, {
-                  label: "Q2",
-                  value: projectForm.q2_plan,
-                  onChange: (v) => setProjectForm({...projectForm, q2_plan:v})
-                }),
-                React.createElement(FieldNumber, {
-                  label: "Q3",
-                  value: projectForm.q3_plan,
-                  onChange: (v) => setProjectForm({...projectForm, q3_plan:v})
-                }),
-                React.createElement(FieldNumber, {
-                  label: "Q4",
-                  value: projectForm.q4_plan,
-                  onChange: (v) => setProjectForm({...projectForm, q4_plan:v})
-                })
+              React.createElement("div",{style:{marginTop:16,display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(100px, 1fr))",gap:16}},
+                React.createElement(FieldNumber, { label: "Q1", value: projectForm.q1_plan, onChange: (v) => setProjectForm({...projectForm, q1_plan:v}) }),
+                React.createElement(FieldNumber, { label: "Q2", value: projectForm.q2_plan, onChange: (v) => setProjectForm({...projectForm, q2_plan:v}) }),
+                React.createElement(FieldNumber, { label: "Q3", value: projectForm.q3_plan, onChange: (v) => setProjectForm({...projectForm, q3_plan:v}) }),
+                React.createElement(FieldNumber, { label: "Q4", value: projectForm.q4_plan, onChange: (v) => setProjectForm({...projectForm, q4_plan:v}) })
               ),
-              React.createElement("div",{style:{marginTop:12,display:"flex",justifyContent:"space-between",alignItems:"center",paddingTop:10,borderTop:"1px solid var(--border)"}},
-                React.createElement("div",{className:"muted"},"Net Sapa: ",
-                  React.createElement("span",{style:{color:"var(--primary)"}}, "฿"+net.toLocaleString())
-                ),
-                React.createElement("div",{className:"muted"},"Total Q1–Q4: ",
-                  React.createElement("span",{style:{color:"var(--text)"}}, "฿"+qsum.toLocaleString()),
+              React.createElement("div",{style:{marginTop:16,display:"flex",justifyContent:"space-between",alignItems:"center",paddingTop:12,borderTop:"1px solid var(--border)"}},
+                React.createElement("div",{className:"muted"},"Net Sapa: ", React.createElement("span",{style:{color:"var(--primary)",fontWeight:800,fontSize:14}}, "฿"+net.toLocaleString())),
+                React.createElement("div",{className:"muted"},"Total Q1–Q4: ", React.createElement("span",{style:{color:"var(--text)",fontWeight:800}}, "฿"+qsum.toLocaleString()),
                   qsum>net ? React.createElement("span",{className:"pill red",style:{marginLeft:10}},"เกินงบ!") : null
                 )
               )
             ),
-
-            React.createElement("div",{style:{marginTop:14,display:"flex",gap:10,justifyContent:"flex-end"}},
+            React.createElement("div",{style:{marginTop:20,display:"flex",gap:10,justifyContent:"flex-end"}},
               React.createElement("button",{className:"btnSoft",onClick:()=>setProjectFormOpen(false)},"Cancel"),
               React.createElement("button",{className:"btnPrimary",onClick:saveProject},"Save")
             )
@@ -1287,10 +1168,10 @@
     function SimpleAddModal(){
       if(!simpleAddModal.open) return null;
       return React.createElement("div",{className:"modalOverlay"},
-        React.createElement("div",{className:"modal",style:{width:"min(720px,96vw)"}},
+        React.createElement("div",{className:"modal",style:{width:"min(600px,96vw)"}},
           React.createElement("div",{className:"modalHead"},
             React.createElement("div",null,
-              React.createElement("div",{style:{fontWeight:900,fontSize:18}}, "Add New "+simpleAddModal.title),
+              React.createElement("div",{style:{fontWeight:800,fontSize:18}}, "Add New "+simpleAddModal.title),
               React.createElement("div",{className:"muted"},"เพิ่มรายการ Lv."+simpleAddModal.level)
             ),
             React.createElement("button",{className:"btnSoft",onClick:()=>setSimpleAddModal({...simpleAddModal,open:false})},"✕")
@@ -1298,11 +1179,11 @@
           React.createElement("div",{className:"modalBody"},
             React.createElement("div",{className:"label"},"Name"),
             React.createElement("input",{
-              value: simpleAddModal.name,
+              value: simpleAddModal.name, autoFocus: true,
               onChange: (e) => setSimpleAddModal({...simpleAddModal, name:e.target.value}),
               placeholder: "ชื่อรายการ..."
             }),
-            React.createElement("div",{style:{marginTop:14,display:"flex",justifyContent:"flex-end",gap:10}},
+            React.createElement("div",{style:{marginTop:20,display:"flex",justifyContent:"flex-end",gap:10}},
               React.createElement("button",{className:"btnSoft",onClick:()=>setSimpleAddModal({...simpleAddModal,open:false})},"Cancel"),
               React.createElement("button",{className:"btnPrimary",onClick:saveSimpleAdd},"Save")
             )
@@ -1313,75 +1194,48 @@
 
     function ActivityModal(){
       if(!activityModal.open) return null;
-
       return React.createElement("div",{className:"modalOverlay"},
-        React.createElement("div",{className:"modal",style:{width:"min(760px,96vw)"}},
+        React.createElement("div",{className:"modal",style:{width:"min(720px,96vw)"}},
           React.createElement("div",{className:"modalHead"},
             React.createElement("div",null,
-              React.createElement("div",{style:{fontWeight:900,fontSize:18}},
-                activityModal.mode==="create" ? "Add New Activity (Lv.5)" : "Update Activity (Lv.5)"
-              ),
-              React.createElement("div",{className:"muted"},"รายละเอียด + ปัญหา/อุปสรรค + สถานะ/Progress")
+              React.createElement("div",{style:{fontWeight:800,fontSize:18}}, activityModal.mode==="create" ? "Add Activity (Lv.5)" : "Update Activity (Lv.5)"),
+              React.createElement("div",{className:"muted"},"รายละเอียด + ปัญหา + Progress")
             ),
             React.createElement("button",{className:"btnSoft",onClick:()=>setActivityModal({...activityModal,open:false})},"✕")
           ),
           React.createElement("div",{className:"modalBody"},
-            React.createElement("div",{style:{display:"grid",gap:12}},
+            React.createElement("div",{style:{display:"grid",gap:16}},
               React.createElement("div",null,
                 React.createElement("div",{className:"label"},"Activity Name"),
-                React.createElement("input",{
-                  value: activityModal.name,
-                  onChange: (e) => setActivityModal({...activityModal, name:e.target.value}),
-                  placeholder: "ชื่อกิจกรรม..."
-                })
+                React.createElement("input",{ value: activityModal.name, onChange: (e) => setActivityModal({...activityModal, name:e.target.value}), placeholder: "ชื่อกิจกรรม..." })
               ),
               React.createElement("div",null,
                 React.createElement("div",{className:"label"},"Description"),
-                React.createElement("textarea",{
-                  value: activityModal.description,
-                  onChange: (e) => setActivityModal({...activityModal, description:e.target.value}),
-                  placeholder: "รายละเอียดกิจกรรม..."
-                })
+                React.createElement("textarea",{ value: activityModal.description, onChange: (e) => setActivityModal({...activityModal, description:e.target.value}), placeholder: "รายละเอียดกิจกรรม..." })
               ),
               React.createElement("div",null,
                 React.createElement("div",{className:"label"},"Problem / Obstacle"),
-                React.createElement("textarea",{
-                  value: activityModal.problem,
-                  onChange: (e) => setActivityModal({...activityModal, problem:e.target.value}),
-                  placeholder: "ปัญหา/อุปสรรค (ถ้ามี)..."
-                })
+                React.createElement("textarea",{ value: activityModal.problem, onChange: (e) => setActivityModal({...activityModal, problem:e.target.value}), placeholder: "ปัญหา/อุปสรรค (ถ้ามี)..." })
               ),
-              React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}},
+              React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}},
                 React.createElement("div",null,
                   React.createElement("div",{className:"label"},"KPI Weight (points)"),
-                  React.createElement("input",{
-                    type: "number",
-                    value: activityModal.points,
-                    onChange: (e) => setActivityModal({...activityModal, points:e.target.value})
-                  })
+                  React.createElement("input",{ type: "number", value: activityModal.points, onChange: (e) => setActivityModal({...activityModal, points:e.target.value}) })
                 ),
                 React.createElement("div",null,
                   React.createElement("div",{className:"label"},"Progress (%)"),
-                  React.createElement("input",{
-                    type: "number",
-                    value: activityModal.progress,
-                    onChange: (e) => setActivityModal({...activityModal, progress:clamp(e.target.value)})
-                  })
+                  React.createElement("input",{ type: "number", value: activityModal.progress, onChange: (e) => setActivityModal({...activityModal, progress:clamp(e.target.value)}) })
                 )
               ),
               React.createElement("div",null,
                 React.createElement("div",{className:"label"},"Status"),
-                React.createElement("select",{
-                  value: activityModal.status,
-                  onChange: (e) => setActivityModal({...activityModal, status:e.target.value})
-                },
+                React.createElement("select",{ value: activityModal.status, onChange: (e) => setActivityModal({...activityModal, status:e.target.value}) },
                   React.createElement("option",{value:"pending"},"ยังไม่เสร็จ (Not Started)"),
                   React.createElement("option",{value:"in_progress"},"กำลังดำเนินการ (In Progress)"),
                   React.createElement("option",{value:"completed"},"เสร็จแล้ว (Completed)")
                 ),
-                React.createElement("div",{className:"muted",style:{marginTop:8}},"* ถ้าเลือก Completed จะบังคับเป็น 100% อัตโนมัติ")
               ),
-              React.createElement("div",{style:{display:"flex",justifyContent:"flex-end",gap:10}},
+              React.createElement("div",{style:{display:"flex",justifyContent:"flex-end",gap:10, marginTop:10}},
                 React.createElement("button",{className:"btnSoft",onClick:()=>setActivityModal({...activityModal,open:false})},"Cancel"),
                 React.createElement("button",{className:"btnPrimary",onClick:saveActivity},"Save")
               )
@@ -1393,84 +1247,52 @@
 
     function ProjectDetailModal(){
       if(!projectModal.open || !currentProject) return null;
-
       return React.createElement("div",{className:"modalOverlay"},
         React.createElement("div",{className:"modal"},
           React.createElement("div",{className:"modalHead"},
             React.createElement("div",{style:{minWidth:0,flex:1}},
-              React.createElement("div",{style:{fontWeight:900,fontSize:18},className:"ellipsis"}, currentProject.name),
+              React.createElement("div",{style:{fontWeight:800,fontSize:18},className:"ellipsis"}, currentProject.name),
               React.createElement("div",{className:"muted",style:{color:"var(--primary)",textTransform:"uppercase"}}, "Lv.2 Main Project Detail • "+currentProject.id)
             ),
             React.createElement("button",{className:"btnSoft",onClick:()=>setProjectModal({open:false,missionId:"",projectId:""})},"✕")
           ),
           React.createElement("div",{className:"modalBody"},
-            React.createElement("div",{className:"card",style:{background:"#eff6ff",borderColor:"#dbeafe"}},
-              React.createElement("div",{className:"label",style:{color:"#2563eb"}},"Weighted Score Logic (Example)"),
-              React.createElement("div",{style:{fontSize:13,fontWeight:900,color:"#1e40af",marginTop:6}},
-                "TOR (10) + Purchase (30) + Install (60 * 75% = 45) = ", React.createElement("b",null,"85 Points Total")
-              )
-            ),
-
-            React.createElement("div",{style:{marginTop:12,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}},
+            React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12, marginBottom:16}},
               canCreate ? React.createElement("button",{className:"btnSoft",style:{border:"2px dashed var(--primary)",color:"var(--primary)"},onClick:openAddLv3},"＋ Add Sub Project (Lv.3)") : null,
               React.createElement("div",{style:{display:"flex",gap:12,alignItems:"center",flexWrap:"wrap"}},
                 React.createElement("span",{className:"pill red"},"Project KPI"),
                 React.createElement(SemiGauge,{value:currentProject.progress,label:"100% = Completed"})
               )
             ),
-
-            !canCreate ? React.createElement("div",{style:{marginTop:12,padding:12,background:"#fef9c3",borderRadius:12,fontSize:12,fontWeight:900,color:"#854d0e"}},"ℹ️ Read-only mode - Login as Admin to add/edit activities") : null,
-
-            React.createElement("div",{style:{marginTop:14,display:"grid",gap:14}},
+            React.createElement("div",{style:{display:"grid",gap:20}},
               (currentProject.sub_projects||[]).length===0
-                ? React.createElement("div",{style:{padding:14,border:"1px dashed #fecaca",borderRadius:16,color:"#991b1b",fontWeight:900}},
-                    canCreate ? 'ยังไม่มี Sub Project (Lv.3) — กด "Add Sub Project (Lv.3)"' : 'ยังไม่มี Sub Project (Lv.3)'
-                  )
+                ? React.createElement("div",{style:{padding:20,border:"2px dashed #e2e8f0",borderRadius:16,color:"#94a3b8",fontWeight:700,textAlign:"center"}},"ยังไม่มี Sub Project (Lv.3)")
                 : null,
-
               (currentProject.sub_projects||[]).map(sp=>React.createElement("div",{key:sp.id,className:"dividerL"},
                 React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10}},
-                  React.createElement("div",{style:{fontWeight:900,fontSize:16}},
-                    sp.name," ",React.createElement("span",{style:{color:"#64748b",fontSize:12}},"(Lv.3)")
-                  ),
+                  React.createElement("div",{style:{fontWeight:800,fontSize:16}},sp.name," ",React.createElement("span",{style:{color:"#64748b",fontSize:12}},"(Lv.3)")),
                   canCreate ? React.createElement("button",{className:"btnSoft",onClick:()=>openAddLv4(sp.id)},"＋ Topic (Lv.4)") : null
                 ),
-
-                React.createElement("div",{style:{marginTop:10,display:"grid",gap:12}},
-                  (sp.topics||[]).length===0
-                    ? React.createElement("div",{style:{padding:12,border:"1px dashed var(--border)",borderRadius:14,color:"#64748b",fontWeight:900}},
-                        "ยังไม่มี Topic (Lv.4)"
-                      )
-                    : null,
-
-                  (sp.topics||[]).map(tp=>React.createElement("div",{key:tp.id,style:{marginLeft:14}},
-                    React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:"1px solid var(--border)",paddingBottom:6,flexWrap:"wrap",gap:10}},
-                      React.createElement("div",{style:{fontWeight:900,color:"#475569",textTransform:"uppercase",fontSize:12,letterSpacing:.8}},
-                        "Topic: ",tp.name," ",React.createElement("span",{style:{color:"#94a3b8"}},"(Lv.4)")
-                      ),
-                      canCreate ? React.createElement("button",{className:"btnPrimary",style:{background:"#2563eb"},onClick:()=>openCreateActivity(tp.id)},"＋ Activity (Lv.5)") : null
+                React.createElement("div",{style:{marginTop:12,display:"grid",gap:12}},
+                  (sp.topics||[]).map(tp=>React.createElement("div",{key:tp.id,style:{marginLeft:16}},
+                    React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:"1px solid var(--border)",paddingBottom:8,flexWrap:"wrap",gap:10}},
+                      React.createElement("div",{style:{fontWeight:700,color:"#475569",textTransform:"uppercase",fontSize:12,letterSpacing:.8}},"Topic: ",tp.name),
+                      canCreate ? React.createElement("button",{className:"btnPrimary",style:{background:"#3b82f6", padding:"6px 12px", fontSize:11},onClick:()=>openCreateActivity(tp.id)},"＋ Activity") : null
                     ),
-
-                    React.createElement("div",{style:{marginTop:10,display:"grid",gap:10}},
-                      (tp.details||[]).length===0
-                        ? React.createElement("div",{style:{padding:12,border:"1px dashed var(--border)",borderRadius:14,color:"#64748b",fontWeight:900}},
-                            canCreate ? 'ยังไม่มี Activity (Lv.5) — ค่าเริ่มต้นต้องเป็น 0%' : 'ยังไม่มี Activity (Lv.5)'
-                          )
-                        : null,
-
-                      (tp.details||[]).map(d=>React.createElement("div",{key:d.id,style:{padding:12,border:"1px solid var(--border)",borderRadius:16,display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}},
+                    React.createElement("div",{style:{marginTop:12,display:"grid",gap:12}},
+                      (tp.details||[]).map(d=>React.createElement("div",{key:d.id,style:{padding:16,border:"1px solid var(--border)",borderRadius:16,display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap", background:"#fff"}},
                         React.createElement("div",{style:{minWidth:0,flex:"1 1 200px"}},
                           React.createElement("div",{style:{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}},
                             React.createElement(StatusBadge,{status:d.status}),
-                            React.createElement("div",{style:{fontWeight:900},className:"ellipsis"},d.name)
+                            React.createElement("div",{style:{fontWeight:700},className:"ellipsis"},d.name)
                           ),
-                          d.description ? React.createElement("div",{style:{marginTop:6,fontSize:12,fontWeight:800,color:"#475569"}}, "รายละเอียด: ", d.description) : null,
-                          d.problem ? React.createElement("div",{style:{marginTop:6,fontSize:12,fontWeight:900,color:"#b91c1c"}}, "⚠ ปัญหา/อุปสรรค: ", d.problem) : null,
-                          React.createElement("div",{style:{marginTop:6,fontSize:12,fontWeight:900,color:"#64748b"}}, "KPI Weight: ", d.points, " pts")
+                          d.description ? React.createElement("div",{style:{marginTop:8,fontSize:13,color:"#475569", lineHeight:1.4}}, d.description) : null,
+                          d.problem ? React.createElement("div",{style:{marginTop:8,fontSize:12,fontWeight:700,color:"#b91c1c", background:"#fef2f2", padding:"6px 10px", borderRadius:6}}, "⚠ Problem: ", d.problem) : null,
+                          React.createElement("div",{style:{marginTop:8,fontSize:11,fontWeight:700,color:"#94a3b8"}}, "Weight: ", d.points, " pts")
                         ),
                         React.createElement("div",{style:{textAlign:"right",display:"flex",flexDirection:"column",gap:8,alignItems:"flex-end"}},
-                          React.createElement("div",{style:{fontSize:22,fontWeight:900}}, clamp(d.progress)+"%"),
-                          canEdit ? React.createElement("button",{className:"btnSoft",onClick:()=>openEditActivity(tp.id,d)},"✎ Edit / Update") : null
+                          React.createElement("div",{style:{fontSize:24,fontWeight:900,color:"var(--primary)"}}, clamp(d.progress)+"%"),
+                          canEdit ? React.createElement("button",{className:"btnSoft",style:{fontSize:11},onClick:()=>openEditActivity(tp.id,d)},"Edit") : null
                         )
                       ))
                     )
@@ -1483,29 +1305,30 @@
       );
     }
 
+    // -- CORRECTED RENDER LOGIC BELOW --
+
     function renderView(){
-      if(view==="dashboard") return React.createElement(Dashboard);
-      if(view==="explorer") return React.createElement(Explorer);
-      if(view==="budget") return React.createElement(Budget);
-      if(view==="reports") return React.createElement(Reports);
+      if(view==="dashboard") return Dashboard(); // Changed: Call directly
+      if(view==="explorer") return Explorer();   // Changed: Call directly
+      if(view==="budget") return Budget();       // Changed: Call directly
+      if(view==="reports") return Reports();     // Changed: Call directly
       return React.createElement("div",{className:"card"},"Unknown view");
     }
 
-    // If not logged in, show login page
-    if(!user){
-      return React.createElement(LoginPage);
-    }
+    if(!user) return LoginPage(); // Changed: Call directly
 
-    return React.createElement("div",{className:"app"},
-      React.createElement("div",{className:"sidebarOverlay" + (sidebarOpen?" show":""),onClick:closeSidebar}),
-      React.createElement(Sidebar),
-      React.createElement("div",{className:"main"},
-        React.createElement(Header),
-        React.createElement("div",{className:"content",onClick:closeSidebar}, renderView()),
-        React.createElement(ProjectFormModal),
-        React.createElement(ProjectDetailModal),
-        React.createElement(SimpleAddModal),
-        React.createElement(ActivityModal)
+    return React.createElement(ToastProvider, null,
+      React.createElement("div",{className:"app"},
+        React.createElement("div",{className:"sidebarOverlay" + (sidebarOpen?" show":""),onClick:closeSidebar}),
+        Sidebar(), // Changed: Call directly
+        React.createElement("div",{className:"main"},
+          Header(), // Changed: Call directly
+          React.createElement("div",{className:"content",onClick:closeSidebar}, renderView()),
+          ProjectFormModal(), // Changed: Call directly
+          ProjectDetailModal(), // Changed: Call directly
+          SimpleAddModal(), // Changed: Call directly
+          ActivityModal() // Changed: Call directly
+        )
       )
     );
   }
