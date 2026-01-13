@@ -1,0 +1,2632 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>MIS Single File (Gemini Run)</title>
+
+    <!-- React 18 CDN -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+    ></script>
+
+    <style>
+      :root {
+        --primary: #a72c32;
+        --secondary: #1e1e1e;
+        --accent: #de3e46;
+        --bg: #f8fafc;
+        --text: #0f172a;
+        --muted: #64748b;
+        --border: #e2e8f0;
+        --card: #ffffff;
+        --soft: #f1f5f9;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        background: var(--bg);
+        color: var(--text);
+      }
+      button {
+        font-family: inherit;
+      }
+      .app {
+        display: flex;
+        height: 100vh;
+      }
+      .sidebar {
+        width: 280px;
+        background: var(--secondary);
+        color: #fff;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+      .logo {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        background: var(--primary);
+        display: grid;
+        place-items: center;
+        font-weight: 900;
+      }
+      .navbtn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 0;
+        cursor: pointer;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.75);
+        font-weight: 900;
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+      }
+      .navbtn.active {
+        background: var(--primary);
+        color: #fff;
+      }
+      .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .header {
+        height: 64px;
+        background: #fff;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 18px;
+      }
+      .content {
+        padding: 18px;
+        overflow: auto;
+      }
+      .grid4 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        padding: 16px;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      }
+      .cardTitle {
+        font-size: 12px;
+        font-weight: 900;
+        color: var(--muted);
+        text-transform: uppercase;
+      }
+      .cardValue {
+        font-size: 26px;
+        font-weight: 900;
+        margin-top: 6px;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .half {
+        flex: 1 1 420px;
+      }
+      .btnPrimary {
+        background: var(--primary);
+        color: #fff;
+        border: 0;
+        padding: 10px 14px;
+        border-radius: 14px;
+        font-weight: 900;
+        cursor: pointer;
+      }
+      .btnSoft {
+        background: var(--soft);
+        color: #334155;
+        border: 1px solid var(--border);
+        padding: 10px 14px;
+        border-radius: 14px;
+        font-weight: 900;
+        cursor: pointer;
+      }
+      .pill {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 900;
+      }
+      .pill.gray {
+        background: #e2e8f0;
+        color: #334155;
+      }
+      .pill.green {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .pill.yellow {
+        background: #fef9c3;
+        color: #854d0e;
+      }
+      .pill.red {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th {
+        text-align: left;
+        font-size: 11px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        padding: 12px;
+        background: #f8fafc;
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 12px;
+        border-bottom: 1px solid var(--border);
+        font-size: 13px;
+        vertical-align: top;
+      }
+      .modalOverlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.75);
+        display: grid;
+        place-items: center;
+        padding: 16px;
+        z-index: 999;
+      }
+      .modal {
+        width: min(1100px, 96vw);
+        max-height: 92vh;
+        background: #fff;
+        border-radius: 28px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .modalHead {
+        padding: 18px;
+        background: #f8fafc;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .modalBody {
+        padding: 18px;
+        overflow: auto;
+      }
+      .label {
+        font-size: 11px;
+        font-weight: 900;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        margin-bottom: 6px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: #f8fafc;
+        font-weight: 800;
+        outline: none;
+      }
+      textarea {
+        min-height: 90px;
+        resize: vertical;
+      }
+      .muted {
+        color: var(--muted);
+        font-weight: 900;
+        font-size: 12px;
+      }
+      .dividerL {
+        padding-left: 12px;
+        border-left: 4px solid var(--border);
+      }
+      .danger {
+        color: #b91c1c;
+        font-weight: 900;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .ellipsis {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script>
+      const { useMemo, useState } = React;
+
+      const THEME = { primary: "#a72c32", accent: "#de3e46" };
+
+      const INITIAL_USERS = [
+        {
+          id: "U1",
+          username: "admin",
+          password: "123",
+          name: "Admin Strategy",
+          role: "admin",
+        },
+      ];
+
+      const INITIAL_DATA = [
+        {
+          id: "PT1",
+          name: "พันธกิจการเรียนการสอน",
+          sapa_approved: 21104500,
+          rolling_2568: 881276,
+          progress: 0,
+          main_projects: [
+            {
+              id: "PT1-2569-001",
+              name: "โครงการรับนักศึกษาเชิงรุกระดับระดับปริญญาตรี",
+              fiscal_year: "2569",
+              responsible: "คุณปทิตตา",
+              sapa_approved: 2310000,
+              rolling: 0,
+              proposed_budget: 2370000,
+              q1_plan: 0,
+              q2_plan: 0,
+              q3_plan: 0,
+              q4_plan: 0,
+              actual_spent: 0,
+              progress: 0,
+              problem: "",
+              sub_projects: [],
+            },
+          ],
+        },
+        {
+          id: "PT2",
+          name: "พันธกิจวิจัย",
+          sapa_approved: 9090000,
+          rolling_2568: 813000,
+          progress: 0,
+          main_projects: [
+            {
+              id: "PT2-2569-001",
+              name: "โครงการสนับสนุนงบประมาณการทำวิจัยในรูปแบบเครดิตฯ",
+              fiscal_year: "2569",
+              responsible: "คุณเอมอร",
+              sapa_approved: 7090000,
+              rolling: 0,
+              proposed_budget: 12552000,
+              q1_plan: 0,
+              q2_plan: 0,
+              q3_plan: 0,
+              q4_plan: 0,
+              actual_spent: 0,
+              progress: 0,
+              problem: "",
+              sub_projects: [],
+            },
+          ],
+        },
+      ];
+
+      const clamp = (n, min = 0, max = 100) =>
+        Math.max(min, Math.min(max, Number(n ?? 0)));
+
+      function normalizeStatusProgress(status, progress) {
+        const p = clamp(progress);
+        const s = status || "pending";
+        if (s === "completed" || p === 100)
+          return { status: "completed", progress: 100 };
+        if (p > 0) return { status: "in_progress", progress: p };
+        return { status: "pending", progress: 0 };
+      }
+
+      function computeProjectKPI(project) {
+        let total = 0,
+          earned = 0;
+        (project.sub_projects || []).forEach((sp) => {
+          (sp.topics || []).forEach((tp) => {
+            (tp.details || []).forEach((d) => {
+              const pts = Number(d.points || 0);
+              const prog = clamp(d.progress);
+              total += pts;
+              earned += pts * (prog / 100);
+            });
+          });
+        });
+        const progress = total > 0 ? Math.round((earned / total) * 100) : 0;
+        return { total, earned, progress };
+      }
+
+      function computeMissionKPI(mission) {
+        let total = 0,
+          earned = 0;
+        (mission.main_projects || []).forEach((p) => {
+          const k = computeProjectKPI(p);
+          total += k.total;
+          earned += k.earned;
+        });
+        const progress = total > 0 ? Math.round((earned / total) * 100) : 0;
+        return { total, earned, progress };
+      }
+
+      function recomputeAll(data) {
+        return (data || []).map((m) => {
+          const main_projects = (m.main_projects || []).map((p) => {
+            const k = computeProjectKPI(p);
+            return { ...p, progress: k.progress, kpi_total_points: k.total };
+          });
+          const mk = computeMissionKPI({ ...m, main_projects });
+          return {
+            ...m,
+            main_projects,
+            progress: mk.progress,
+            kpi_total_points: mk.total,
+          };
+        });
+      }
+
+      function uid(prefix = "ID") {
+        return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      }
+
+      function SemiGauge({ value = 0, label = "" }) {
+        const v = clamp(value);
+        const radius = 48,
+          stroke = 10,
+          cx = 60,
+          cy = 60;
+        const startX = cx - radius,
+          startY = cy,
+          endX = cx + radius,
+          endY = cy;
+        const arcLength = Math.PI * radius;
+        const dash = (arcLength * v) / 100;
+
+        return React.createElement(
+          "div",
+          {
+            style: {
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            },
+          },
+          React.createElement(
+            "svg",
+            { width: 120, height: 72, viewBox: "0 0 120 72" },
+            React.createElement("path", {
+              d: `M ${startX} ${startY} A ${radius} ${radius} 0 0 1 ${endX} ${endY}`,
+              fill: "none",
+              stroke: "#e2e8f0",
+              strokeWidth: stroke,
+              strokeLinecap: "round",
+            }),
+            React.createElement("path", {
+              d: `M ${startX} ${startY} A ${radius} ${radius} 0 0 1 ${endX} ${endY}`,
+              fill: "none",
+              stroke: v === 100 ? THEME.primary : THEME.accent,
+              strokeWidth: stroke,
+              strokeLinecap: "round",
+              strokeDasharray: `${dash} ${arcLength}`,
+            })
+          ),
+          React.createElement(
+            "div",
+            { style: { fontSize: 18, fontWeight: 900, marginTop: -8 } },
+            `${v}%`
+          ),
+          label
+            ? React.createElement(
+                "div",
+                { style: { fontSize: 10, fontWeight: 900, color: "#64748b" } },
+                label
+              )
+            : null
+        );
+      }
+
+      function StatusBadge({ status }) {
+        if (status === "completed")
+          return React.createElement(
+            "span",
+            { className: "pill green" },
+            "เสร็จแล้ว"
+          );
+        if (status === "in_progress")
+          return React.createElement(
+            "span",
+            { className: "pill yellow" },
+            "กำลังทำ"
+          );
+        return React.createElement(
+          "span",
+          { className: "pill gray" },
+          "รอเริ่ม"
+        );
+      }
+
+      function App() {
+        const [view, setView] = useState("dashboard");
+        const [user] = useState(INITIAL_USERS[0]);
+        const [data, setData] = useState(() => recomputeAll(INITIAL_DATA));
+
+        const [projectFormOpen, setProjectFormOpen] = useState(false);
+        const [projectForm, setProjectForm] = useState({
+          mode: "create",
+          missionId: "PT1",
+          id: "",
+          fiscal_year: "2569",
+          name: "",
+          responsible: "",
+          sapa_approved: 0,
+          rolling: 0,
+          proposed_budget: 0,
+          q1_plan: 0,
+          q2_plan: 0,
+          q3_plan: 0,
+          q4_plan: 0,
+        });
+
+        const [projectModal, setProjectModal] = useState({
+          open: false,
+          missionId: "",
+          projectId: "",
+        });
+
+        const [simpleAddModal, setSimpleAddModal] = useState({
+          open: false,
+          level: 0,
+          missionId: "",
+          projectId: "",
+          parentId: "",
+          name: "",
+          title: "",
+        });
+
+        const [activityModal, setActivityModal] = useState({
+          open: false,
+          mode: "create",
+          missionId: "",
+          projectId: "",
+          parentTopicId: "",
+          activityId: "",
+          name: "",
+          description: "",
+          problem: "",
+          points: 10,
+          progress: 0,
+          status: "pending",
+        });
+
+        const overallProgress = useMemo(() => {
+          const arr = data.map((m) => clamp(m.progress));
+          return arr.length
+            ? Math.round(arr.reduce((a, b) => a + b, 0) / arr.length)
+            : 0;
+        }, [data]);
+
+        function openCreateProject(missionId = "PT1") {
+          setProjectForm({
+            mode: "create",
+            missionId,
+            id: "",
+            fiscal_year: "2569",
+            name: "",
+            responsible: "",
+            sapa_approved: 0,
+            rolling: 0,
+            proposed_budget: 0,
+            q1_plan: 0,
+            q2_plan: 0,
+            q3_plan: 0,
+            q4_plan: 0,
+          });
+          setProjectFormOpen(true);
+        }
+
+        function openEditProject(missionId, p) {
+          setProjectForm({
+            mode: "edit",
+            missionId,
+            id: p.id,
+            fiscal_year: p.fiscal_year || "2569",
+            name: p.name || "",
+            responsible: p.responsible || "",
+            sapa_approved: Number(p.sapa_approved || 0),
+            rolling: Number(p.rolling || 0),
+            proposed_budget: Number(p.proposed_budget || 0),
+            q1_plan: Number(p.q1_plan || 0),
+            q2_plan: Number(p.q2_plan || 0),
+            q3_plan: Number(p.q3_plan || 0),
+            q4_plan: Number(p.q4_plan || 0),
+          });
+          setProjectFormOpen(true);
+        }
+
+        function saveProject() {
+          if (!projectForm.name.trim()) return;
+
+          const net =
+            Number(projectForm.sapa_approved || 0) +
+            Number(projectForm.rolling || 0);
+          const qsum =
+            Number(projectForm.q1_plan) +
+            Number(projectForm.q2_plan) +
+            Number(projectForm.q3_plan) +
+            Number(projectForm.q4_plan);
+          if (qsum > net) {
+            alert("ยอดรวมรายไตรมาสเกินงบสภาอนุมัติสุทธิ!");
+            return;
+          }
+
+          const newData = data.map((m) => {
+            if (m.id !== projectForm.missionId) return m;
+            const idx = m.main_projects.findIndex(
+              (p) => p.id === projectForm.id
+            );
+            const newId =
+              projectForm.mode === "create"
+                ? `${m.id}-${projectForm.fiscal_year}-` +
+                  String(m.main_projects.length + 1).padStart(3, "0")
+                : projectForm.id;
+
+            const baseOld = idx >= 0 ? m.main_projects[idx] : null;
+
+            const obj = {
+              ...(baseOld || {}),
+              id: newId,
+              fiscal_year: projectForm.fiscal_year,
+              name: projectForm.name,
+              responsible: projectForm.responsible,
+              sapa_approved: Number(projectForm.sapa_approved || 0),
+              rolling: Number(projectForm.rolling || 0),
+              proposed_budget: Number(projectForm.proposed_budget || 0),
+              q1_plan: Number(projectForm.q1_plan || 0),
+              q2_plan: Number(projectForm.q2_plan || 0),
+              q3_plan: Number(projectForm.q3_plan || 0),
+              q4_plan: Number(projectForm.q4_plan || 0),
+              actual_spent: Number(baseOld?.actual_spent || 0),
+              problem: baseOld?.problem || "",
+              sub_projects: baseOld?.sub_projects || [],
+              progress: Number(baseOld?.progress || 0),
+            };
+
+            const arr = [...m.main_projects];
+            if (idx >= 0) arr[idx] = obj;
+            else arr.push(obj);
+            return { ...m, main_projects: arr };
+          });
+
+          setData(recomputeAll(newData));
+          setProjectFormOpen(false);
+        }
+
+        function openProjectModal(missionId, projectId) {
+          setProjectModal({ open: true, missionId, projectId });
+        }
+
+        const currentMission = useMemo(
+          () => data.find((m) => m.id === projectModal.missionId),
+          [data, projectModal.missionId]
+        );
+        const currentProject = useMemo(
+          () =>
+            currentMission?.main_projects?.find(
+              (p) => p.id === projectModal.projectId
+            ),
+          [currentMission, projectModal.projectId]
+        );
+
+        function openAddLv3() {
+          setSimpleAddModal({
+            open: true,
+            level: 3,
+            missionId: projectModal.missionId,
+            projectId: projectModal.projectId,
+            parentId: projectModal.projectId,
+            name: "",
+            title: "Sub Project (Lv.3)",
+          });
+        }
+        function openAddLv4(subId) {
+          setSimpleAddModal({
+            open: true,
+            level: 4,
+            missionId: projectModal.missionId,
+            projectId: projectModal.projectId,
+            parentId: subId,
+            name: "",
+            title: "Topic (Lv.4)",
+          });
+        }
+        function saveSimpleAdd() {
+          if (!simpleAddModal.name.trim()) return;
+          const newData = data.map((m) => {
+            if (m.id !== simpleAddModal.missionId) return m;
+            const main_projects = m.main_projects.map((p) => {
+              if (p.id !== simpleAddModal.projectId) return p;
+
+              if (simpleAddModal.level === 3) {
+                const sp = {
+                  id: uid("SUB"),
+                  name: simpleAddModal.name,
+                  topics: [],
+                };
+                return { ...p, sub_projects: [...(p.sub_projects || []), sp] };
+              }
+
+              if (simpleAddModal.level === 4) {
+                const subs = (p.sub_projects || []).map((sp) => {
+                  if (sp.id !== simpleAddModal.parentId) return sp;
+                  const tp = {
+                    id: uid("TOP"),
+                    name: simpleAddModal.name,
+                    details: [],
+                  };
+                  return { ...sp, topics: [...(sp.topics || []), tp] };
+                });
+                return { ...p, sub_projects: subs };
+              }
+
+              return p;
+            });
+            return { ...m, main_projects };
+          });
+
+          setData(recomputeAll(newData));
+          setSimpleAddModal({ ...simpleAddModal, open: false, name: "" });
+        }
+
+        function openCreateActivity(topicId) {
+          setActivityModal({
+            open: true,
+            mode: "create",
+            missionId: projectModal.missionId,
+            projectId: projectModal.projectId,
+            parentTopicId: topicId,
+            activityId: "",
+            name: "",
+            description: "",
+            problem: "",
+            points: 10,
+            progress: 0,
+            status: "pending",
+          });
+        }
+        function openEditActivity(topicId, d) {
+          setActivityModal({
+            open: true,
+            mode: "edit",
+            missionId: projectModal.missionId,
+            projectId: projectModal.projectId,
+            parentTopicId: topicId,
+            activityId: d.id,
+            name: d.name || "",
+            description: d.description || "",
+            problem: d.problem || "",
+            points: Number(d.points || 10),
+            progress: Number(d.progress || 0),
+            status: d.status || "pending",
+          });
+        }
+        function saveActivity() {
+          if (!activityModal.name.trim()) return;
+          const norm = normalizeStatusProgress(
+            activityModal.status,
+            activityModal.progress
+          );
+
+          const newData = data.map((m) => {
+            if (m.id !== activityModal.missionId) return m;
+            const main_projects = m.main_projects.map((p) => {
+              if (p.id !== activityModal.projectId) return p;
+
+              const sub_projects = (p.sub_projects || []).map((sp) => {
+                const topics = (sp.topics || []).map((tp) => {
+                  if (tp.id !== activityModal.parentTopicId) return tp;
+
+                  const details = [...(tp.details || [])];
+
+                  if (activityModal.mode === "create") {
+                    details.push({
+                      id: uid("ACT"),
+                      name: activityModal.name,
+                      description: activityModal.description,
+                      problem: activityModal.problem,
+                      points: Number(activityModal.points || 0),
+                      progress: Number(norm.progress),
+                      status: norm.status,
+                    });
+                  } else {
+                    const idx = details.findIndex(
+                      (x) => x.id === activityModal.activityId
+                    );
+                    if (idx >= 0) {
+                      details[idx] = {
+                        ...details[idx],
+                        name: activityModal.name,
+                        description: activityModal.description,
+                        problem: activityModal.problem,
+                        points: Number(activityModal.points || 0),
+                        progress: Number(norm.progress),
+                        status: norm.status,
+                      };
+                    }
+                  }
+
+                  return { ...tp, details };
+                });
+                return { ...sp, topics };
+              });
+
+              return { ...p, sub_projects };
+            });
+            return { ...m, main_projects };
+          });
+
+          setData(recomputeAll(newData));
+          setActivityModal({ ...activityModal, open: false });
+        }
+
+        function exportBudgetCSV() {
+          const rows = [];
+          rows.push([
+            "Mission",
+            "ProjectId",
+            "ProjectName",
+            "Responsible",
+            "NetSapa",
+            "SapaApproved",
+            "Rolling",
+            "Proposed",
+            "Q1",
+            "Q2",
+            "Q3",
+            "Q4",
+            "KPIProgress(%)",
+          ]);
+          data.forEach((m) => {
+            m.main_projects.forEach((p) => {
+              const net = Number(p.sapa_approved || 0) + Number(p.rolling || 0);
+              rows.push([
+                m.id,
+                p.id,
+                p.name,
+                p.responsible || "",
+                net,
+                p.sapa_approved || 0,
+                p.rolling || 0,
+                p.proposed_budget || 0,
+                p.q1_plan || 0,
+                p.q2_plan || 0,
+                p.q3_plan || 0,
+                p.q4_plan || 0,
+                p.progress || 0,
+              ]);
+            });
+          });
+          const csv = rows
+            .map((r) =>
+              r
+                .map((v) => {
+                  const s = String(v ?? "");
+                  if (s.includes(",") || s.includes('"') || s.includes("\n"))
+                    return `"${s.replace(/"/g, '""')}"`;
+                  return s;
+                })
+                .join(",")
+            )
+            .join("\n");
+          const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "budget_export.csv";
+          a.click();
+          URL.revokeObjectURL(a.href);
+        }
+
+        function Sidebar() {
+          return React.createElement(
+            "aside",
+            { className: "sidebar" },
+            React.createElement(
+              "div",
+              { className: "brand" },
+              React.createElement("div", { className: "logo" }, "M"),
+              React.createElement(
+                "div",
+                { style: { fontSize: 22, fontWeight: 900 } },
+                "MIS"
+              )
+            ),
+            NavButton("dashboard", "📊 Dashboard"),
+            NavButton("explorer", "🧭 Explorer (Lv.1-5)"),
+            NavButton("budget", "💰 Budget"),
+            NavButton("reports", "📈 Reports & KPI"),
+            React.createElement(
+              "div",
+              {
+                style: {
+                  marginTop: "auto",
+                  borderTop: "1px solid rgba(255,255,255,.12)",
+                  paddingTop: 14,
+                },
+              },
+              React.createElement(
+                "div",
+                { style: { display: "flex", alignItems: "center", gap: 10 } },
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      width: 38,
+                      height: 38,
+                      borderRadius: 999,
+                      background: THEME.primary,
+                      display: "grid",
+                      placeItems: "center",
+                      fontWeight: 900,
+                    },
+                  },
+                  user.name.charAt(0)
+                ),
+                React.createElement(
+                  "div",
+                  null,
+                  React.createElement(
+                    "div",
+                    { style: { fontSize: 12, fontWeight: 900, opacity: 0.92 } },
+                    user.name
+                  ),
+                  React.createElement(
+                    "div",
+                    {
+                      style: {
+                        fontSize: 10,
+                        fontWeight: 900,
+                        opacity: 0.5,
+                        textTransform: "uppercase",
+                      },
+                    },
+                    user.role
+                  )
+                )
+              ),
+              React.createElement(
+                "button",
+                {
+                  className: "navbtn",
+                  style: { marginTop: 10 },
+                  onClick: () => alert("Demo mode: logout disabled"),
+                },
+                "⎋ Logout"
+              )
+            )
+          );
+        }
+
+        function NavButton(key, label) {
+          return React.createElement(
+            "button",
+            {
+              className: "navbtn" + (view === key ? " active" : ""),
+              onClick: () => setView(key),
+            },
+            label
+          );
+        }
+
+        function Dashboard() {
+          const totalBudget = data.reduce(
+            (s, m) => s + Number(m.sapa_approved || 0),
+            0
+          );
+          const actualSpent = data
+            .flatMap((m) => m.main_projects)
+            .reduce((s, p) => s + Number(p.actual_spent || 0), 0);
+
+          return React.createElement(
+            "div",
+            { style: { display: "grid", gap: 12 } },
+            React.createElement(
+              "div",
+              { className: "grid4" },
+              CardStat("Total Budget", "฿" + totalBudget.toLocaleString()),
+              CardStat("Actual Spent", "฿" + actualSpent.toLocaleString()),
+              CardStat("Progress", overallProgress + "%"),
+              CardStat("KPI Score", overallProgress + "%")
+            ),
+            React.createElement(
+              "div",
+              { className: "row" },
+              React.createElement(
+                "div",
+                { className: "card half" },
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    },
+                  },
+                  React.createElement(
+                    "div",
+                    { style: { fontWeight: 900 } },
+                    "Mission KPI (Semi Gauge)"
+                  ),
+                  React.createElement(
+                    "span",
+                    { className: "pill red" },
+                    "100% = เสร็จแล้ว"
+                  )
+                ),
+                React.createElement(
+                  "div",
+                  { style: { marginTop: 12, display: "grid", gap: 10 } },
+                  data.map((m) =>
+                    React.createElement(
+                      "div",
+                      {
+                        key: m.id,
+                        style: {
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          padding: 12,
+                          border: "1px solid var(--border)",
+                          borderRadius: 16,
+                        },
+                      },
+                      React.createElement(
+                        "div",
+                        null,
+                        React.createElement(
+                          "div",
+                          { style: { fontWeight: 900 } },
+                          m.name
+                        ),
+                        React.createElement(
+                          "div",
+                          { className: "muted" },
+                          (m.kpi_total_points || 0) + " KPI pts"
+                        )
+                      ),
+                      React.createElement(SemiGauge, {
+                        value: m.progress,
+                        label: m.id,
+                      })
+                    )
+                  )
+                )
+              ),
+              React.createElement(
+                "div",
+                { className: "card half" },
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    },
+                  },
+                  React.createElement(
+                    "div",
+                    { style: { fontWeight: 900 } },
+                    "Quick Actions"
+                  ),
+                  React.createElement(
+                    "button",
+                    {
+                      className: "btnPrimary",
+                      onClick: () => setView("explorer"),
+                    },
+                    "↗ Open Explorer"
+                  )
+                ),
+                React.createElement(
+                  "div",
+                  { style: { marginTop: 14, display: "grid", gap: 10 } },
+                  React.createElement(
+                    "button",
+                    {
+                      className: "btnSoft",
+                      onClick: () => openCreateProject("PT1"),
+                    },
+                    "＋ Create New Project (Lv.2)"
+                  ),
+                  React.createElement(
+                    "button",
+                    { className: "btnSoft", onClick: () => setView("budget") },
+                    "💰 Go to Budget"
+                  ),
+                  React.createElement(
+                    "button",
+                    { className: "btnSoft", onClick: () => setView("reports") },
+                    "📈 Reports & KPI"
+                  )
+                )
+              )
+            )
+          );
+        }
+
+        function Explorer() {
+          return React.createElement(
+            "div",
+            { style: { display: "grid", gap: 12 } },
+            React.createElement(
+              "div",
+              {
+                className: "card",
+                style: {
+                  background: "var(--secondary)",
+                  color: "#fff",
+                  borderColor: "transparent",
+                },
+              },
+              React.createElement(
+                "div",
+                {
+                  style: {
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  },
+                },
+                React.createElement(
+                  "div",
+                  null,
+                  React.createElement(
+                    "div",
+                    { style: { fontSize: 20, fontWeight: 900 } },
+                    "Hierarchy Explorer"
+                  ),
+                  React.createElement(
+                    "div",
+                    { style: { fontSize: 12, fontWeight: 900, opacity: 0.6 } },
+                    "Manage Lv.1 to Lv.5 Activities"
+                  )
+                ),
+                React.createElement(
+                  "button",
+                  {
+                    className: "btnPrimary",
+                    style: { background: "#fff", color: "#111827" },
+                    onClick: () => openCreateProject("PT1"),
+                  },
+                  "＋ Create Project"
+                )
+              )
+            ),
+            data.map((m) =>
+              React.createElement(
+                "div",
+                { key: m.id, className: "card" },
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    },
+                  },
+                  React.createElement(
+                    "div",
+                    null,
+                    React.createElement(
+                      "div",
+                      { style: { fontWeight: 900, fontSize: 16 } },
+                      `${m.id} • ${m.name}`
+                    ),
+                    React.createElement(
+                      "div",
+                      { className: "muted" },
+                      `${m.main_projects.length} projects`
+                    )
+                  ),
+                  React.createElement(
+                    "div",
+                    {
+                      style: { display: "flex", gap: 10, alignItems: "center" },
+                    },
+                    React.createElement(
+                      "button",
+                      {
+                        className: "btnSoft",
+                        onClick: () => openCreateProject(m.id),
+                      },
+                      "＋ Add Project"
+                    ),
+                    React.createElement(SemiGauge, {
+                      value: m.progress,
+                      label: "Mission",
+                    })
+                  )
+                ),
+                React.createElement(
+                  "div",
+                  { style: { marginTop: 12, display: "grid", gap: 10 } },
+                  m.main_projects.map((p) =>
+                    React.createElement(
+                      "div",
+                      {
+                        key: p.id,
+                        style: {
+                          padding: 12,
+                          border: "1px solid var(--border)",
+                          borderRadius: 16,
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          gap: 12,
+                        },
+                      },
+                      React.createElement(
+                        "div",
+                        { style: { minWidth: 0 } },
+                        React.createElement(
+                          "div",
+                          {
+                            style: {
+                              fontSize: 12,
+                              fontWeight: 900,
+                              color: "var(--primary)",
+                            },
+                          },
+                          p.id
+                        ),
+                        React.createElement(
+                          "div",
+                          {
+                            style: { fontSize: 14, fontWeight: 900 },
+                            className: "ellipsis",
+                          },
+                          p.name
+                        ),
+                        React.createElement(
+                          "div",
+                          { className: "muted" },
+                          `${p.responsible || "N/A"} • ${
+                            p.kpi_total_points || 0
+                          } pts`
+                        )
+                      ),
+                      React.createElement(
+                        "div",
+                        {
+                          style: {
+                            display: "flex",
+                            gap: 10,
+                            alignItems: "center",
+                          },
+                        },
+                        React.createElement(
+                          "button",
+                          {
+                            className: "btnSoft",
+                            onClick: () => openEditProject(m.id, p),
+                          },
+                          "✎"
+                        ),
+                        React.createElement(
+                          "button",
+                          {
+                            className: "btnPrimary",
+                            onClick: () => openProjectModal(m.id, p.id),
+                          },
+                          "Open Detail"
+                        ),
+                        React.createElement(SemiGauge, {
+                          value: p.progress,
+                          label: "Project",
+                        })
+                      )
+                    )
+                  ),
+                  m.main_projects.length === 0
+                    ? React.createElement(
+                        "div",
+                        {
+                          style: {
+                            padding: 14,
+                            color: "#94a3b8",
+                            fontWeight: 900,
+                            fontSize: 12,
+                          },
+                        },
+                        "No projects"
+                      )
+                    : null
+                )
+              )
+            )
+          );
+        }
+
+        function Budget() {
+          return React.createElement(
+            "div",
+            { style: { display: "grid", gap: 12 } },
+            React.createElement(
+              "div",
+              { className: "card" },
+              React.createElement(
+                "div",
+                {
+                  style: {
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  },
+                },
+                React.createElement(
+                  "div",
+                  null,
+                  React.createElement(
+                    "div",
+                    { style: { fontWeight: 900, fontSize: 18 } },
+                    "Budget Management"
+                  ),
+                  React.createElement(
+                    "div",
+                    { className: "muted" },
+                    "Create / Edit budget records by project"
+                  )
+                ),
+                React.createElement(
+                  "div",
+                  { style: { display: "flex", gap: 10 } },
+                  React.createElement(
+                    "button",
+                    { className: "btnSoft", onClick: exportBudgetCSV },
+                    "Export CSV"
+                  ),
+                  React.createElement(
+                    "button",
+                    {
+                      className: "btnPrimary",
+                      onClick: () => openCreateProject("PT1"),
+                    },
+                    "＋ New Entry"
+                  )
+                )
+              )
+            ),
+            React.createElement(
+              "div",
+              { className: "card" },
+              React.createElement(
+                "table",
+                null,
+                React.createElement(
+                  "thead",
+                  null,
+                  React.createElement(
+                    "tr",
+                    null,
+                    React.createElement("th", null, "Project"),
+                    React.createElement("th", null, "Responsible"),
+                    React.createElement(
+                      "th",
+                      { style: { textAlign: "right" } },
+                      "Net Approved"
+                    ),
+                    React.createElement(
+                      "th",
+                      { style: { textAlign: "center" } },
+                      "KPI"
+                    ),
+                    React.createElement(
+                      "th",
+                      { style: { textAlign: "center" } },
+                      "Action"
+                    )
+                  )
+                ),
+                React.createElement(
+                  "tbody",
+                  null,
+                  data
+                    .flatMap((m) =>
+                      m.main_projects.map((p) => ({ missionId: m.id, ...p }))
+                    )
+                    .map((p) => {
+                      const net =
+                        Number(p.sapa_approved || 0) + Number(p.rolling || 0);
+                      return React.createElement(
+                        "tr",
+                        { key: p.id },
+                        React.createElement(
+                          "td",
+                          null,
+                          React.createElement(
+                            "div",
+                            {
+                              style: {
+                                fontSize: 12,
+                                fontWeight: 900,
+                                color: "var(--primary)",
+                              },
+                            },
+                            p.id
+                          ),
+                          React.createElement(
+                            "div",
+                            { style: { fontWeight: 900 } },
+                            p.name
+                          ),
+                          p.problem
+                            ? React.createElement(
+                                "div",
+                                {
+                                  className: "danger",
+                                  style: { marginTop: 6 },
+                                },
+                                "⚠ ",
+                                p.problem
+                              )
+                            : null
+                        ),
+                        React.createElement("td", null, p.responsible || "-"),
+                        React.createElement(
+                          "td",
+                          { style: { textAlign: "right", fontWeight: 900 } },
+                          "฿" + net.toLocaleString()
+                        ),
+                        React.createElement(
+                          "td",
+                          { style: { textAlign: "center" } },
+                          React.createElement(
+                            "span",
+                            { className: "pill gray" },
+                            (p.progress || 0) + "%"
+                          )
+                        ),
+                        React.createElement(
+                          "td",
+                          { style: { textAlign: "center" } },
+                          React.createElement(
+                            "div",
+                            {
+                              style: {
+                                display: "flex",
+                                justifyContent: "center",
+                                gap: 10,
+                              },
+                            },
+                            React.createElement(
+                              "button",
+                              {
+                                className: "btnSoft",
+                                onClick: () => openEditProject(p.missionId, p),
+                              },
+                              "✎"
+                            ),
+                            React.createElement(
+                              "button",
+                              {
+                                className: "btnPrimary",
+                                onClick: () =>
+                                  openProjectModal(p.missionId, p.id),
+                              },
+                              "Detail"
+                            )
+                          )
+                        )
+                      );
+                    })
+                )
+              )
+            )
+          );
+        }
+
+        function Reports() {
+          return React.createElement(
+            "div",
+            { style: { display: "grid", gap: 12 } },
+            React.createElement(
+              "div",
+              { className: "card" },
+              React.createElement(
+                "div",
+                {
+                  style: {
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  },
+                },
+                React.createElement(
+                  "div",
+                  null,
+                  React.createElement(
+                    "div",
+                    { style: { fontWeight: 900, fontSize: 18 } },
+                    "Reports & KPI"
+                  ),
+                  React.createElement(
+                    "div",
+                    { className: "muted" },
+                    "KPI แบบครึ่งวงกลม (Mission/Project)"
+                  )
+                ),
+                React.createElement(
+                  "span",
+                  { className: "pill red" },
+                  "Overall " + overallProgress + "%"
+                )
+              )
+            ),
+            data.map((m) =>
+              React.createElement(
+                "div",
+                { key: m.id, className: "card" },
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    },
+                  },
+                  React.createElement(
+                    "div",
+                    null,
+                    React.createElement(
+                      "div",
+                      { style: { fontWeight: 900 } },
+                      `${m.id} • ${m.name}`
+                    ),
+                    React.createElement(
+                      "div",
+                      { className: "muted" },
+                      `${m.main_projects.length} projects`
+                    )
+                  ),
+                  React.createElement(SemiGauge, {
+                    value: m.progress,
+                    label: "Mission KPI",
+                  })
+                ),
+                React.createElement(
+                  "div",
+                  { style: { marginTop: 12, display: "grid", gap: 10 } },
+                  m.main_projects.map((p) =>
+                    React.createElement(
+                      "div",
+                      {
+                        key: p.id,
+                        style: {
+                          padding: 12,
+                          border: "1px solid var(--border)",
+                          borderRadius: 16,
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          gap: 12,
+                        },
+                      },
+                      React.createElement(
+                        "div",
+                        { style: { minWidth: 0 } },
+                        React.createElement(
+                          "div",
+                          {
+                            style: {
+                              fontSize: 12,
+                              fontWeight: 900,
+                              color: "var(--primary)",
+                            },
+                          },
+                          p.id
+                        ),
+                        React.createElement(
+                          "div",
+                          {
+                            style: { fontSize: 14, fontWeight: 900 },
+                            className: "ellipsis",
+                          },
+                          p.name
+                        ),
+                        React.createElement(
+                          "div",
+                          { className: "muted" },
+                          `Net Sapa: ฿${(
+                            Number(p.sapa_approved || 0) +
+                            Number(p.rolling || 0)
+                          ).toLocaleString()} • KPI pts: ${
+                            p.kpi_total_points || 0
+                          }`
+                        )
+                      ),
+                      React.createElement(
+                        "div",
+                        {
+                          style: {
+                            display: "flex",
+                            gap: 10,
+                            alignItems: "center",
+                          },
+                        },
+                        React.createElement(
+                          "button",
+                          {
+                            className: "btnPrimary",
+                            onClick: () => openProjectModal(m.id, p.id),
+                          },
+                          "Open Detail"
+                        ),
+                        React.createElement(SemiGauge, {
+                          value: p.progress,
+                          label: "Project KPI",
+                        })
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          );
+        }
+
+        function CardStat(title, value) {
+          return React.createElement(
+            "div",
+            { className: "card" },
+            React.createElement("div", { className: "cardTitle" }, title),
+            React.createElement("div", { className: "cardValue" }, value)
+          );
+        }
+
+        function Header() {
+          return React.createElement(
+            "div",
+            { className: "header" },
+            React.createElement(
+              "div",
+              { style: { display: "flex", alignItems: "center", gap: 10 } },
+              React.createElement(
+                "button",
+                { className: "btnSoft", style: { padding: "8px 10px" } },
+                "≡"
+              ),
+              React.createElement(
+                "div",
+                {
+                  style: {
+                    fontSize: 16,
+                    fontWeight: 900,
+                    textTransform: "uppercase",
+                  },
+                },
+                view
+              )
+            ),
+            React.createElement("div", { className: "muted" }, "FY 2569")
+          );
+        }
+
+        function ProjectFormModal() {
+          if (!projectFormOpen) return null;
+
+          const net =
+            Number(projectForm.sapa_approved || 0) +
+            Number(projectForm.rolling || 0);
+          const qsum =
+            Number(projectForm.q1_plan) +
+            Number(projectForm.q2_plan) +
+            Number(projectForm.q3_plan) +
+            Number(projectForm.q4_plan);
+
+          return React.createElement(
+            "div",
+            { className: "modalOverlay" },
+            React.createElement(
+              "div",
+              { className: "modal", style: { width: "min(900px,96vw)" } },
+              React.createElement(
+                "div",
+                { className: "modalHead" },
+                React.createElement(
+                  "div",
+                  null,
+                  React.createElement(
+                    "div",
+                    { style: { fontWeight: 900, fontSize: 18 } },
+                    projectForm.mode === "create"
+                      ? "Create Project (Lv.2)"
+                      : "Edit Project (Lv.2)"
+                  ),
+                  React.createElement(
+                    "div",
+                    { className: "muted" },
+                    "Budget fields + Q1–Q4 validation"
+                  )
+                ),
+                React.createElement(
+                  "button",
+                  {
+                    className: "btnSoft",
+                    onClick: () => setProjectFormOpen(false),
+                  },
+                  "✕"
+                )
+              ),
+              React.createElement(
+                "div",
+                { className: "modalBody" },
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr",
+                      gap: 12,
+                    },
+                  },
+                  FieldSelect(
+                    "Mission",
+                    projectForm.missionId,
+                    (v) => setProjectForm({ ...projectForm, missionId: v }),
+                    data.map((m) => ({
+                      value: m.id,
+                      label: `${m.id} - ${m.name}`,
+                    }))
+                  ),
+                  FieldSelect(
+                    "Fiscal Year",
+                    projectForm.fiscal_year,
+                    (v) => setProjectForm({ ...projectForm, fiscal_year: v }),
+                    [
+                      { value: "2569", label: "2569" },
+                      { value: "2570", label: "2570" },
+                    ]
+                  ),
+                  FieldInput(
+                    "Project Name",
+                    projectForm.name,
+                    (v) => setProjectForm({ ...projectForm, name: v }),
+                    { colSpan: 2, placeholder: "ชื่อโครงการ..." }
+                  ),
+                  FieldInput(
+                    "Responsible",
+                    projectForm.responsible,
+                    (v) => setProjectForm({ ...projectForm, responsible: v }),
+                    { colSpan: 2, placeholder: "ผู้รับผิดชอบ..." }
+                  )
+                ),
+
+                React.createElement(
+                  "div",
+                  { className: "card", style: { marginTop: 14 } },
+                  React.createElement(
+                    "div",
+                    { style: { fontWeight: 900, marginBottom: 10 } },
+                    "Financial Fields"
+                  ),
+                  React.createElement(
+                    "div",
+                    {
+                      style: {
+                        display: "grid",
+                        gridTemplateColumns: "repeat(3,1fr)",
+                        gap: 12,
+                      },
+                    },
+                    FieldNumber(
+                      "Sapa Approved",
+                      projectForm.sapa_approved,
+                      (v) =>
+                        setProjectForm({ ...projectForm, sapa_approved: v })
+                    ),
+                    FieldNumber("Proposed", projectForm.proposed_budget, (v) =>
+                      setProjectForm({ ...projectForm, proposed_budget: v })
+                    ),
+                    FieldNumber("Rolling 2568", projectForm.rolling, (v) =>
+                      setProjectForm({ ...projectForm, rolling: v })
+                    )
+                  ),
+                  React.createElement(
+                    "div",
+                    {
+                      style: {
+                        marginTop: 12,
+                        display: "grid",
+                        gridTemplateColumns: "repeat(4,1fr)",
+                        gap: 12,
+                      },
+                    },
+                    FieldNumber("Q1", projectForm.q1_plan, (v) =>
+                      setProjectForm({ ...projectForm, q1_plan: v })
+                    ),
+                    FieldNumber("Q2", projectForm.q2_plan, (v) =>
+                      setProjectForm({ ...projectForm, q2_plan: v })
+                    ),
+                    FieldNumber("Q3", projectForm.q3_plan, (v) =>
+                      setProjectForm({ ...projectForm, q3_plan: v })
+                    ),
+                    FieldNumber("Q4", projectForm.q4_plan, (v) =>
+                      setProjectForm({ ...projectForm, q4_plan: v })
+                    )
+                  ),
+                  React.createElement(
+                    "div",
+                    {
+                      style: {
+                        marginTop: 12,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        paddingTop: 10,
+                        borderTop: "1px solid var(--border)",
+                      },
+                    },
+                    React.createElement(
+                      "div",
+                      { className: "muted" },
+                      "Net Sapa: ",
+                      React.createElement(
+                        "span",
+                        { style: { color: "var(--primary)" } },
+                        "฿" + net.toLocaleString()
+                      )
+                    ),
+                    React.createElement(
+                      "div",
+                      { className: "muted" },
+                      "Total Q1–Q4: ",
+                      React.createElement(
+                        "span",
+                        { style: { color: "var(--text)" } },
+                        "฿" + qsum.toLocaleString()
+                      ),
+                      qsum > net
+                        ? React.createElement(
+                            "span",
+                            {
+                              className: "pill red",
+                              style: { marginLeft: 10 },
+                            },
+                            "เกินงบ!"
+                          )
+                        : null
+                    )
+                  )
+                ),
+
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      marginTop: 14,
+                      display: "flex",
+                      gap: 10,
+                      justifyContent: "flex-end",
+                    },
+                  },
+                  React.createElement(
+                    "button",
+                    {
+                      className: "btnSoft",
+                      onClick: () => setProjectFormOpen(false),
+                    },
+                    "Cancel"
+                  ),
+                  React.createElement(
+                    "button",
+                    { className: "btnPrimary", onClick: saveProject },
+                    "Save"
+                  )
+                )
+              )
+            )
+          );
+        }
+
+        function FieldInput(label, val, onChange, opts = {}) {
+          return React.createElement(
+            "div",
+            {
+              style: opts.colSpan
+                ? { gridColumn: `span ${opts.colSpan}` }
+                : null,
+            },
+            React.createElement("div", { className: "label" }, label),
+            React.createElement("input", {
+              value: val,
+              onInput: (e) => onChange(e.target.value),
+              placeholder: opts.placeholder || "",
+            })
+          );
+        }
+        function FieldNumber(label, val, onChange) {
+          return React.createElement(
+            "div",
+            null,
+            React.createElement("div", { className: "label" }, label),
+            React.createElement("input", {
+              type: "number",
+              value: val,
+              onInput: (e) => onChange(e.target.value),
+            })
+          );
+        }
+        function FieldSelect(label, val, onChange, options) {
+          return React.createElement(
+            "div",
+            null,
+            React.createElement("div", { className: "label" }, label),
+            React.createElement(
+              "select",
+              { value: val, onChange: (e) => onChange(e.target.value) },
+              options.map((o) =>
+                React.createElement(
+                  "option",
+                  { key: o.value, value: o.value },
+                  o.label
+                )
+              )
+            )
+          );
+        }
+
+        function SimpleAddModal() {
+          if (!simpleAddModal.open) return null;
+          return React.createElement(
+            "div",
+            { className: "modalOverlay" },
+            React.createElement(
+              "div",
+              { className: "modal", style: { width: "min(720px,96vw)" } },
+              React.createElement(
+                "div",
+                { className: "modalHead" },
+                React.createElement(
+                  "div",
+                  null,
+                  React.createElement(
+                    "div",
+                    { style: { fontWeight: 900, fontSize: 18 } },
+                    "Add New " + simpleAddModal.title
+                  ),
+                  React.createElement(
+                    "div",
+                    { className: "muted" },
+                    "เพิ่มรายการ Lv." + simpleAddModal.level
+                  )
+                ),
+                React.createElement(
+                  "button",
+                  {
+                    className: "btnSoft",
+                    onClick: () =>
+                      setSimpleAddModal({ ...simpleAddModal, open: false }),
+                  },
+                  "✕"
+                )
+              ),
+              React.createElement(
+                "div",
+                { className: "modalBody" },
+                React.createElement("div", { className: "label" }, "Name"),
+                React.createElement("input", {
+                  value: simpleAddModal.name,
+                  onInput: (e) =>
+                    setSimpleAddModal({
+                      ...simpleAddModal,
+                      name: e.target.value,
+                    }),
+                  placeholder: "ชื่อรายการ...",
+                }),
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      marginTop: 14,
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      gap: 10,
+                    },
+                  },
+                  React.createElement(
+                    "button",
+                    {
+                      className: "btnSoft",
+                      onClick: () =>
+                        setSimpleAddModal({ ...simpleAddModal, open: false }),
+                    },
+                    "Cancel"
+                  ),
+                  React.createElement(
+                    "button",
+                    { className: "btnPrimary", onClick: saveSimpleAdd },
+                    "Save"
+                  )
+                )
+              )
+            )
+          );
+        }
+
+        function ActivityModal() {
+          if (!activityModal.open) return null;
+
+          return React.createElement(
+            "div",
+            { className: "modalOverlay" },
+            React.createElement(
+              "div",
+              { className: "modal", style: { width: "min(760px,96vw)" } },
+              React.createElement(
+                "div",
+                { className: "modalHead" },
+                React.createElement(
+                  "div",
+                  null,
+                  React.createElement(
+                    "div",
+                    { style: { fontWeight: 900, fontSize: 18 } },
+                    activityModal.mode === "create"
+                      ? "Add New Activity (Lv.5)"
+                      : "Update Activity (Lv.5)"
+                  ),
+                  React.createElement(
+                    "div",
+                    { className: "muted" },
+                    "รายละเอียด + ปัญหา/อุปสรรค + สถานะ/Progress"
+                  )
+                ),
+                React.createElement(
+                  "button",
+                  {
+                    className: "btnSoft",
+                    onClick: () =>
+                      setActivityModal({ ...activityModal, open: false }),
+                  },
+                  "✕"
+                )
+              ),
+              React.createElement(
+                "div",
+                { className: "modalBody" },
+                React.createElement(
+                  "div",
+                  { style: { display: "grid", gap: 12 } },
+                  React.createElement(
+                    "div",
+                    null,
+                    React.createElement(
+                      "div",
+                      { className: "label" },
+                      "Activity Name"
+                    ),
+                    React.createElement("input", {
+                      value: activityModal.name,
+                      onInput: (e) =>
+                        setActivityModal({
+                          ...activityModal,
+                          name: e.target.value,
+                        }),
+                      placeholder: "ชื่อกิจกรรม...",
+                    })
+                  ),
+                  React.createElement(
+                    "div",
+                    null,
+                    React.createElement(
+                      "div",
+                      { className: "label" },
+                      "Description"
+                    ),
+                    React.createElement("textarea", {
+                      value: activityModal.description,
+                      onInput: (e) =>
+                        setActivityModal({
+                          ...activityModal,
+                          description: e.target.value,
+                        }),
+                      placeholder: "รายละเอียดกิจกรรม...",
+                    })
+                  ),
+                  React.createElement(
+                    "div",
+                    null,
+                    React.createElement(
+                      "div",
+                      { className: "label" },
+                      "Problem / Obstacle"
+                    ),
+                    React.createElement("textarea", {
+                      value: activityModal.problem,
+                      onInput: (e) =>
+                        setActivityModal({
+                          ...activityModal,
+                          problem: e.target.value,
+                        }),
+                      placeholder: "ปัญหา/อุปสรรค (ถ้ามี)...",
+                    })
+                  ),
+                  React.createElement(
+                    "div",
+                    {
+                      style: {
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        gap: 12,
+                      },
+                    },
+                    React.createElement(
+                      "div",
+                      null,
+                      React.createElement(
+                        "div",
+                        { className: "label" },
+                        "KPI Weight (points)"
+                      ),
+                      React.createElement("input", {
+                        type: "number",
+                        value: activityModal.points,
+                        onInput: (e) =>
+                          setActivityModal({
+                            ...activityModal,
+                            points: e.target.value,
+                          }),
+                      })
+                    ),
+                    React.createElement(
+                      "div",
+                      null,
+                      React.createElement(
+                        "div",
+                        { className: "label" },
+                        "Progress (%)"
+                      ),
+                      React.createElement("input", {
+                        type: "number",
+                        value: activityModal.progress,
+                        onInput: (e) =>
+                          setActivityModal({
+                            ...activityModal,
+                            progress: clamp(e.target.value),
+                          }),
+                      })
+                    )
+                  ),
+                  React.createElement(
+                    "div",
+                    null,
+                    React.createElement(
+                      "div",
+                      { className: "label" },
+                      "Status"
+                    ),
+                    React.createElement(
+                      "select",
+                      {
+                        value: activityModal.status,
+                        onChange: (e) =>
+                          setActivityModal({
+                            ...activityModal,
+                            status: e.target.value,
+                          }),
+                      },
+                      React.createElement(
+                        "option",
+                        { value: "pending" },
+                        "ยังไม่เสร็จ (Not Started)"
+                      ),
+                      React.createElement(
+                        "option",
+                        { value: "in_progress" },
+                        "กำลังดำเนินการ (In Progress)"
+                      ),
+                      React.createElement(
+                        "option",
+                        { value: "completed" },
+                        "เสร็จแล้ว (Completed)"
+                      )
+                    ),
+                    React.createElement(
+                      "div",
+                      { className: "muted", style: { marginTop: 8 } },
+                      "* ถ้าเลือก Completed จะบังคับเป็น 100% อัตโนมัติ"
+                    )
+                  ),
+                  React.createElement(
+                    "div",
+                    {
+                      style: {
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        gap: 10,
+                      },
+                    },
+                    React.createElement(
+                      "button",
+                      {
+                        className: "btnSoft",
+                        onClick: () =>
+                          setActivityModal({ ...activityModal, open: false }),
+                      },
+                      "Cancel"
+                    ),
+                    React.createElement(
+                      "button",
+                      { className: "btnPrimary", onClick: saveActivity },
+                      "Save"
+                    )
+                  )
+                )
+              )
+            )
+          );
+        }
+
+        function ProjectDetailModal() {
+          if (!projectModal.open || !currentProject) return null;
+
+          return React.createElement(
+            "div",
+            { className: "modalOverlay" },
+            React.createElement(
+              "div",
+              { className: "modal" },
+              React.createElement(
+                "div",
+                { className: "modalHead" },
+                React.createElement(
+                  "div",
+                  { style: { minWidth: 0 } },
+                  React.createElement(
+                    "div",
+                    {
+                      style: { fontWeight: 900, fontSize: 18 },
+                      className: "ellipsis",
+                    },
+                    currentProject.name
+                  ),
+                  React.createElement(
+                    "div",
+                    {
+                      className: "muted",
+                      style: {
+                        color: "var(--primary)",
+                        textTransform: "uppercase",
+                      },
+                    },
+                    "Lv.2 Main Project Detail • " + currentProject.id
+                  )
+                ),
+                React.createElement(
+                  "button",
+                  {
+                    className: "btnSoft",
+                    onClick: () =>
+                      setProjectModal({
+                        open: false,
+                        missionId: "",
+                        projectId: "",
+                      }),
+                  },
+                  "✕"
+                )
+              ),
+              React.createElement(
+                "div",
+                { className: "modalBody" },
+                React.createElement(
+                  "div",
+                  {
+                    className: "card",
+                    style: { background: "#eff6ff", borderColor: "#dbeafe" },
+                  },
+                  React.createElement(
+                    "div",
+                    { className: "label", style: { color: "#2563eb" } },
+                    "Weighted Score Logic (Example)"
+                  ),
+                  React.createElement(
+                    "div",
+                    {
+                      style: {
+                        fontSize: 13,
+                        fontWeight: 900,
+                        color: "#1e40af",
+                        marginTop: 6,
+                      },
+                    },
+                    "TOR (10) + Purchase (30) + Install (60 * 75% = 45) = ",
+                    React.createElement("b", null, "85 Points Total")
+                  )
+                ),
+
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      marginTop: 12,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    },
+                  },
+                  React.createElement(
+                    "button",
+                    {
+                      className: "btnSoft",
+                      style: {
+                        border: "2px dashed var(--primary)",
+                        color: "var(--primary)",
+                      },
+                      onClick: openAddLv3,
+                    },
+                    "＋ Add Sub Project (Lv.3)"
+                  ),
+                  React.createElement(
+                    "div",
+                    {
+                      style: { display: "flex", gap: 12, alignItems: "center" },
+                    },
+                    React.createElement(
+                      "span",
+                      { className: "pill red" },
+                      "Project KPI"
+                    ),
+                    React.createElement(SemiGauge, {
+                      value: currentProject.progress,
+                      label: "100% = Completed",
+                    })
+                  )
+                ),
+
+                React.createElement(
+                  "div",
+                  { style: { marginTop: 14, display: "grid", gap: 14 } },
+                  (currentProject.sub_projects || []).length === 0
+                    ? React.createElement(
+                        "div",
+                        {
+                          style: {
+                            padding: 14,
+                            border: "1px dashed #fecaca",
+                            borderRadius: 16,
+                            color: "#991b1b",
+                            fontWeight: 900,
+                          },
+                        },
+                        "ยังไม่มี Sub Project (Lv.3) — กด “Add Sub Project (Lv.3)”"
+                      )
+                    : null,
+
+                  (currentProject.sub_projects || []).map((sp) =>
+                    React.createElement(
+                      "div",
+                      { key: sp.id, className: "dividerL" },
+                      React.createElement(
+                        "div",
+                        {
+                          style: {
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          },
+                        },
+                        React.createElement(
+                          "div",
+                          { style: { fontWeight: 900, fontSize: 16 } },
+                          sp.name,
+                          " ",
+                          React.createElement(
+                            "span",
+                            { style: { color: "#64748b", fontSize: 12 } },
+                            "(Lv.3)"
+                          )
+                        ),
+                        React.createElement(
+                          "button",
+                          {
+                            className: "btnSoft",
+                            onClick: () => openAddLv4(sp.id),
+                          },
+                          "＋ Topic (Lv.4)"
+                        )
+                      ),
+
+                      React.createElement(
+                        "div",
+                        { style: { marginTop: 10, display: "grid", gap: 12 } },
+                        (sp.topics || []).length === 0
+                          ? React.createElement(
+                              "div",
+                              {
+                                style: {
+                                  padding: 12,
+                                  border: "1px dashed var(--border)",
+                                  borderRadius: 14,
+                                  color: "#64748b",
+                                  fontWeight: 900,
+                                },
+                              },
+                              "ยังไม่มี Topic (Lv.4)"
+                            )
+                          : null,
+
+                        (sp.topics || []).map((tp) =>
+                          React.createElement(
+                            "div",
+                            { key: tp.id, style: { marginLeft: 14 } },
+                            React.createElement(
+                              "div",
+                              {
+                                style: {
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                  borderBottom: "1px solid var(--border)",
+                                  paddingBottom: 6,
+                                },
+                              },
+                              React.createElement(
+                                "div",
+                                {
+                                  style: {
+                                    fontWeight: 900,
+                                    color: "#475569",
+                                    textTransform: "uppercase",
+                                    fontSize: 12,
+                                    letterSpacing: 0.8,
+                                  },
+                                },
+                                "Topic: ",
+                                tp.name,
+                                " ",
+                                React.createElement(
+                                  "span",
+                                  { style: { color: "#94a3b8" } },
+                                  "(Lv.4)"
+                                )
+                              ),
+                              React.createElement(
+                                "button",
+                                {
+                                  className: "btnPrimary",
+                                  style: { background: "#2563eb" },
+                                  onClick: () => openCreateActivity(tp.id),
+                                },
+                                "＋ Activity (Lv.5)"
+                              )
+                            ),
+
+                            React.createElement(
+                              "div",
+                              {
+                                style: {
+                                  marginTop: 10,
+                                  display: "grid",
+                                  gap: 10,
+                                },
+                              },
+                              (tp.details || []).length === 0
+                                ? React.createElement(
+                                    "div",
+                                    {
+                                      style: {
+                                        padding: 12,
+                                        border: "1px dashed var(--border)",
+                                        borderRadius: 14,
+                                        color: "#64748b",
+                                        fontWeight: 900,
+                                      },
+                                    },
+                                    "ยังไม่มี Activity (Lv.5) — ค่าเริ่มต้นต้องเป็น 0%"
+                                  )
+                                : null,
+
+                              (tp.details || []).map((d) =>
+                                React.createElement(
+                                  "div",
+                                  {
+                                    key: d.id,
+                                    style: {
+                                      padding: 12,
+                                      border: "1px solid var(--border)",
+                                      borderRadius: 16,
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      gap: 12,
+                                    },
+                                  },
+                                  React.createElement(
+                                    "div",
+                                    { style: { minWidth: 0 } },
+                                    React.createElement(
+                                      "div",
+                                      {
+                                        style: {
+                                          display: "flex",
+                                          gap: 10,
+                                          alignItems: "center",
+                                        },
+                                      },
+                                      React.createElement(StatusBadge, {
+                                        status: d.status,
+                                      }),
+                                      React.createElement(
+                                        "div",
+                                        {
+                                          style: { fontWeight: 900 },
+                                          className: "ellipsis",
+                                        },
+                                        d.name
+                                      )
+                                    ),
+                                    d.description
+                                      ? React.createElement(
+                                          "div",
+                                          {
+                                            style: {
+                                              marginTop: 6,
+                                              fontSize: 12,
+                                              fontWeight: 800,
+                                              color: "#475569",
+                                            },
+                                          },
+                                          "รายละเอียด: ",
+                                          d.description
+                                        )
+                                      : null,
+                                    d.problem
+                                      ? React.createElement(
+                                          "div",
+                                          {
+                                            style: {
+                                              marginTop: 6,
+                                              fontSize: 12,
+                                              fontWeight: 900,
+                                              color: "#b91c1c",
+                                            },
+                                          },
+                                          "⚠ ปัญหา/อุปสรรค: ",
+                                          d.problem
+                                        )
+                                      : null,
+                                    React.createElement(
+                                      "div",
+                                      {
+                                        style: {
+                                          marginTop: 6,
+                                          fontSize: 12,
+                                          fontWeight: 900,
+                                          color: "#64748b",
+                                        },
+                                      },
+                                      "KPI Weight: ",
+                                      d.points,
+                                      " pts"
+                                    )
+                                  ),
+                                  React.createElement(
+                                    "div",
+                                    {
+                                      style: {
+                                        textAlign: "right",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        gap: 8,
+                                        alignItems: "flex-end",
+                                      },
+                                    },
+                                    React.createElement(
+                                      "div",
+                                      {
+                                        style: {
+                                          fontSize: 22,
+                                          fontWeight: 900,
+                                        },
+                                      },
+                                      clamp(d.progress) + "%"
+                                    ),
+                                    React.createElement(
+                                      "button",
+                                      {
+                                        className: "btnSoft",
+                                        onClick: () =>
+                                          openEditActivity(tp.id, d),
+                                      },
+                                      "✎ Edit / Update"
+                                    )
+                                  )
+                                )
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          );
+        }
+
+        function renderView() {
+          if (view === "dashboard") return React.createElement(Dashboard);
+          if (view === "explorer") return React.createElement(Explorer);
+          if (view === "budget") return React.createElement(Budget);
+          if (view === "reports") return React.createElement(Reports);
+          return React.createElement(
+            "div",
+            { className: "card" },
+            "Unknown view"
+          );
+        }
+
+        return React.createElement(
+          "div",
+          { className: "app" },
+          React.createElement(Sidebar),
+          React.createElement(
+            "div",
+            { className: "main" },
+            React.createElement(Header),
+            React.createElement("div", { className: "content" }, renderView()),
+            React.createElement(ProjectFormModal),
+            React.createElement(ProjectDetailModal),
+            React.createElement(SimpleAddModal),
+            React.createElement(ActivityModal)
+          )
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(React.createElement(App));
+    </script>
+  </body>
+</html>
