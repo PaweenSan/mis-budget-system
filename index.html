@@ -27,10 +27,64 @@
     *{ box-sizing:border-box; }
     body{ margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; background:var(--bg); color:var(--text); }
     button{ font-family:inherit; }
-    .app{ display:flex; height:100vh; }
+    
+    /* Login Page Styles */
+    .loginContainer{
+      min-height:100vh; display:grid; place-items:center; padding:20px;
+      background:linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    }
+    .loginCard{
+      background:#fff; border-radius:28px; padding:40px;
+      box-shadow:0 20px 60px rgba(0,0,0,.3);
+      width:100%; max-width:420px;
+    }
+    .loginLogo{
+      width:64px; height:64px; border-radius:20px; background:var(--primary);
+      display:grid; place-items:center; font-weight:900; font-size:32px;
+      color:#fff; margin:0 auto 24px;
+    }
+    .loginTitle{ font-size:28px; font-weight:900; text-align:center; margin-bottom:8px; }
+    .loginSubtitle{ text-align:center; color:var(--muted); font-weight:900; font-size:14px; margin-bottom:32px; }
+    .loginForm{ display:grid; gap:20px; }
+    .loginField{ display:grid; gap:8px; }
+    .loginLabel{ font-size:12px; font-weight:900; color:var(--muted); text-transform:uppercase; }
+    .loginInput{
+      width:100%; padding:14px; border-radius:14px; border:2px solid var(--border);
+      font-weight:800; font-size:15px; outline:none; transition:all .2s;
+    }
+    .loginInput:focus{ border-color:var(--primary); background:#fff; }
+    .loginButton{
+      width:100%; padding:16px; border-radius:14px; border:0;
+      background:var(--primary); color:#fff; font-weight:900; font-size:16px;
+      cursor:pointer; transition:all .2s;
+    }
+    .loginButton:hover{ background:var(--accent); transform:translateY(-2px); }
+    .loginButton:active{ transform:translateY(0); }
+    .demoAccounts{
+      margin-top:24px; padding:16px; background:#f8fafc; border-radius:16px;
+      border:1px dashed var(--border);
+    }
+    .demoTitle{ font-size:11px; font-weight:900; color:var(--muted); text-transform:uppercase; margin-bottom:12px; }
+    .demoAccount{
+      display:flex; justify-content:space-between; align-items:center;
+      padding:10px; background:#fff; border-radius:12px; margin-bottom:8px;
+      cursor:pointer; transition:all .2s; border:1px solid var(--border);
+    }
+    .demoAccount:hover{ border-color:var(--primary); transform:translateX(4px); }
+    .demoAccount:last-child{ margin-bottom:0; }
+    .demoRole{ font-weight:900; font-size:13px; }
+    .demoCredentials{ font-size:11px; color:var(--muted); font-weight:900; }
+    .errorMsg{
+      padding:12px; background:#fee2e2; color:#991b1b; border-radius:12px;
+      font-weight:900; font-size:13px; text-align:center;
+    }
+    
+    /* Main App Layout */
+    .app{ display:flex; height:100vh; overflow:hidden; }
     .sidebar{
       width:280px; background:var(--secondary); color:#fff;
       padding:20px; display:flex; flex-direction:column;
+      transition:transform .3s ease;
     }
     .brand{ display:flex; align-items:center; gap:10px; margin-bottom:18px; }
     .logo{ width:34px; height:34px; border-radius:12px; background:var(--primary); display:grid; place-items:center; font-weight:900; }
@@ -39,15 +93,22 @@
       padding:12px 14px; border-radius:14px; border:0; cursor:pointer;
       background:transparent; color:rgba(255,255,255,.75);
       font-weight:900; text-transform:uppercase; font-size:12px; letter-spacing:.5px;
-      margin-bottom:8px;
+      margin-bottom:8px; transition:all .2s;
     }
+    .navbtn:hover{ background:rgba(255,255,255,.1); }
     .navbtn.active{ background:var(--primary); color:#fff; }
     .main{ flex:1; display:flex; flex-direction:column; min-width:0; }
     .header{
       height:64px; background:#fff; border-bottom:1px solid var(--border);
       display:flex; align-items:center; justify-content:space-between; padding:0 18px;
+      flex-shrink:0;
     }
-    .content{ padding:18px; overflow:auto; }
+    .hamburger{
+      display:none; width:40px; height:40px; border:0; background:var(--soft);
+      border-radius:12px; cursor:pointer; font-size:20px; align-items:center;
+      justify-content:center;
+    }
+    .content{ padding:18px; overflow:auto; flex:1; }
     .grid4{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
     .card{
       background:var(--card); border:1px solid var(--border); border-radius:22px;
@@ -59,12 +120,15 @@
     .half{ flex:1 1 420px; }
     .btnPrimary{
       background:var(--primary); color:#fff; border:0; padding:10px 14px;
-      border-radius:14px; font-weight:900; cursor:pointer;
+      border-radius:14px; font-weight:900; cursor:pointer; transition:all .2s;
     }
+    .btnPrimary:hover{ background:var(--accent); }
+    .btnPrimary:disabled{ opacity:.5; cursor:not-allowed; }
     .btnSoft{
       background:var(--soft); color:#334155; border:1px solid var(--border);
-      padding:10px 14px; border-radius:14px; font-weight:900; cursor:pointer;
+      padding:10px 14px; border-radius:14px; font-weight:900; cursor:pointer; transition:all .2s;
     }
+    .btnSoft:hover{ background:#e2e8f0; }
     .pill{ display:inline-block; padding:4px 10px; border-radius:999px; font-size:11px; font-weight:900; }
     .pill.gray{ background:#e2e8f0; color:#334155; }
     .pill.green{ background:#dcfce7; color:#166534; }
@@ -88,30 +152,88 @@
     }
     .modalHead{
       padding:18px; background:#f8fafc; border-bottom:1px solid var(--border);
-      display:flex; align-items:center; justify-content:space-between;
+      display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
     }
     .modalBody{ padding:18px; overflow:auto; }
     .label{ font-size:11px; font-weight:900; color:var(--muted); text-transform:uppercase; letter-spacing:.6px; margin-bottom:6px; }
     input, select, textarea{
       width:100%; padding:12px; border-radius:14px; border:1px solid var(--border);
-      background:#f8fafc; font-weight:800; outline:none;
+      background:#f8fafc; font-weight:800; outline:none; font-size:14px;
     }
     textarea{ min-height:90px; resize:vertical; }
     .muted{ color:var(--muted); font-weight:900; font-size:12px; }
     .dividerL{ padding-left:12px; border-left:4px solid var(--border); }
     .danger{ color:#b91c1c; font-weight:900; display:flex; gap:6px; align-items:center; }
     .ellipsis{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    
-    /* Checkbox styles */
     .checkboxWrapper{ display:flex; align-items:center; gap:8px; cursor:pointer; padding:8px; border-radius:8px; }
     .checkboxWrapper:hover{ background:#f1f5f9; }
     .checkbox{ width:18px; height:18px; cursor:pointer; accent-color:var(--primary); }
-    
-    /* Selection info */
     .selectionInfo{
       background:#eff6ff; border:1px solid #dbeafe; border-radius:16px; padding:12px;
-      display:flex; justify-content:space-between; align-items:center;
+      display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
     }
+    .userInfo{
+      display:flex; align-items:center; gap:10px; padding:12px; background:rgba(255,255,255,.05);
+      border-radius:12px; margin-bottom:10px;
+    }
+    .userAvatar{
+      width:38px; height:38px; border-radius:999px; background:var(--primary);
+      display:grid; place-items:center; font-weight:900; flex-shrink:0;
+    }
+    .roleBadge{
+      padding:4px 8px; border-radius:8px; font-size:10px; font-weight:900;
+      text-transform:uppercase; letter-spacing:.5px;
+    }
+    .roleBadge.admin{ background:#ef4444; color:#fff; }
+    .roleBadge.user{ background:#3b82f6; color:#fff; }
+    
+    /* Responsive Design - Mobile First */
+    @media (max-width: 768px) {
+      .sidebar{
+        position:fixed; left:0; top:0; bottom:0; z-index:1000;
+        transform:translateX(-100%); width:280px;
+      }
+      .sidebar.open{ transform:translateX(0); box-shadow:4px 0 20px rgba(0,0,0,.3); }
+      .hamburger{ display:flex !important; }
+      .header{ padding:0 12px; }
+      .content{ padding:12px; }
+      .grid4{ grid-template-columns:1fr; }
+      .row{ flex-direction:column; }
+      .half{ flex:1 1 100%; }
+      .card{ padding:14px; border-radius:18px; }
+      .cardValue{ font-size:22px; }
+      .loginCard{ padding:28px; }
+      .modal{ width:100vw; height:100vh; max-height:100vh; border-radius:0; }
+      .modalHead{ padding:14px; }
+      .modalBody{ padding:14px; }
+      table{ font-size:12px; }
+      th, td{ padding:8px; }
+      .selectionInfo{ flex-direction:column; align-items:stretch; }
+      .btnPrimary, .btnSoft{ font-size:14px; padding:12px; }
+    }
+    
+    @media (max-width: 480px) {
+      .content{ padding:8px; }
+      .card{ padding:12px; }
+      .cardTitle{ font-size:10px; }
+      .cardValue{ font-size:18px; }
+      .loginCard{ padding:20px; }
+      .loginTitle{ font-size:24px; }
+      input, select, textarea{ font-size:16px; } /* Prevent zoom on iOS */
+    }
+    
+    /* Tablet */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .sidebar{ width:240px; padding:16px; }
+      .grid4{ grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); }
+    }
+    
+    /* Overlay for mobile sidebar */
+    .sidebarOverlay{
+      display:none; position:fixed; inset:0; background:rgba(0,0,0,.5);
+      z-index:999;
+    }
+    .sidebarOverlay.show{ display:block; }
   </style>
 </head>
 <body>
@@ -124,6 +246,7 @@
 
   const INITIAL_USERS = [
     { id:"U1", username:"admin", password:"123", name:"Admin Strategy", role:"admin" },
+    { id:"U2", username:"user", password:"123", name:"User Viewer", role:"user" },
   ];
 
   const INITIAL_DATA = [
@@ -272,7 +395,9 @@
 
   function App(){
     const [view,setView]=useState("dashboard");
-    const [user]=useState(INITIAL_USERS[0]);
+    const [user, setUser]=useState(null);
+    const [loginForm, setLoginForm]=useState({ username:"", password:"", error:"" });
+    const [sidebarOpen, setSidebarOpen]=useState(false);
     const [data,setData]=useState(()=>recomputeAll(INITIAL_DATA));
 
     const [projectFormOpen,setProjectFormOpen]=useState(false);
@@ -304,6 +429,45 @@
       const arr=data.map(m=>clamp(m.progress));
       return arr.length ? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length) : 0;
     },[data]);
+
+    // Authentication handlers
+    function handleLogin(e){
+      e.preventDefault();
+      const foundUser = INITIAL_USERS.find(u => 
+        u.username === loginForm.username && u.password === loginForm.password
+      );
+      if(foundUser){
+        setUser(foundUser);
+        setLoginForm({ username:"", password:"", error:"" });
+      } else {
+        setLoginForm({ ...loginForm, error:"Invalid username or password" });
+      }
+    }
+
+    function handleDemoLogin(username, password){
+      setLoginForm({ username, password, error:"" });
+      const foundUser = INITIAL_USERS.find(u => u.username === username && u.password === password);
+      if(foundUser) setUser(foundUser);
+    }
+
+    function handleLogout(){
+      setUser(null);
+      setView("dashboard");
+      setSidebarOpen(false);
+    }
+
+    function toggleSidebar(){
+      setSidebarOpen(!sidebarOpen);
+    }
+
+    function closeSidebar(){
+      setSidebarOpen(false);
+    }
+
+    // Permission checks
+    const canEdit = user?.role === "admin";
+    const canCreate = user?.role === "admin";
+    const canDelete = user?.role === "admin";
 
     const toggleProjectSelection = useCallback((missionId, projectId) => {
       setSelectedProjects(prev => {
@@ -683,7 +847,7 @@
     }
 
     function Sidebar(){
-      return React.createElement("aside",{className:"sidebar"},
+      return React.createElement("aside",{className:"sidebar" + (sidebarOpen?" open":"")},
         React.createElement("div",{className:"brand"},
           React.createElement("div",{className:"logo"},"M"),
           React.createElement("div",{style:{fontSize:22,fontWeight:900}},"MIS")
@@ -693,16 +857,76 @@
         NavButton("budget","💰 Budget"),
         NavButton("reports","📈 Reports & KPI"),
         React.createElement("div",{style:{marginTop:"auto",borderTop:"1px solid rgba(255,255,255,.12)",paddingTop:14}},
-          React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10}},
-            React.createElement("div",{style:{width:38,height:38,borderRadius:999,background:THEME.primary,display:"grid",placeItems:"center",fontWeight:900}},
-              user.name.charAt(0)
-            ),
-            React.createElement("div",null,
-              React.createElement("div",{style:{fontSize:12,fontWeight:900,opacity:.92}},user.name),
-              React.createElement("div",{style:{fontSize:10,fontWeight:900,opacity:.5,textTransform:"uppercase"}},user.role)
+          React.createElement("div",{className:"userInfo"},
+            React.createElement("div",{className:"userAvatar"},user.name.charAt(0)),
+            React.createElement("div",{style:{flex:1,minWidth:0}},
+              React.createElement("div",{style:{fontSize:12,fontWeight:900,opacity:.92,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},user.name),
+              React.createElement("span",{className:"roleBadge " + user.role},user.role)
             )
           ),
-          React.createElement("button",{className:"navbtn",style:{marginTop:10},onClick:()=>alert("Demo mode: logout disabled")}, "⎋ Logout")
+          React.createElement("button",{className:"navbtn",onClick:handleLogout}, "⎋ Logout")
+        )
+      );
+    }
+
+    function LoginPage(){
+      return React.createElement("div",{className:"loginContainer"},
+        React.createElement("div",{className:"loginCard"},
+          React.createElement("div",{className:"loginLogo"},"M"),
+          React.createElement("div",{className:"loginTitle"},"MIS Budget System"),
+          React.createElement("div",{className:"loginSubtitle"},"ระบบบริหารจัดการงบประมาณ FY 2569"),
+          
+          loginForm.error ? React.createElement("div",{className:"errorMsg"},loginForm.error) : null,
+          
+          React.createElement("form",{className:"loginForm",onSubmit:handleLogin},
+            React.createElement("div",{className:"loginField"},
+              React.createElement("label",{className:"loginLabel"},"Username"),
+              React.createElement("input",{
+                className:"loginInput",
+                type:"text",
+                value:loginForm.username,
+                onChange:(e)=>setLoginForm({...loginForm,username:e.target.value}),
+                placeholder:"Enter username",
+                required:true
+              })
+            ),
+            React.createElement("div",{className:"loginField"},
+              React.createElement("label",{className:"loginLabel"},"Password"),
+              React.createElement("input",{
+                className:"loginInput",
+                type:"password",
+                value:loginForm.password,
+                onChange:(e)=>setLoginForm({...loginForm,password:e.target.value}),
+                placeholder:"Enter password",
+                required:true
+              })
+            ),
+            React.createElement("button",{className:"loginButton",type:"submit"},"🔐 Login")
+          ),
+          
+          React.createElement("div",{className:"demoAccounts"},
+            React.createElement("div",{className:"demoTitle"},"📋 Demo Accounts (Click to Auto-fill)"),
+            React.createElement("div",{
+              className:"demoAccount",
+              onClick:()=>handleDemoLogin("admin","123")
+            },
+              React.createElement("div",null,
+                React.createElement("div",{className:"demoRole"},"👑 Administrator"),
+                React.createElement("div",{className:"demoCredentials"},"Full access • Create/Edit/Delete")
+              ),
+              React.createElement("div",{style:{fontSize:11,fontWeight:900,color:"#64748b"}},"admin / 123")
+            ),
+            React.createElement("div",{
+              className:"demoAccount",
+              onClick:()=>handleDemoLogin("user","123")
+            },
+              React.createElement("div",null,
+                React.createElement("div",{className:"demoRole"},"👤 User (Read-Only)"),
+                React.createElement("div",{className:"demoCredentials"},"View only • No edit permissions")
+              ),
+              React.createElement("div",{style:{fontSize:11,fontWeight:900,color:"#64748b"}},"user / 123")
+            )
+          )
         )
       );
     }
@@ -747,10 +971,11 @@
               React.createElement("button",{className:"btnPrimary",onClick:()=>setView("explorer")},"↗ Open Explorer")
             ),
             React.createElement("div",{style:{marginTop:14,display:"grid",gap:10}},
-              React.createElement("button",{className:"btnSoft",onClick:()=>openCreateProject("PT1")},"＋ Create New Project (Lv.2)"),
+              canCreate ? React.createElement("button",{className:"btnSoft",onClick:()=>openCreateProject("PT1")},"＋ Create New Project (Lv.2)") : null,
               React.createElement("button",{className:"btnSoft",onClick:()=>setView("budget")},"💰 Go to Budget"),
               React.createElement("button",{className:"btnSoft",onClick:()=>setView("reports")},"📈 Reports & KPI")
-            )
+            ),
+            !canCreate ? React.createElement("div",{style:{marginTop:10,padding:12,background:"#fef9c3",borderRadius:12,fontSize:12,fontWeight:900,color:"#854d0e"}},"ℹ️ Read-only mode - Login as Admin to create/edit") : null
           )
         )
       );
@@ -759,34 +984,34 @@
     function Explorer(){
       return React.createElement("div",{style:{display:"grid",gap:12}},
         React.createElement("div",{className:"card",style:{background:"var(--secondary)",color:"#fff",borderColor:"transparent"}},
-          React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
+          React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}},
             React.createElement("div",null,
               React.createElement("div",{style:{fontSize:20,fontWeight:900}},"Hierarchy Explorer"),
               React.createElement("div",{style:{fontSize:12,fontWeight:900,opacity:.6}},"Manage Lv.1 to Lv.5 Activities")
             ),
-            React.createElement("button",{className:"btnPrimary",style:{background:"#fff",color:"#111827"},onClick:()=>openCreateProject("PT1")},"＋ Create Project")
+            canCreate ? React.createElement("button",{className:"btnPrimary",style:{background:"#fff",color:"#111827"},onClick:()=>openCreateProject("PT1")},"＋ Create Project") : null
           )
         ),
         data.map(m=>React.createElement("div",{key:m.id,className:"card"},
-          React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
+          React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}},
             React.createElement("div",null,
               React.createElement("div",{style:{fontWeight:900,fontSize:16}},`${m.id} • ${m.name}`),
               React.createElement("div",{className:"muted"},`${m.main_projects.length} projects`)
             ),
-            React.createElement("div",{style:{display:"flex",gap:10,alignItems:"center"}},
-              React.createElement("button",{className:"btnSoft",onClick:()=>openCreateProject(m.id)},"＋ Add Project"),
+            React.createElement("div",{style:{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}},
+              canCreate ? React.createElement("button",{className:"btnSoft",onClick:()=>openCreateProject(m.id)},"＋ Add Project") : null,
               React.createElement(SemiGauge,{value:m.progress,label:"Mission"})
             )
           ),
           React.createElement("div",{style:{marginTop:12,display:"grid",gap:10}},
-            m.main_projects.map(p=>React.createElement("div",{key:p.id,style:{padding:12,border:"1px solid var(--border)",borderRadius:16,display:"flex",justifyContent:"space-between",alignItems:"center",gap:12}},
-              React.createElement("div",{style:{minWidth:0}},
+            m.main_projects.map(p=>React.createElement("div",{key:p.id,style:{padding:12,border:"1px solid var(--border)",borderRadius:16,display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,flexWrap:"wrap"}},
+              React.createElement("div",{style:{minWidth:0,flex:"1 1 200px"}},
                 React.createElement("div",{style:{fontSize:12,fontWeight:900,color:"var(--primary)"}},p.id),
                 React.createElement("div",{style:{fontSize:14,fontWeight:900},className:"ellipsis"},p.name),
                 React.createElement("div",{className:"muted"},`${p.responsible||"N/A"} • ${(p.kpi_total_points||0)} pts`)
               ),
-              React.createElement("div",{style:{display:"flex",gap:10,alignItems:"center"}},
-                React.createElement("button",{className:"btnSoft",onClick:()=>openEditProject(m.id,p)},"✎"),
+              React.createElement("div",{style:{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}},
+                canEdit ? React.createElement("button",{className:"btnSoft",onClick:()=>openEditProject(m.id,p)},"✎") : null,
                 React.createElement("button",{className:"btnPrimary",onClick:()=>openProjectModal(m.id,p.id)},"Open Detail"),
                 React.createElement(SemiGauge,{value:p.progress,label:"Project"})
               )
@@ -800,18 +1025,18 @@
     function Budget(){
       return React.createElement("div",{style:{display:"grid",gap:12}},
         React.createElement("div",{className:"card"},
-          React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
+          React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}},
             React.createElement("div",null,
               React.createElement("div",{style:{fontWeight:900,fontSize:18}},"Budget Management"),
               React.createElement("div",{className:"muted"},"Create / Edit budget records by project")
             ),
-            React.createElement("div",{style:{display:"flex",gap:10}},
+            React.createElement("div",{style:{display:"flex",gap:10,flexWrap:"wrap"}},
               React.createElement("button",{className:"btnSoft",onClick:exportBudgetCSV},"Export CSV"),
-              React.createElement("button",{className:"btnPrimary",onClick:()=>openCreateProject("PT1")},"＋ New Entry")
+              canCreate ? React.createElement("button",{className:"btnPrimary",onClick:()=>openCreateProject("PT1")},"＋ New Entry") : null
             )
           )
         ),
-        React.createElement("div",{className:"card"},
+        React.createElement("div",{className:"card",style:{overflowX:"auto"}},
           React.createElement("table",null,
             React.createElement("thead",null,
               React.createElement("tr",null,
@@ -837,8 +1062,8 @@
                     React.createElement("span",{className:"pill gray"},(p.progress||0)+"%")
                   ),
                   React.createElement("td",{style:{textAlign:"center"}},
-                    React.createElement("div",{style:{display:"flex",justifyContent:"center",gap:10}},
-                      React.createElement("button",{className:"btnSoft",onClick:()=>openEditProject(p.missionId,p)},"✎"),
+                    React.createElement("div",{style:{display:"flex",justifyContent:"center",gap:10,flexWrap:"wrap"}},
+                      canEdit ? React.createElement("button",{className:"btnSoft",onClick:()=>openEditProject(p.missionId,p)},"✎") : null,
                       React.createElement("button",{className:"btnPrimary",onClick:()=>openProjectModal(p.missionId,p.id)},"Detail")
                     )
                   )
@@ -943,8 +1168,9 @@
     function Header(){
       return React.createElement("div",{className:"header"},
         React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10}},
-          React.createElement("button",{className:"btnSoft",style:{padding:"8px 10px"}}, "≡"),
-          React.createElement("div",{style:{fontSize:16,fontWeight:900,textTransform:"uppercase"}}, view)
+          React.createElement("button",{className:"hamburger",onClick:toggleSidebar}, "☰"),
+          React.createElement("div",{style:{fontSize:16,fontWeight:900,textTransform:"uppercase"}}, view),
+          React.createElement("span",{className:"roleBadge " + user.role,style:{marginLeft:8}},user.role)
         ),
         React.createElement("div",{className:"muted"},"FY 2569")
       );
@@ -1171,7 +1397,7 @@
       return React.createElement("div",{className:"modalOverlay"},
         React.createElement("div",{className:"modal"},
           React.createElement("div",{className:"modalHead"},
-            React.createElement("div",{style:{minWidth:0}},
+            React.createElement("div",{style:{minWidth:0,flex:1}},
               React.createElement("div",{style:{fontWeight:900,fontSize:18},className:"ellipsis"}, currentProject.name),
               React.createElement("div",{className:"muted",style:{color:"var(--primary)",textTransform:"uppercase"}}, "Lv.2 Main Project Detail • "+currentProject.id)
             ),
@@ -1185,27 +1411,29 @@
               )
             ),
 
-            React.createElement("div",{style:{marginTop:12,display:"flex",justifyContent:"space-between",alignItems:"center"}},
-              React.createElement("button",{className:"btnSoft",style:{border:"2px dashed var(--primary)",color:"var(--primary)"},onClick:openAddLv3},"＋ Add Sub Project (Lv.3)"),
-              React.createElement("div",{style:{display:"flex",gap:12,alignItems:"center"}},
+            React.createElement("div",{style:{marginTop:12,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}},
+              canCreate ? React.createElement("button",{className:"btnSoft",style:{border:"2px dashed var(--primary)",color:"var(--primary)"},onClick:openAddLv3},"＋ Add Sub Project (Lv.3)") : null,
+              React.createElement("div",{style:{display:"flex",gap:12,alignItems:"center",flexWrap:"wrap"}},
                 React.createElement("span",{className:"pill red"},"Project KPI"),
                 React.createElement(SemiGauge,{value:currentProject.progress,label:"100% = Completed"})
               )
             ),
 
+            !canCreate ? React.createElement("div",{style:{marginTop:12,padding:12,background:"#fef9c3",borderRadius:12,fontSize:12,fontWeight:900,color:"#854d0e"}},"ℹ️ Read-only mode - Login as Admin to add/edit activities") : null,
+
             React.createElement("div",{style:{marginTop:14,display:"grid",gap:14}},
               (currentProject.sub_projects||[]).length===0
                 ? React.createElement("div",{style:{padding:14,border:"1px dashed #fecaca",borderRadius:16,color:"#991b1b",fontWeight:900}},
-                    'ยังไม่มี Sub Project (Lv.3) — กด "Add Sub Project (Lv.3)"'
+                    canCreate ? 'ยังไม่มี Sub Project (Lv.3) — กด "Add Sub Project (Lv.3)"' : 'ยังไม่มี Sub Project (Lv.3)'
                   )
                 : null,
 
               (currentProject.sub_projects||[]).map(sp=>React.createElement("div",{key:sp.id,className:"dividerL"},
-                React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
+                React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10}},
                   React.createElement("div",{style:{fontWeight:900,fontSize:16}},
                     sp.name," ",React.createElement("span",{style:{color:"#64748b",fontSize:12}},"(Lv.3)")
                   ),
-                  React.createElement("button",{className:"btnSoft",onClick:()=>openAddLv4(sp.id)},"＋ Topic (Lv.4)")
+                  canCreate ? React.createElement("button",{className:"btnSoft",onClick:()=>openAddLv4(sp.id)},"＋ Topic (Lv.4)") : null
                 ),
 
                 React.createElement("div",{style:{marginTop:10,display:"grid",gap:12}},
@@ -1216,23 +1444,23 @@
                     : null,
 
                   (sp.topics||[]).map(tp=>React.createElement("div",{key:tp.id,style:{marginLeft:14}},
-                    React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:"1px solid var(--border)",paddingBottom:6}},
+                    React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:"1px solid var(--border)",paddingBottom:6,flexWrap:"wrap",gap:10}},
                       React.createElement("div",{style:{fontWeight:900,color:"#475569",textTransform:"uppercase",fontSize:12,letterSpacing:.8}},
                         "Topic: ",tp.name," ",React.createElement("span",{style:{color:"#94a3b8"}},"(Lv.4)")
                       ),
-                      React.createElement("button",{className:"btnPrimary",style:{background:"#2563eb"},onClick:()=>openCreateActivity(tp.id)},"＋ Activity (Lv.5)")
+                      canCreate ? React.createElement("button",{className:"btnPrimary",style:{background:"#2563eb"},onClick:()=>openCreateActivity(tp.id)},"＋ Activity (Lv.5)") : null
                     ),
 
                     React.createElement("div",{style:{marginTop:10,display:"grid",gap:10}},
                       (tp.details||[]).length===0
                         ? React.createElement("div",{style:{padding:12,border:"1px dashed var(--border)",borderRadius:14,color:"#64748b",fontWeight:900}},
-                            'ยังไม่มี Activity (Lv.5) — ค่าเริ่มต้นต้องเป็น 0%'
+                            canCreate ? 'ยังไม่มี Activity (Lv.5) — ค่าเริ่มต้นต้องเป็น 0%' : 'ยังไม่มี Activity (Lv.5)'
                           )
                         : null,
 
-                      (tp.details||[]).map(d=>React.createElement("div",{key:d.id,style:{padding:12,border:"1px solid var(--border)",borderRadius:16,display:"flex",justifyContent:"space-between",gap:12}},
-                        React.createElement("div",{style:{minWidth:0}},
-                          React.createElement("div",{style:{display:"flex",gap:10,alignItems:"center"}},
+                      (tp.details||[]).map(d=>React.createElement("div",{key:d.id,style:{padding:12,border:"1px solid var(--border)",borderRadius:16,display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}},
+                        React.createElement("div",{style:{minWidth:0,flex:"1 1 200px"}},
+                          React.createElement("div",{style:{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}},
                             React.createElement(StatusBadge,{status:d.status}),
                             React.createElement("div",{style:{fontWeight:900},className:"ellipsis"},d.name)
                           ),
@@ -1242,7 +1470,7 @@
                         ),
                         React.createElement("div",{style:{textAlign:"right",display:"flex",flexDirection:"column",gap:8,alignItems:"flex-end"}},
                           React.createElement("div",{style:{fontSize:22,fontWeight:900}}, clamp(d.progress)+"%"),
-                          React.createElement("button",{className:"btnSoft",onClick:()=>openEditActivity(tp.id,d)},"✎ Edit / Update")
+                          canEdit ? React.createElement("button",{className:"btnSoft",onClick:()=>openEditActivity(tp.id,d)},"✎ Edit / Update") : null
                         )
                       ))
                     )
@@ -1263,11 +1491,17 @@
       return React.createElement("div",{className:"card"},"Unknown view");
     }
 
+    // If not logged in, show login page
+    if(!user){
+      return React.createElement(LoginPage);
+    }
+
     return React.createElement("div",{className:"app"},
+      React.createElement("div",{className:"sidebarOverlay" + (sidebarOpen?" show":""),onClick:closeSidebar}),
       React.createElement(Sidebar),
       React.createElement("div",{className:"main"},
         React.createElement(Header),
-        React.createElement("div",{className:"content"}, renderView()),
+        React.createElement("div",{className:"content",onClick:closeSidebar}, renderView()),
         React.createElement(ProjectFormModal),
         React.createElement(ProjectDetailModal),
         React.createElement(SimpleAddModal),
