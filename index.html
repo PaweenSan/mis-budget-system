@@ -912,6 +912,7 @@
     const [kpiModal, setKpiModal]=useState({open:false, mode:"create", kpiId:"", data:null});
     const [kpiMonthlyModal, setKpiMonthlyModal]=useState({open:false, kpiId:""});
     const [outcomeModal, setOutcomeModal]=useState({open:false, mode:"create", outcomeId:"", data:null});
+    const [projectDetailTab, setProjectDetailTab]=useState("hierarchy");
     
     const toast = useToast();
 
@@ -2134,7 +2135,6 @@
 
     function ProjectDetailModal(){
       if(!projectModal.open || !currentProject) return null;
-      const [activeTab, setActiveTab] = useState("hierarchy");
       
       // Collect all items for Gantt Chart
       const ganttItems = [];
@@ -2163,37 +2163,37 @@
             React.createElement("button",{
               className:"navbtn",
               style:{
-                background:activeTab==="hierarchy"?"var(--primary)":"transparent",
-                color:activeTab==="hierarchy"?"#fff":"var(--muted)",
+                background:projectDetailTab==="hierarchy"?"var(--primary)":"transparent",
+                color:projectDetailTab==="hierarchy"?"#fff":"var(--muted)",
                 border:0,borderRadius:"12px 12px 0 0",padding:"12px 20px",
                 fontWeight:700,fontSize:13,cursor:"pointer",transition:"all .2s"
               },
-              onClick:()=>setActiveTab("hierarchy")
+              onClick:()=>setProjectDetailTab("hierarchy")
             },"📋 Hierarchy"),
             React.createElement("button",{
               className:"navbtn",
               style:{
-                background:activeTab==="gantt"?"var(--primary)":"transparent",
-                color:activeTab==="gantt"?"#fff":"var(--muted)",
+                background:projectDetailTab==="gantt"?"var(--primary)":"transparent",
+                color:projectDetailTab==="gantt"?"#fff":"var(--muted)",
                 border:0,borderRadius:"12px 12px 0 0",padding:"12px 20px",
                 fontWeight:700,fontSize:13,cursor:"pointer",transition:"all .2s"
               },
-              onClick:()=>setActiveTab("gantt")
+              onClick:()=>setProjectDetailTab("gantt")
             },"📅 Gantt Chart"),
             React.createElement("button",{
               className:"navbtn",
               style:{
-                background:activeTab==="outcomes"?"var(--primary)":"transparent",
-                color:activeTab==="outcomes"?"#fff":"var(--muted)",
+                background:projectDetailTab==="outcomes"?"var(--primary)":"transparent",
+                color:projectDetailTab==="outcomes"?"#fff":"var(--muted)",
                 border:0,borderRadius:"12px 12px 0 0",padding:"12px 20px",
                 fontWeight:700,fontSize:13,cursor:"pointer",transition:"all .2s"
               },
-              onClick:()=>setActiveTab("outcomes")
+              onClick:()=>setProjectDetailTab("outcomes")
             },"🎯 Outcomes")
           ),
           React.createElement("div",{className:"modalBody"},
             // Hierarchy Tab
-            activeTab==="hierarchy" ? React.createElement("div",null,
+            projectDetailTab==="hierarchy" ? React.createElement("div",null,
               React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12, marginBottom:16}},
                 canCreate ? React.createElement("button",{className:"btnSoft",style:{border:"2px dashed var(--primary)",color:"var(--primary)"},onClick:openAddLv3},"＋ Add Sub Project (Lv.3)") : null,
                 React.createElement("div",{style:{display:"flex",gap:12,alignItems:"center",flexWrap:"wrap"}},
@@ -2240,7 +2240,7 @@
             ) : null,
             
             // Gantt Chart Tab
-            activeTab==="gantt" ? React.createElement("div",null,
+            projectDetailTab==="gantt" ? React.createElement("div",null,
               React.createElement("div",{style:{marginBottom:16}},
                 React.createElement("div",{style:{fontWeight:800,fontSize:16,marginBottom:8}},"Project Timeline"),
                 React.createElement("div",{className:"muted",fontSize:13},"แสดง Gantt Chart ของโครงการและกิจกรรมทั้งหมด (Lv.2-5)")
@@ -2249,7 +2249,7 @@
             ) : null,
             
             // Outcomes Tab
-            activeTab==="outcomes" ? React.createElement("div",null,
+            projectDetailTab==="outcomes" ? React.createElement("div",null,
               React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}},
                 React.createElement("div",null,
                   React.createElement("div",{style:{fontWeight:800,fontSize:16}},"ผลสัมฤทธิ์ของโครงการ"),
