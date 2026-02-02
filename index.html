@@ -26,6 +26,13 @@
       --success:#10b981;
       --warning:#f59e0b;
       --danger:#ef4444;
+      --gantt-complete:#10b981;
+      --gantt-progress:#f59e0b;
+      --gantt-pending:#94a3b8;
+      --notif-warning30:#f59e0b;
+      --notif-warning7:#fb923c;
+      --notif-overdue7:#ef4444;
+      --notif-overdue30:#991b1b;
     }
     *{ box-sizing:border-box; }
     body{ margin:0; font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif; background:var(--bg); color:var(--text); }
@@ -250,6 +257,41 @@
       z-index:1000; opacity: 0; transition:opacity .3s ease;
     }
     .sidebarOverlay.show{ display:block; opacity: 1; }
+    
+    /* Notification Styles */
+    .notificationPanel{
+      background:#fff; border:1px solid var(--border); border-radius:16px;
+      padding:20px; max-height:400px; overflow-y:auto;
+    }
+    .notificationItem{
+      padding:12px; border-radius:10px; margin-bottom:8px;
+      border-left:4px solid var(--muted); cursor:pointer;
+      transition:all .2s; display:flex; align-items:center; gap:12px;
+    }
+    .notificationItem:hover{ background:var(--soft); transform:translateX(4px); }
+    .notificationItem.overdue_30{ border-left-color:var(--notif-overdue30); background:#fef2f2; }
+    .notificationItem.overdue_7{ border-left-color:var(--notif-overdue7); background:#fee2e2; }
+    .notificationItem.warning_7{ border-left-color:var(--notif-warning7); background:#ffedd5; }
+    .notificationItem.warning_30{ border-left-color:var(--notif-warning30); background:#fef9c3; }
+    .notifBadge{
+      position:absolute; top:-6px; right:-6px; background:var(--danger);
+      color:#fff; border-radius:99px; padding:2px 6px;
+      font-size:10px; font-weight:800; min-width:18px; text-align:center;
+    }
+    .notifIndicator{
+      display:inline-flex; align-items:center; justify-content:center;
+      width:24px; height:24px; border-radius:50%; font-size:12px;
+      flex-shrink:0; border:2px solid;
+    }
+    .notifIndicator.on_track{ background:#dcfce7; border-color:#10b981; color:#166534; }
+    .notifIndicator.warning_30{ background:#fef9c3; border-color:#f59e0b; color:#854d0e; }
+    .notifIndicator.warning_7{ background:#ffedd5; border-color:#fb923c; color:#9a3412; }
+    .notifIndicator.overdue_7{ background:#fee2e2; border-color:#ef4444; color:#991b1b; }
+    .notifIndicator.overdue_30{ 
+      background:#fecaca; border-color:#991b1b; color:#7f1d1d; 
+      animation:pulse 1s infinite;
+    }
+    @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.6;} }
   </style>
 </head>
 <body>
@@ -265,55 +307,191 @@
     { id:"U2", username:"user", password:"123", name:"User Viewer", role:"user" },
   ];
 
-  // Updated Data to include all 4 Missions
+  // Updated Data to include all 4 Missions with new fields
   const INITIAL_DATA = [
     {
       id:"PT1", name:"พันธกิจด้านการจัดการเรียนการสอน (Teaching)", sapa_approved:21104500, rolling_2568:881276, progress:0,
+      start_date:"2568-10-01", end_date:"2569-09-30", planned_progress:0, notification_status:"on_track",
       main_projects:[
         {
           id:"PT1-2569-001", name:"โครงการรับนักศึกษาเชิงรุกระดับปริญญาตรี", fiscal_year:"2569", responsible:"คุณปทิตตา",
           sapa_approved:2310000, rolling:0, proposed_budget:2370000,
           q1_plan:0,q2_plan:0,q3_plan:0,q4_plan:0, actual_spent:0,
-          progress:0, problem:"", sub_projects:[]
+          progress:0, problem:"", sub_projects:[],
+          start_date:"2568-10-01", end_date:"2569-09-30", planned_progress:0, notification_status:"on_track",
+          outcomes:[]
         }
       ]
     },
     {
       id:"PT2", name:"พันธกิจด้านการวิจัยและนวัตกรรม (Research)", sapa_approved:9090000, rolling_2568:813000, progress:0,
+      start_date:"2568-10-01", end_date:"2569-09-30", planned_progress:0, notification_status:"on_track",
       main_projects:[
         {
           id:"PT2-2569-001", name:"โครงการสนับสนุนงบประมาณการทำวิจัย", fiscal_year:"2569", responsible:"คุณเอมอร",
           sapa_approved:7090000, rolling:0, proposed_budget:12552000,
           q1_plan:0,q2_plan:0,q3_plan:0,q4_plan:0, actual_spent:0,
-          progress:0, problem:"", sub_projects:[]
+          progress:0, problem:"", sub_projects:[],
+          start_date:"2568-10-01", end_date:"2569-09-30", planned_progress:0, notification_status:"on_track",
+          outcomes:[]
         }
       ]
     },
     {
       id:"PT3", name:"พันธกิจด้านการบริการวิชาการ (Academic Service)", sapa_approved:5000000, rolling_2568:0, progress:0,
+      start_date:"2568-10-01", end_date:"2569-09-30", planned_progress:0, notification_status:"on_track",
       main_projects:[
          {
           id:"PT3-2569-001", name:"โครงการบริการวิชาการสู่ชุมชนเข้มแข็ง", fiscal_year:"2569", responsible:"คุณสมชาย",
           sapa_approved:5000000, rolling:0, proposed_budget:5000000,
           q1_plan:0,q2_plan:0,q3_plan:0,q4_plan:0, actual_spent:0,
-          progress:0, problem:"", sub_projects:[]
+          progress:0, problem:"", sub_projects:[],
+          start_date:"2568-10-01", end_date:"2569-09-30", planned_progress:0, notification_status:"on_track",
+          outcomes:[]
         }
       ]
     },
     {
       id:"PT4", name:"พันธกิจด้านทำนุบำรุงศิลปวัฒนธรรม (Arts & Culture)", sapa_approved:2000000, rolling_2568:0, progress:0,
+      start_date:"2568-10-01", end_date:"2569-09-30", planned_progress:0, notification_status:"on_track",
       main_projects:[
          {
           id:"PT4-2569-001", name:"โครงการสืบสานวัฒนธรรมไทย", fiscal_year:"2569", responsible:"คุณวิไล",
           sapa_approved:2000000, rolling:0, proposed_budget:2000000,
           q1_plan:0,q2_plan:0,q3_plan:0,q4_plan:0, actual_spent:0,
-          progress:0, problem:"", sub_projects:[]
+          progress:0, problem:"", sub_projects:[],
+          start_date:"2568-10-01", end_date:"2569-09-30", planned_progress:0, notification_status:"on_track",
+          outcomes:[]
         }
       ]
     }
   ];
 
+  // KPI Data with Monthly Tracking
+  const INITIAL_KPI_DATA = [
+    {
+      id:"KPI001", name:"อัตราการบรรลุเป้าหมายการรับนักศึกษา", 
+      description:"วัดจำนวนนักศึกษาใหม่ที่รับเข้าเทียบกับเป้าหมาย",
+      target_value:1000, actual_value:0, unit:"คน",
+      linked_projects:["PT1-2569-001"], fiscal_year:"2569", status:"active",
+      monthly_data:[
+        {month:"2568-10",target:83.33,actual:0,recorded_date:null},
+        {month:"2568-11",target:83.33,actual:0,recorded_date:null},
+        {month:"2568-12",target:83.33,actual:0,recorded_date:null},
+        {month:"2569-01",target:83.33,actual:0,recorded_date:null},
+        {month:"2569-02",target:83.33,actual:0,recorded_date:null},
+        {month:"2569-03",target:83.33,actual:0,recorded_date:null},
+        {month:"2569-04",target:83.33,actual:0,recorded_date:null},
+        {month:"2569-05",target:83.33,actual:0,recorded_date:null},
+        {month:"2569-06",target:83.33,actual:0,recorded_date:null},
+        {month:"2569-07",target:83.33,actual:0,recorded_date:null},
+        {month:"2569-08",target:83.33,actual:0,recorded_date:null},
+        {month:"2569-09",target:83.33,actual:0,recorded_date:null}
+      ]
+    },
+    {
+      id:"KPI002", name:"จำนวนงานวิจัยที่เผยแพร่", 
+      description:"วัดจำนวนงานวิจัยที่ได้รับการตีพิมพ์หรือนำเสนอ",
+      target_value:50, actual_value:0, unit:"เรื่อง",
+      linked_projects:["PT2-2569-001"], fiscal_year:"2569", status:"active",
+      monthly_data:[
+        {month:"2568-10",target:4.17,actual:0,recorded_date:null},
+        {month:"2568-11",target:4.17,actual:0,recorded_date:null},
+        {month:"2568-12",target:4.17,actual:0,recorded_date:null},
+        {month:"2569-01",target:4.17,actual:0,recorded_date:null},
+        {month:"2569-02",target:4.17,actual:0,recorded_date:null},
+        {month:"2569-03",target:4.17,actual:0,recorded_date:null},
+        {month:"2569-04",target:4.17,actual:0,recorded_date:null},
+        {month:"2569-05",target:4.17,actual:0,recorded_date:null},
+        {month:"2569-06",target:4.17,actual:0,recorded_date:null},
+        {month:"2569-07",target:4.17,actual:0,recorded_date:null},
+        {month:"2569-08",target:4.17,actual:0,recorded_date:null},
+        {month:"2569-09",target:4.17,actual:0,recorded_date:null}
+      ]
+    }
+  ];
+
   const clamp = (n,min=0,max=100)=>Math.max(min,Math.min(max,Number(n??0)));
+
+  // Calculate notification status based on end date
+  function calculateNotificationStatus(endDate){
+    if(!endDate) return {status:"on_track",color:"green",icon:"✓",message:""};
+    const today=new Date();
+    const end=new Date(endDate);
+    const diffDays=Math.ceil((end-today)/(1000*60*60*24));
+    
+    if(diffDays>=30) return {status:"on_track",color:"green",icon:"✓",message:""};
+    if(diffDays>=7) return {status:"warning_30",color:"#f59e0b",icon:"⚠",message:`ใกล้ครบกำหนด ${diffDays} วัน`};
+    if(diffDays>=0) return {status:"warning_7",color:"#fb923c",icon:"⚠⚠",message:`ใกล้ครบกำหนด ${diffDays} วัน`};
+    if(diffDays>=-7) return {status:"overdue_7",color:"#ef4444",icon:"🚨",message:`เลยกำหนดมา ${Math.abs(diffDays)} วัน`};
+    return {status:"overdue_30",color:"#991b1b",icon:"🚨🚨",message:`เลยกำหนดมา ${Math.abs(diffDays)} วัน`};
+  }
+
+  // Calculate planned progress based on dates
+  function calculatePlannedProgress(startDate,endDate){
+    if(!startDate||!endDate) return 0;
+    const start=new Date(startDate);
+    const end=new Date(endDate);
+    const today=new Date();
+    if(today<start) return 0;
+    if(today>end) return 100;
+    const total=end-start;
+    const elapsed=today-start;
+    return Math.min(100,Math.max(0,Math.round((elapsed/total)*100)));
+  }
+
+  // Calculate cumulative KPI from monthly data
+  function calculateCumulativeKPI(monthlyData){
+    if(!monthlyData||monthlyData.length===0) return {target:0,actual:0,achievement:0};
+    const target=monthlyData.reduce((sum,m)=>sum+Number(m.target||0),0);
+    const actual=monthlyData.reduce((sum,m)=>sum+Number(m.actual||0),0);
+    const achievement=target>0?Math.round((actual/target)*100):0;
+    return {target,actual,achievement};
+  }
+
+  // Check project completeness
+  function checkProjectCompleteness(project){
+    const missing=[];
+    if(!project.start_date) missing.push("วันที่เริ่มต้น");
+    if(!project.end_date) missing.push("วันที่สิ้นสุด");
+    if(!project.sapa_approved||project.sapa_approved===0) missing.push("งบประมาณ");
+    if(!project.outcomes||project.outcomes.length===0) missing.push("ผลสัมฤทธิ์");
+    return {
+      complete:missing.length===0,
+      missing:missing,
+      completeness_score:Math.round(((4-missing.length)/4)*100)
+    };
+  }
+
+  // Get all notifications from data
+  function getAllNotifications(data){
+    const notifications=[];
+    const processItem=(item,level,mission,project,parent)=>{
+      if(!item.end_date) return;
+      const status=calculateNotificationStatus(item.end_date);
+      if(status.status!=="on_track"){
+        notifications.push({level,item,status,mission,project,parent});
+      }
+    };
+    
+    data.forEach(m=>{
+      m.main_projects?.forEach(p=>{
+        processItem(p,"project",m,p,null);
+        p.sub_projects?.forEach(sp=>{
+          processItem(sp,"sub_project",m,p,sp);
+          sp.topics?.forEach(tp=>{
+            processItem(tp,"topic",m,p,tp);
+            tp.details?.forEach(d=>{
+              processItem(d,"activity",m,p,d);
+            });
+          });
+        });
+      });
+    });
+    
+    const order={overdue_30:0,overdue_7:1,warning_7:2,warning_30:3};
+    return notifications.sort((a,b)=>order[a.status.status]-order[b.status.status]);
+  }
 
   function normalizeStatusProgress(status, progress){
     const p = clamp(progress);
@@ -351,12 +529,42 @@
 
   function recomputeAll(data){
     return (data||[]).map(m=>{
+      // Recompute mission-level planned_progress and notification_status
+      const mPlanned = calculatePlannedProgress(m.start_date, m.end_date);
+      const mNotif = calculateNotificationStatus(m.end_date);
+      
       const main_projects = (m.main_projects||[]).map(p=>{
         const k=computeProjectKPI(p);
-        return { ...p, progress:k.progress, kpi_total_points:k.total };
+        const pPlanned = calculatePlannedProgress(p.start_date, p.end_date);
+        const pNotif = calculateNotificationStatus(p.end_date);
+        
+        // Recompute sub_projects
+        const sub_projects = (p.sub_projects||[]).map(sp=>{
+          const spPlanned = calculatePlannedProgress(sp.start_date, sp.end_date);
+          const spNotif = calculateNotificationStatus(sp.end_date);
+          
+          // Recompute topics
+          const topics = (sp.topics||[]).map(tp=>{
+            const tpPlanned = calculatePlannedProgress(tp.start_date, tp.end_date);
+            const tpNotif = calculateNotificationStatus(tp.end_date);
+            
+            // Recompute details/activities
+            const details = (tp.details||[]).map(d=>{
+              const dPlanned = calculatePlannedProgress(d.start_date, d.end_date);
+              const dNotif = calculateNotificationStatus(d.end_date);
+              return {...d, planned_progress:dPlanned, notification_status:dNotif.status};
+            });
+            
+            return {...tp, details, planned_progress:tpPlanned, notification_status:tpNotif.status};
+          });
+          
+          return {...sp, topics, planned_progress:spPlanned, notification_status:spNotif.status};
+        });
+        
+        return { ...p, sub_projects, progress:k.progress, kpi_total_points:k.total, planned_progress:pPlanned, notification_status:pNotif.status };
       });
       const mk = computeMissionKPI({ ...m, main_projects });
-      return { ...m, main_projects, progress:mk.progress, kpi_total_points:mk.total };
+      return { ...m, main_projects, progress:mk.progress, kpi_total_points:mk.total, planned_progress:mPlanned, notification_status:mNotif.status };
     });
   }
 
@@ -421,10 +629,219 @@
     );
   }
 
+  function ComparisonGauge({ planned=0, actual=0, label="" }){
+    const p = clamp(planned);
+    const a = clamp(actual);
+    const deviation = a - p;
+    const ratio = p > 0 ? (a / p) : 0;
+    
+    // Color based on performance
+    let color = "#10b981"; // green - good
+    if(ratio < 0.5) color = "#ef4444"; // red - poor
+    else if(ratio < 1.0) color = "#f59e0b"; // yellow - moderate
+    
+    const radius=40, cx=50, cy=50;
+    const startX=cx-radius, startY=cy, endX=cx+radius, endY=cy;
+    const arcLength=Math.PI*radius;
+    
+    // Outer arc (planned) - thinner, lighter
+    const plannedStroke = 6;
+    const plannedDash = (arcLength * p) / 100;
+    
+    // Inner arc (actual) - thicker, colored
+    const actualStroke = 8;
+    const actualDash = (arcLength * a) / 100;
+    
+    return React.createElement("div", { 
+      style:{ display:"flex", flexDirection:"column", alignItems:"center", position:"relative"} 
+    },
+      React.createElement("svg", { width:100, height:60, viewBox:"0 0 100 60" },
+        // Background arc
+        React.createElement("path", {
+          d:`M ${startX} ${startY} A ${radius} ${radius} 0 0 1 ${endX} ${endY}`,
+          fill:"none", stroke:"#e2e8f0", strokeWidth:plannedStroke+2, strokeLinecap:"round"
+        }),
+        // Planned arc (outer, lighter)
+        React.createElement("path", {
+          d:`M ${startX} ${startY} A ${radius} ${radius} 0 0 1 ${endX} ${endY}`,
+          fill:"none", stroke:"#94a3b8", strokeWidth:plannedStroke, strokeLinecap:"round",
+          strokeDasharray:`${plannedDash} ${arcLength}`, opacity:0.4
+        }),
+        // Actual arc (inner, colored)
+        React.createElement("path", {
+          d:`M ${startX} ${startY} A ${radius} ${radius} 0 0 1 ${endX} ${endY}`,
+          fill:"none", stroke:color, strokeWidth:actualStroke, strokeLinecap:"round",
+          strokeDasharray:`${actualDash} ${arcLength}`
+        })
+      ),
+      React.createElement("div", { 
+        style:{ fontSize:14, fontWeight:900, marginTop:-10, display:"flex", alignItems:"center", gap:4 } 
+      },
+        React.createElement("span", {style:{color:"#94a3b8",fontSize:12}}, `${p}%`),
+        React.createElement("span", {style:{color:"#cbd5e1"}}, "/"),
+        React.createElement("span", {style:{color:color}}, `${a}%`)
+      ),
+      React.createElement("div", { 
+        style:{ fontSize:10, fontWeight:700, color:deviation>=0?"#10b981":"#ef4444", marginTop:2 } 
+      }, `${deviation>=0?"+":""}${deviation.toFixed(1)}%`),
+      label ? React.createElement("div", { 
+        style:{ fontSize:10, fontWeight:700, color:"#94a3b8", marginTop:2 } 
+      }, label) : null
+    );
+  }
+
+  function GanttChart({ items, fiscalYear="2569", onItemClick }){
+    // Thai fiscal year: Oct (10) - Sep (9)
+    const months = [
+      {label:"ต.ค.",value:"2568-10"},{label:"พ.ย.",value:"2568-11"},{label:"ธ.ค.",value:"2568-12"},
+      {label:"ม.ค.",value:"2569-01"},{label:"ก.พ.",value:"2569-02"},{label:"มี.ค.",value:"2569-03"},
+      {label:"เม.ย.",value:"2569-04"},{label:"พ.ค.",value:"2569-05"},{label:"มิ.ย.",value:"2569-06"},
+      {label:"ก.ค.",value:"2569-07"},{label:"ส.ค.",value:"2569-08"},{label:"ก.ย.",value:"2569-09"}
+    ];
+    
+    const today = new Date();
+    const fiscalStart = new Date("2568-10-01");
+    const fiscalEnd = new Date("2569-09-30");
+    
+    // Calculate today marker position (0-12)
+    const todayPosition = ((today - fiscalStart) / (fiscalEnd - fiscalStart)) * 12;
+    
+    const getBarPosition = (startDate, endDate) => {
+      if(!startDate || !endDate) return {left:0, width:0, valid:false};
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const left = Math.max(0, ((start - fiscalStart) / (fiscalEnd - fiscalStart)) * 100);
+      const right = Math.min(100, ((end - fiscalStart) / (fiscalEnd - fiscalStart)) * 100);
+      const width = Math.max(0, right - left);
+      return {left, width, valid:true};
+    };
+    
+    const getBarColor = (item) => {
+      const notif = calculateNotificationStatus(item.end_date);
+      if(notif.status.includes("overdue")) return "var(--danger)";
+      if(item.progress >= 100) return "var(--gantt-complete)";
+      if(item.progress > 0) return "var(--gantt-progress)";
+      return "var(--gantt-pending)";
+    };
+    
+    return React.createElement("div",{style:{padding:20,background:"#fff",borderRadius:16,border:"1px solid var(--border)",overflowX:"auto"}},
+      React.createElement("div",{style:{minWidth:800}},
+        // Header row
+        React.createElement("div",{style:{display:"grid",gridTemplateColumns:"200px 1fr",gap:16,marginBottom:12}},
+          React.createElement("div",{style:{fontWeight:800,fontSize:12,color:"var(--muted)",textTransform:"uppercase"}},"รายการ"),
+          React.createElement("div",{style:{display:"grid",gridTemplateColumns:`repeat(12, 1fr)`,gap:2}},
+            months.map(m=>React.createElement("div",{key:m.value,style:{textAlign:"center",fontSize:11,fontWeight:700,color:"var(--muted)"}},m.label))
+          )
+        ),
+        // Items
+        items && items.length > 0 ? items.map((item,idx)=>{
+          const pos = getBarPosition(item.start_date, item.end_date);
+          const notif = calculateNotificationStatus(item.end_date);
+          const barColor = getBarColor(item);
+          
+          return React.createElement("div",{
+            key:item.id||idx,
+            style:{
+              display:"grid",gridTemplateColumns:"200px 1fr",gap:16,
+              padding:12,borderRadius:8,marginBottom:8,
+              background:notif.status.includes("overdue")?"#fef2f2":"#f8fafc",
+              border:notif.status.includes("overdue")?"2px solid var(--danger)":"1px solid var(--border)",
+              cursor:"pointer",transition:"all .2s"
+            },
+            onClick:()=>onItemClick&&onItemClick(item),
+            onMouseEnter:e=>e.currentTarget.style.background="#e2e8f0",
+            onMouseLeave:e=>e.currentTarget.style.background=notif.status.includes("overdue")?"#fef2f2":"#f8fafc"
+          },
+            React.createElement("div",{style:{display:"flex",alignItems:"center",gap:8}},
+              React.createElement(NotificationIndicator,{status:notif,size:"small"}),
+              React.createElement("div",{style:{minWidth:0,flex:1}},
+                React.createElement("div",{style:{fontWeight:700,fontSize:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},item.name || "ไม่มีชื่อ"),
+                React.createElement("div",{style:{fontSize:10,color:"var(--muted)"}},(item.progress||0)+"%")
+              )
+            ),
+            React.createElement("div",{style:{position:"relative",height:32,background:"#e2e8f0",borderRadius:8,overflow:"hidden"}},
+              // Today marker
+              todayPosition >= 0 && todayPosition <= 12 ? React.createElement("div",{style:{
+                position:"absolute",left:`${(todayPosition/12)*100}%`,top:0,bottom:0,
+                width:2,background:"#3b82f6",zIndex:10
+              }},
+                React.createElement("div",{style:{
+                  position:"absolute",top:-18,left:-15,
+                  fontSize:9,fontWeight:700,color:"#3b82f6",whiteSpace:"nowrap"
+                }},"วันนี้")
+              ) : null,
+              // Gantt bar
+              pos.valid ? React.createElement("div",{style:{
+                position:"absolute",left:`${pos.left}%`,width:`${pos.width}%`,
+                top:4,bottom:4,background:barColor,borderRadius:6,
+                display:"flex",alignItems:"center",justifyContent:"center",
+                fontSize:11,fontWeight:700,color:"#fff",
+                boxShadow:"0 2px 4px rgba(0,0,0,0.1)"
+              }},
+                pos.width>10 ? `${item.progress||0}%` : null
+              ) : null
+            )
+          );
+        }) : React.createElement("div",{style:{padding:40,textAlign:"center",color:"var(--muted)"}},"ไม่มีข้อมูล")
+      )
+    );
+  }
+
   function StatusBadge({ status }){
     if (status==="completed") return React.createElement("span",{className:"pill green"},"เสร็จแล้ว");
     if (status==="in_progress") return React.createElement("span",{className:"pill yellow"},"กำลังทำ");
     return React.createElement("span",{className:"pill gray"},"รอเริ่ม");
+  }
+
+  function NotificationIndicator({ status, size="normal" }){
+    const notifStatus = typeof status === 'string' ? status : (status?.status || "on_track");
+    const sizeStyle = size === "small" ? {width:18, height:18, fontSize:10} : {width:24, height:24, fontSize:12};
+    const iconMap = {
+      on_track: "✓",
+      warning_30: "⚠",
+      warning_7: "⚠",
+      overdue_7: "🚨",
+      overdue_30: "🚨"
+    };
+    return React.createElement("div", {
+      className: `notifIndicator ${notifStatus}`,
+      style: sizeStyle,
+      title: status?.message || ""
+    }, iconMap[notifStatus] || "");
+  }
+
+  function NotificationPanel({ notifications, onClose, onItemClick }){
+    if(!notifications || notifications.length === 0){
+      return React.createElement("div", {className:"notificationPanel"},
+        React.createElement("div", {style:{textAlign:"center", color:"var(--muted)", padding:20}}, 
+          "ไม่มีการแจ้งเตือน ✓"
+        )
+      );
+    }
+    
+    return React.createElement("div", {className:"notificationPanel"},
+      React.createElement("div", {style:{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16}},
+        React.createElement("div", {style:{fontWeight:800, fontSize:16}}, `การแจ้งเตือน (${notifications.length})`),
+        onClose ? React.createElement("button", {className:"btnSoft", onClick:onClose, style:{padding:"4px 8px"}}, "✕") : null
+      ),
+      React.createElement("div", {style:{display:"grid", gap:8}},
+        notifications.map(n => 
+          React.createElement("div", {
+            key: `${n.level}-${n.item.id}`,
+            className: `notificationItem ${n.status.status}`,
+            onClick: () => onItemClick && onItemClick(n)
+          },
+            React.createElement(NotificationIndicator, {status:n.status, size:"normal"}),
+            React.createElement("div", {style:{flex:1, minWidth:0}},
+              React.createElement("div", {style:{fontWeight:700, fontSize:13}}, n.item.name || "ไม่มีชื่อ"),
+              React.createElement("div", {style:{fontSize:11, color:"var(--muted)", marginTop:2}}, 
+                `${n.mission?.id || ""} • ${n.level} • ${n.status.message}`
+              )
+            )
+          )
+        )
+      )
+    );
   }
 
   const FieldInput = React.memo(function FieldInput({ label, value, onChange, colSpan, placeholder }){
@@ -467,13 +884,17 @@
     const [loginForm, setLoginForm]=useState({ username:"", password:"", error:"" });
     const [sidebarOpen, setSidebarOpen]=useState(false);
     const [data,setData]=useState(()=>recomputeAll(INITIAL_DATA));
+    const [kpiData, setKpiData]=useState(INITIAL_KPI_DATA);
+    const [notifications, setNotifications]=useState([]);
+    const [showNotifPanel, setShowNotifPanel]=useState(false);
 
     const [projectFormOpen,setProjectFormOpen]=useState(false);
     const [projectForm,setProjectForm]=useState({
       mode:"create", missionId:"PT1", id:"",
       fiscal_year:"2569", name:"", responsible:"",
       sapa_approved:0, rolling:0, proposed_budget:0,
-      q1_plan:0,q2_plan:0,q3_plan:0,q4_plan:0
+      q1_plan:0,q2_plan:0,q3_plan:0,q4_plan:0,
+      start_date:"", end_date:"", outcomes:[]
     });
 
     const [projectModal,setProjectModal]=useState({ open:false, missionId:"", projectId:"" });
@@ -483,12 +904,22 @@
       missionId:"", projectId:"", parentTopicId:"",
       activityId:"",
       name:"", description:"", problem:"",
-      points:10, progress:0, status:"pending"
+      points:10, progress:0, status:"pending",
+      start_date:"", end_date:""
     });
 
     const [selectedProjects, setSelectedProjects] = useState({});
+    const [kpiModal, setKpiModal]=useState({open:false, mode:"create", kpiId:"", data:null});
+    const [kpiMonthlyModal, setKpiMonthlyModal]=useState({open:false, kpiId:""});
+    const [outcomeModal, setOutcomeModal]=useState({open:false, mode:"create", outcomeId:"", data:null});
     
     const toast = useToast();
+
+    // Update notifications whenever data changes
+    useEffect(()=>{
+      const notifs = getAllNotifications(data);
+      setNotifications(notifs);
+    }, [data]);
 
     const overallProgress = useMemo(()=>{
       const arr=data.map(m=>clamp(m.progress));
@@ -678,6 +1109,9 @@
           q3_plan:Number(projectForm.q3_plan||0), q4_plan:Number(projectForm.q4_plan||0),
           actual_spent:Number(baseOld?.actual_spent||0), problem:baseOld?.problem||"",
           sub_projects:baseOld?.sub_projects||[], progress:Number(baseOld?.progress||0),
+          start_date:projectForm.start_date||baseOld?.start_date||"",
+          end_date:projectForm.end_date||baseOld?.end_date||"",
+          outcomes:projectForm.outcomes||baseOld?.outcomes||[]
         };
         const arr=[...m.main_projects];
         if(idx>=0) arr[idx]=obj; else arr.push(obj);
@@ -695,10 +1129,10 @@
     const currentProject = useMemo(()=>currentMission?.main_projects?.find(p=>p.id===projectModal.projectId),[currentMission,projectModal.projectId]);
 
     function openAddLv3(){
-      setSimpleAddModal({ open:true, level:3, missionId:projectModal.missionId, projectId:projectModal.projectId, parentId:projectModal.projectId, name:"", title:"Sub Project (Lv.3)" });
+      setSimpleAddModal({ open:true, level:3, missionId:projectModal.missionId, projectId:projectModal.projectId, parentId:projectModal.projectId, name:"", title:"Sub Project (Lv.3)", start_date:"", end_date:"" });
     }
     function openAddLv4(subId){
-      setSimpleAddModal({ open:true, level:4, missionId:projectModal.missionId, projectId:projectModal.projectId, parentId:subId, name:"", title:"Topic (Lv.4)" });
+      setSimpleAddModal({ open:true, level:4, missionId:projectModal.missionId, projectId:projectModal.projectId, parentId:subId, name:"", title:"Topic (Lv.4)", start_date:"", end_date:"" });
     }
     function saveSimpleAdd(){
       if(!simpleAddModal.name.trim()) return;
@@ -707,13 +1141,21 @@
         const main_projects = m.main_projects.map(p=>{
           if(p.id!==simpleAddModal.projectId) return p;
           if(simpleAddModal.level===3){
-            const sp = { id:uid("SUB"), name:simpleAddModal.name, topics:[] };
+            const sp = { 
+              id:uid("SUB"), name:simpleAddModal.name, topics:[],
+              start_date:simpleAddModal.start_date||"", end_date:simpleAddModal.end_date||"",
+              planned_progress:0, notification_status:"on_track"
+            };
             return { ...p, sub_projects:[...(p.sub_projects||[]), sp] };
           }
           if(simpleAddModal.level===4){
             const subs = (p.sub_projects||[]).map(sp=>{
               if(sp.id!==simpleAddModal.parentId) return sp;
-              const tp = { id:uid("TOP"), name:simpleAddModal.name, details:[] };
+              const tp = { 
+                id:uid("TOP"), name:simpleAddModal.name, details:[],
+                start_date:simpleAddModal.start_date||"", end_date:simpleAddModal.end_date||"",
+                planned_progress:0, notification_status:"on_track"
+              };
               return { ...sp, topics:[...(sp.topics||[]), tp] };
             });
             return { ...p, sub_projects:subs };
@@ -728,10 +1170,10 @@
     }
 
     function openCreateActivity(topicId){
-      setActivityModal({ open:true, mode:"create", missionId:projectModal.missionId, projectId:projectModal.projectId, parentTopicId:topicId, activityId:"", name:"", description:"", problem:"", points:10, progress:0, status:"pending" });
+      setActivityModal({ open:true, mode:"create", missionId:projectModal.missionId, projectId:projectModal.projectId, parentTopicId:topicId, activityId:"", name:"", description:"", problem:"", points:10, progress:0, status:"pending", start_date:"", end_date:"" });
     }
     function openEditActivity(topicId, d){
-      setActivityModal({ open:true, mode:"edit", missionId:projectModal.missionId, projectId:projectModal.projectId, parentTopicId:topicId, activityId:d.id, name:d.name||"", description:d.description||"", problem:d.problem||"", points:Number(d.points||10), progress:Number(d.progress||0), status:d.status||"pending" });
+      setActivityModal({ open:true, mode:"edit", missionId:projectModal.missionId, projectId:projectModal.projectId, parentTopicId:topicId, activityId:d.id, name:d.name||"", description:d.description||"", problem:d.problem||"", points:Number(d.points||10), progress:Number(d.progress||0), status:d.status||"pending", start_date:d.start_date||"", end_date:d.end_date||"" });
     }
     function saveActivity(){
       if(!activityModal.name.trim()) return;
@@ -748,7 +1190,9 @@
                 details.push({
                   id:uid("ACT"), name:activityModal.name, description:activityModal.description,
                   problem:activityModal.problem, points:Number(activityModal.points||0),
-                  progress:Number(norm.progress), status:norm.status
+                  progress:Number(norm.progress), status:norm.status,
+                  start_date:activityModal.start_date||"", end_date:activityModal.end_date||"",
+                  planned_progress:0, notification_status:"on_track"
                 });
               }else{
                 const idx=details.findIndex(x=>x.id===activityModal.activityId);
@@ -756,7 +1200,9 @@
                   details[idx]={
                     ...details[idx], name:activityModal.name, description:activityModal.description,
                     problem:activityModal.problem, points:Number(activityModal.points||0),
-                    progress:Number(norm.progress), status:norm.status
+                    progress:Number(norm.progress), status:norm.status,
+                    start_date:activityModal.start_date||details[idx].start_date||"",
+                    end_date:activityModal.end_date||details[idx].end_date||""
                   };
                 }
               }
@@ -796,15 +1242,82 @@
       toast("CSV Downloaded", "success");
     }
 
+    function exportKPIReport(){
+      const wb = XLSX.utils.book_new();
+      
+      // KPI Summary Sheet
+      const summaryData = [
+        ["KPI MONTHLY TRACKING REPORT"],
+        ["Generated:", new Date().toLocaleString('th-TH')],
+        [],
+        ["KPI ID", "KPI Name", "Target", "Actual", "Achievement %", "Unit", "Status", "Linked Projects"]
+      ];
+      
+      kpiData.forEach(kpi=>{
+        const cumulative = calculateCumulativeKPI(kpi.monthly_data);
+        summaryData.push([
+          kpi.id, kpi.name, kpi.target_value, cumulative.actual.toFixed(2),
+          cumulative.achievement, kpi.unit, kpi.status,
+          (kpi.linked_projects||[]).join(", ")
+        ]);
+      });
+      
+      const summaryWS = XLSX.utils.aoa_to_sheet(summaryData);
+      XLSX.utils.book_append_sheet(wb, summaryWS, "KPI Summary");
+      
+      // Monthly Data Sheets for each KPI
+      kpiData.forEach(kpi=>{
+        const monthlyData = [
+          [`KPI: ${kpi.name}`],
+          [`Target: ${kpi.target_value} ${kpi.unit}`],
+          [],
+          ["เดือน", "เป้าหมาย", "ผลจริง", "% Achievement", "วันที่บันทึก"]
+        ];
+        
+        const monthNames = ["ต.ค.","พ.ย.","ธ.ค.","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย."];
+        kpi.monthly_data.forEach((m,idx)=>{
+          const achievement = m.target>0?Math.round((m.actual/m.target)*100):0;
+          monthlyData.push([
+            `${monthNames[idx]} ${m.month.split('-')[0]}`,
+            m.target.toFixed(2), m.actual.toFixed(2), achievement, m.recorded_date||"-"
+          ]);
+        });
+        
+        const cumulative = calculateCumulativeKPI(kpi.monthly_data);
+        monthlyData.push([]);
+        monthlyData.push(["รวม", cumulative.target.toFixed(2), cumulative.actual.toFixed(2), cumulative.achievement+"%", ""]);
+        
+        const monthlyWS = XLSX.utils.aoa_to_sheet(monthlyData);
+        const sheetName = kpi.id.substring(0, 31);
+        XLSX.utils.book_append_sheet(wb, monthlyWS, sheetName);
+      });
+      
+      XLSX.writeFile(wb, `KPI_Report_${new Date().toISOString().split('T')[0]}.xlsx`);
+      toast("Export KPI Report สำเร็จ", "success");
+    }
+
     function Sidebar(){
+      const overdueCount = notifications.filter(n=>n.status.status.includes("overdue")).length;
+      const warningCount = notifications.filter(n=>n.status.status.includes("warning")).length;
+      
       return React.createElement("aside",{className:"sidebar" + (sidebarOpen?" open":"")},
         React.createElement("div",{className:"brand"},
           React.createElement("div",{className:"logo"},"M"),
           React.createElement("div",{style:{fontSize:22,fontWeight:900}},"MIS")
         ),
+        // Notification button with badge
+        React.createElement("button",{
+          className:"navbtn",
+          style:{position:"relative", marginBottom:12, background:notifications.length>0?"rgba(239,68,68,0.1)":"transparent"},
+          onClick:()=>setShowNotifPanel(!showNotifPanel)
+        }, 
+          "🔔 Notifications",
+          notifications.length>0 ? React.createElement("span",{className:"notifBadge"},notifications.length) : null
+        ),
         NavButton("dashboard","📊 Dashboard"),
         NavButton("explorer","🧭 Explorer (Lv.1-5)"),
         NavButton("budget","💰 Budget"),
+        NavButton("kpi","📊 KPI Management"),
         NavButton("reports","📈 Reports & KPI"),
         React.createElement("div",{style:{marginTop:"auto",borderTop:"1px solid rgba(255,255,255,.12)",paddingTop:14}},
           React.createElement("div",{className:"userInfo"},
@@ -885,7 +1398,23 @@
     function Dashboard(){
       const totalBudget = data.reduce((s,m)=>s+Number(m.sapa_approved||0),0);
       const actualSpent = data.flatMap(m=>m.main_projects).reduce((s,p)=>s+Number(p.actual_spent||0),0);
+      
+      const handleNotifItemClick = (notif) => {
+        setShowNotifPanel(false);
+        if(notif.level === "project"){
+          openProjectModal(notif.mission.id, notif.item.id);
+        }
+      };
+      
       return React.createElement("div",{style:{display:"grid",gap:16}},
+        // Notification Panel
+        showNotifPanel ? React.createElement("div",{className:"card", style:{background:"#fff5f5"}},
+          React.createElement(NotificationPanel, {
+            notifications,
+            onClose:()=>setShowNotifPanel(false),
+            onItemClick:handleNotifItemClick
+          })
+        ) : null,
         React.createElement("div",{className:"grid4"},
           CardStat("Total Budget","฿"+totalBudget.toLocaleString()),
           CardStat("Actual Spent","฿"+actualSpent.toLocaleString()),
@@ -905,7 +1434,7 @@
                   React.createElement("div",{style:{fontWeight:800,marginBottom:4}},m.name.split(" (")[0]),
                   React.createElement("div",{className:"muted"},(m.kpi_total_points||0)+" KPI pts")
                 ),
-                React.createElement(SemiGauge,{value:m.progress})
+                React.createElement(ComparisonGauge,{planned:m.planned_progress||0,actual:m.progress||0,label:"แผน/ผล"})
               ))
             )
           ),
@@ -945,7 +1474,7 @@
             ),
             React.createElement("div",{style:{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}},
               canCreate ? React.createElement("button",{className:"btnSoft",onClick:()=>openCreateProject(m.id)},"＋ Add Project") : null,
-              React.createElement(SemiGauge,{value:m.progress,label:"Mission"})
+              React.createElement(ComparisonGauge,{planned:m.planned_progress||0,actual:m.progress||0,label:"Mission"})
             )
           ),
           React.createElement("div",{style:{marginTop:16,display:"grid",gap:12}},
@@ -958,7 +1487,7 @@
               React.createElement("div",{style:{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}},
                 canEdit ? React.createElement("button",{className:"btnSoft",onClick:()=>openEditProject(m.id,p)},"✎") : null,
                 React.createElement("button",{className:"btnPrimary",onClick:()=>openProjectModal(m.id,p.id)},"Detail"),
-                React.createElement(SemiGauge,{value:p.progress,label:"Project"})
+                React.createElement(ComparisonGauge,{planned:p.planned_progress||0,actual:p.progress||0,label:"Project"})
               )
             )),
             m.main_projects.length===0 ? React.createElement("div",{style:{padding:14,color:"#94a3b8",fontWeight:700,fontSize:12,textAlign:"center",border:"1px dashed var(--border)",borderRadius:12}},"No projects yet") : null
@@ -1020,6 +1549,88 @@
       );
     }
 
+    function KPIManagement(){
+      const canEdit = user?.role === "admin";
+      
+      const openCreateKPI = () => {
+        setKpiModal({open:true, mode:"create", kpiId:"", data:null});
+      };
+      
+      const openEditKPI = (kpi) => {
+        setKpiModal({open:true, mode:"edit", kpiId:kpi.id, data:kpi});
+      };
+      
+      const openMonthlyTracking = (kpiId) => {
+        setKpiMonthlyModal({open:true, kpiId});
+      };
+      
+      const deleteKPI = (kpiId) => {
+        if(!confirm("ต้องการลบ KPI นี้?")) return;
+        setKpiData(kpiData.filter(k=>k.id!==kpiId));
+        toast("ลบ KPI สำเร็จ", "success");
+      };
+      
+      return React.createElement("div",{style:{display:"grid",gap:16}},
+        React.createElement("div",{className:"card"},
+          React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}},
+            React.createElement("div",null,
+              React.createElement("div",{style:{fontWeight:900,fontSize:18}},"KPI Management"),
+              React.createElement("div",{className:"muted"},"จัดการตัววัด KPI และติดตามรายเดือน")
+            ),
+            React.createElement("div",{style:{display:"flex",gap:10,flexWrap:"wrap"}},
+              React.createElement("button",{className:"btnSoft",onClick:exportKPIReport},"📥 Export KPI Report"),
+              canEdit ? React.createElement("button",{className:"btnPrimary",onClick:openCreateKPI},"＋ สร้าง KPI ใหม่") : null
+            )
+          )
+        ),
+        React.createElement("div",{className:"card",style:{overflowX:"auto",padding:0}},
+          React.createElement("table",null,
+            React.createElement("thead",null,
+              React.createElement("tr",null,
+                React.createElement("th",null,"KPI Name"),
+                React.createElement("th",{style:{textAlign:"right"}},"Target"),
+                React.createElement("th",{style:{textAlign:"right"}},"Actual"),
+                React.createElement("th",{style:{textAlign:"center"}},"Achievement"),
+                React.createElement("th",{style:{textAlign:"center"}},"Status"),
+                React.createElement("th",{style:{textAlign:"center"}},"Actions")
+              )
+            ),
+            React.createElement("tbody",null,
+              kpiData.length===0 ? React.createElement("tr",null,
+                React.createElement("td",{colSpan:6,style:{textAlign:"center",padding:40,color:"var(--muted)"}},"ยังไม่มี KPI")
+              ) : null,
+              kpiData.map(kpi=>{
+                const cumulative = calculateCumulativeKPI(kpi.monthly_data);
+                return React.createElement("tr",{key:kpi.id},
+                  React.createElement("td",null,
+                    React.createElement("div",{style:{fontWeight:700}},kpi.name),
+                    React.createElement("div",{className:"muted",style:{fontSize:11}},kpi.description)
+                  ),
+                  React.createElement("td",{style:{textAlign:"right",fontWeight:700}},`${kpi.target_value} ${kpi.unit}`),
+                  React.createElement("td",{style:{textAlign:"right",fontWeight:700}},`${cumulative.actual.toFixed(2)} ${kpi.unit}`),
+                  React.createElement("td",{style:{textAlign:"center"}},
+                    React.createElement("span",{className:cumulative.achievement>=100?"pill green":cumulative.achievement>=50?"pill yellow":"pill red"},
+                      `${cumulative.achievement}%`
+                    )
+                  ),
+                  React.createElement("td",{style:{textAlign:"center"}},
+                    React.createElement("span",{className:kpi.status==="active"?"pill blue":"pill gray"},kpi.status)
+                  ),
+                  React.createElement("td",{style:{textAlign:"center"}},
+                    React.createElement("div",{style:{display:"flex",justifyContent:"center",gap:8,flexWrap:"wrap"}},
+                      React.createElement("button",{className:"btnSoft",style:{fontSize:11},onClick:()=>openMonthlyTracking(kpi.id)},"📅 Monthly"),
+                      canEdit ? React.createElement("button",{className:"btnSoft",style:{fontSize:11},onClick:()=>openEditKPI(kpi)},"✎") : null,
+                      canEdit ? React.createElement("button",{className:"btnSoft",style:{fontSize:11,color:"var(--danger)"},onClick:()=>deleteKPI(kpi.id)},"🗑") : null
+                    )
+                  )
+                );
+              })
+            )
+          )
+        )
+      );
+    }
+
     function Reports(){
       const selectedCount = Object.values(selectedProjects).filter(Boolean).length;
       const totalProjects = data.flatMap(m => m.main_projects).length;
@@ -1046,7 +1657,7 @@
               React.createElement("div",{style:{fontWeight:800}},`${m.id} • ${m.name}`),
               React.createElement("div",{className:"muted"},`${m.main_projects.length} projects`)
             ),
-            React.createElement(SemiGauge,{value:m.progress,label:"Mission KPI"})
+            React.createElement(ComparisonGauge,{planned:m.planned_progress||0,actual:m.progress||0,label:"Mission KPI"})
           ),
           React.createElement("div",{style:{marginTop:12,display:"grid",gap:10}},
             m.main_projects.map(p=>{
@@ -1072,7 +1683,7 @@
                 ),
                 React.createElement("div",{style:{display:"flex",gap:10,alignItems:"center"}},
                   React.createElement("button",{className:"btnPrimary",onClick:()=>openProjectModal(m.id,p.id)},"Detail"),
-                  React.createElement(SemiGauge,{value:p.progress,label:"Project KPI"})
+                  React.createElement(ComparisonGauge,{planned:p.planned_progress||0,actual:p.progress||0,label:"Project KPI"})
                 )
               );
             })
@@ -1134,7 +1745,15 @@
                 label: "Responsible", value: projectForm.responsible,
                 onChange: (v) => setProjectForm({...projectForm, responsible:v}),
                 colSpan: 2, placeholder: "ผู้รับผิดชอบ..."
-              })
+              }),
+              React.createElement("div",null,
+                React.createElement("div",{className:"label"},"วันที่เริ่มต้น (Start Date)"),
+                React.createElement("input",{type:"date",value:projectForm.start_date||"",onChange:e=>setProjectForm({...projectForm,start_date:e.target.value})})
+              ),
+              React.createElement("div",null,
+                React.createElement("div",{className:"label"},"วันที่สิ้นสุด (End Date)"),
+                React.createElement("input",{type:"date",value:projectForm.end_date||"",onChange:e=>setProjectForm({...projectForm,end_date:e.target.value})})
+              )
             ),
             React.createElement("div",{className:"card",style:{marginTop:20, background:"#f8fafc", border:"none"}},
               React.createElement("div",{style:{fontWeight:800,marginBottom:12}},"Financial Fields"),
@@ -1183,6 +1802,16 @@
               onChange: (e) => setSimpleAddModal({...simpleAddModal, name:e.target.value}),
               placeholder: "ชื่อรายการ..."
             }),
+            React.createElement("div",{style:{marginTop:16,display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}},
+              React.createElement("div",null,
+                React.createElement("div",{className:"label"},"วันที่เริ่มต้น"),
+                React.createElement("input",{type:"date",value:simpleAddModal.start_date||"",onChange:e=>setSimpleAddModal({...simpleAddModal,start_date:e.target.value})})
+              ),
+              React.createElement("div",null,
+                React.createElement("div",{className:"label"},"วันที่สิ้นสุด"),
+                React.createElement("input",{type:"date",value:simpleAddModal.end_date||"",onChange:e=>setSimpleAddModal({...simpleAddModal,end_date:e.target.value})})
+              )
+            ),
             React.createElement("div",{style:{marginTop:20,display:"flex",justifyContent:"flex-end",gap:10}},
               React.createElement("button",{className:"btnSoft",onClick:()=>setSimpleAddModal({...simpleAddModal,open:false})},"Cancel"),
               React.createElement("button",{className:"btnPrimary",onClick:saveSimpleAdd},"Save")
@@ -1233,7 +1862,17 @@
                   React.createElement("option",{value:"pending"},"ยังไม่เสร็จ (Not Started)"),
                   React.createElement("option",{value:"in_progress"},"กำลังดำเนินการ (In Progress)"),
                   React.createElement("option",{value:"completed"},"เสร็จแล้ว (Completed)")
+                )
+              ),
+              React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}},
+                React.createElement("div",null,
+                  React.createElement("div",{className:"label"},"วันที่เริ่มต้น"),
+                  React.createElement("input",{type:"date",value:activityModal.start_date||"",onChange:e=>setActivityModal({...activityModal,start_date:e.target.value})})
                 ),
+                React.createElement("div",null,
+                  React.createElement("div",{className:"label"},"วันที่สิ้นสุด"),
+                  React.createElement("input",{type:"date",value:activityModal.end_date||"",onChange:e=>setActivityModal({...activityModal,end_date:e.target.value})})
+                )
               ),
               React.createElement("div",{style:{display:"flex",justifyContent:"flex-end",gap:10, marginTop:10}},
                 React.createElement("button",{className:"btnSoft",onClick:()=>setActivityModal({...activityModal,open:false})},"Cancel"),
@@ -1245,8 +1884,271 @@
       );
     }
 
+    function KPIFormModal(){
+      if(!kpiModal.open) return null;
+      const kpi = kpiModal.data || {
+        name:"", description:"", target_value:100, unit:"คน",
+        linked_projects:[], fiscal_year:"2569", status:"active", monthly_data:[]
+      };
+      
+      const [form, setForm] = useState(kpi);
+      
+      const distributeMonthly = () => {
+        const perMonth = form.target_value / 12;
+        const monthly = [];
+        for(let i=10; i<=12; i++) monthly.push({month:`2568-${String(i).padStart(2,'0')}`,target:perMonth,actual:0,recorded_date:null});
+        for(let i=1; i<=9; i++) monthly.push({month:`2569-${String(i).padStart(2,'0')}`,target:perMonth,actual:0,recorded_date:null});
+        setForm({...form, monthly_data:monthly});
+        toast("กระจายเป้าหมายรายเดือนสำเร็จ", "success");
+      };
+      
+      const saveKPI = () => {
+        if(!form.name.trim()) return toast("กรุณากรอกชื่อ KPI");
+        if(kpiModal.mode==="create"){
+          const newKPI = {...form, id:uid("KPI"), actual_value:0};
+          if(newKPI.monthly_data.length===0) distributeMonthly();
+          setKpiData([...kpiData, {...form, id:uid("KPI"), actual_value:0, monthly_data:newKPI.monthly_data.length>0?newKPI.monthly_data:form.monthly_data}]);
+          toast("สร้าง KPI สำเร็จ", "success");
+        }else{
+          setKpiData(kpiData.map(k=>k.id===kpiModal.kpiId?{...k,...form}:k));
+          toast("อัพเดท KPI สำเร็จ", "success");
+        }
+        setKpiModal({...kpiModal,open:false});
+      };
+      
+      return React.createElement("div",{className:"modalOverlay"},
+        React.createElement("div",{className:"modal",style:{width:"min(800px,96vw)"}},
+          React.createElement("div",{className:"modalHead"},
+            React.createElement("div",null,
+              React.createElement("div",{style:{fontWeight:800,fontSize:18}}, kpiModal.mode==="create"?"สร้าง KPI ใหม่":"แก้ไข KPI"),
+              React.createElement("div",{className:"muted"},"ตัววัดผลการดำเนินงาน")
+            ),
+            React.createElement("button",{className:"btnSoft",onClick:()=>setKpiModal({...kpiModal,open:false})},"✕")
+          ),
+          React.createElement("div",{className:"modalBody"},
+            React.createElement("div",{style:{display:"grid",gap:16}},
+              React.createElement("div",null,
+                React.createElement("div",{className:"label"},"ชื่อ KPI"),
+                React.createElement("input",{value:form.name,onChange:e=>setForm({...form,name:e.target.value}),placeholder:"เช่น อัตราการรับนักศึกษาใหม่"})
+              ),
+              React.createElement("div",null,
+                React.createElement("div",{className:"label"},"คำอธิบาย"),
+                React.createElement("textarea",{value:form.description,onChange:e=>setForm({...form,description:e.target.value}),placeholder:"รายละเอียด KPI..."})
+              ),
+              React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}},
+                React.createElement("div",null,
+                  React.createElement("div",{className:"label"},"เป้าหมายรวมทั้งปี"),
+                  React.createElement("input",{type:"number",value:form.target_value,onChange:e=>setForm({...form,target_value:Number(e.target.value)})})
+                ),
+                React.createElement("div",null,
+                  React.createElement("div",{className:"label"},"หน่วย"),
+                  React.createElement("input",{value:form.unit,onChange:e=>setForm({...form,unit:e.target.value}),placeholder:"คน/ครั้ง/%"})
+                )
+              ),
+              React.createElement("div",null,
+                React.createElement("div",{className:"label"},"สถานะ"),
+                React.createElement("select",{value:form.status,onChange:e=>setForm({...form,status:e.target.value})},
+                  React.createElement("option",{value:"active"},"Active"),
+                  React.createElement("option",{value:"completed"},"Completed"),
+                  React.createElement("option",{value:"cancelled"},"Cancelled")
+                )
+              ),
+              React.createElement("div",{style:{padding:12,background:"#f1f5f9",borderRadius:12}},
+                React.createElement("div",{style:{fontWeight:700,marginBottom:8}},"กระจายเป้าหมายรายเดือน"),
+                React.createElement("button",{className:"btnSoft",onClick:distributeMonthly},"📅 แบ่งเท่าๆ กัน 12 เดือน")
+              ),
+              React.createElement("div",{style:{display:"flex",justifyContent:"flex-end",gap:10,marginTop:10}},
+                React.createElement("button",{className:"btnSoft",onClick:()=>setKpiModal({...kpiModal,open:false})},"Cancel"),
+                React.createElement("button",{className:"btnPrimary",onClick:saveKPI},"Save")
+              )
+            )
+          )
+        )
+      );
+    }
+
+    function KPIMonthlyTrackingModal(){
+      if(!kpiMonthlyModal.open) return null;
+      const kpi = kpiData.find(k=>k.id===kpiMonthlyModal.kpiId);
+      if(!kpi) return null;
+      
+      const monthNames = ["ต.ค.","พ.ย.","ธ.ค.","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย."];
+      
+      const updateMonthlyActual = (monthIndex, value) => {
+        const updatedKPI = {...kpi};
+        updatedKPI.monthly_data[monthIndex].actual = Number(value);
+        updatedKPI.monthly_data[monthIndex].recorded_date = new Date().toISOString().split('T')[0];
+        setKpiData(kpiData.map(k=>k.id===kpi.id?updatedKPI:k));
+      };
+      
+      const cumulative = calculateCumulativeKPI(kpi.monthly_data);
+      
+      return React.createElement("div",{className:"modalOverlay"},
+        React.createElement("div",{className:"modal",style:{width:"min(900px,96vw)"}},
+          React.createElement("div",{className:"modalHead"},
+            React.createElement("div",null,
+              React.createElement("div",{style:{fontWeight:800,fontSize:18}},kpi.name),
+              React.createElement("div",{className:"muted"},"บันทึกผลรายเดือน")
+            ),
+            React.createElement("button",{className:"btnSoft",onClick:()=>setKpiMonthlyModal({...kpiMonthlyModal,open:false})},"✕")
+          ),
+          React.createElement("div",{className:"modalBody"},
+            React.createElement("div",{style:{marginBottom:20,padding:16,background:"#f1f5f9",borderRadius:12}},
+              React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}},
+                React.createElement("div",null,
+                  React.createElement("div",{style:{fontSize:11,fontWeight:700,color:"var(--muted)"}},"เป้าหมายรวม"),
+                  React.createElement("div",{style:{fontSize:20,fontWeight:900}},`${kpi.target_value} ${kpi.unit}`)
+                ),
+                React.createElement("div",null,
+                  React.createElement("div",{style:{fontSize:11,fontWeight:700,color:"var(--muted)"}},"ผลรวมจริง"),
+                  React.createElement("div",{style:{fontSize:20,fontWeight:900,color:"var(--primary)"}},`${cumulative.actual.toFixed(2)} ${kpi.unit}`)
+                ),
+                React.createElement("div",null,
+                  React.createElement("div",{style:{fontSize:11,fontWeight:700,color:"var(--muted)"}},"% Achievement"),
+                  React.createElement("div",{style:{fontSize:20,fontWeight:900,color:cumulative.achievement>=100?"var(--success)":"var(--warning)"}},`${cumulative.achievement}%`)
+                )
+              )
+            ),
+            React.createElement("div",{style:{overflowX:"auto"}},
+              React.createElement("table",null,
+                React.createElement("thead",null,
+                  React.createElement("tr",null,
+                    React.createElement("th",null,"เดือน"),
+                    React.createElement("th",{style:{textAlign:"right"}},"เป้าหมาย"),
+                    React.createElement("th",{style:{textAlign:"right"}},"ผลจริง"),
+                    React.createElement("th",{style:{textAlign:"center"}},"% Achievement"),
+                    React.createElement("th",{style:{textAlign:"center"}},"วันที่บันทึก")
+                  )
+                ),
+                React.createElement("tbody",null,
+                  kpi.monthly_data.map((m,idx)=>{
+                    const achievement = m.target>0?Math.round((m.actual/m.target)*100):0;
+                    return React.createElement("tr",{key:m.month},
+                      React.createElement("td",{style:{fontWeight:700}},`${monthNames[idx]} ${m.month.split('-')[0]}`),
+                      React.createElement("td",{style:{textAlign:"right"}},`${m.target.toFixed(2)} ${kpi.unit}`),
+                      React.createElement("td",{style:{textAlign:"right"}},
+                        React.createElement("input",{
+                          type:"number",
+                          value:m.actual,
+                          onChange:e=>updateMonthlyActual(idx,e.target.value),
+                          style:{width:100,padding:6,textAlign:"right"}
+                        })
+                      ),
+                      React.createElement("td",{style:{textAlign:"center"}},
+                        React.createElement("span",{className:achievement>=100?"pill green":achievement>=50?"pill yellow":"pill gray"},`${achievement}%`)
+                      ),
+                      React.createElement("td",{style:{textAlign:"center",fontSize:11}},m.recorded_date||"-")
+                    );
+                  })
+                )
+              )
+            ),
+            React.createElement("div",{style:{marginTop:20,display:"flex",justifyContent:"flex-end"}},
+              React.createElement("button",{className:"btnPrimary",onClick:()=>setKpiMonthlyModal({...kpiMonthlyModal,open:false})},"Close")
+            )
+          )
+        )
+      );
+    }
+
+    function OutcomesFormModal(){
+      if(!outcomeModal.open) return null;
+      
+      const outcome = outcomeModal.data || {
+        name:"", description:"", target_value:0, actual_value:0,
+        unit:"คน", measurement_method:""
+      };
+      
+      const [form, setForm] = useState(outcome);
+      
+      const saveOutcome = () => {
+        if(!form.name.trim()) return toast("กรุณากรอกชื่อผลสัมฤทธิ์");
+        
+        const newData = data.map(m=>{
+          if(m.id!==projectModal.missionId) return m;
+          const main_projects = m.main_projects.map(p=>{
+            if(p.id!==projectModal.projectId) return p;
+            const outcomes = [...(p.outcomes||[])];
+            if(outcomeModal.mode==="create"){
+              outcomes.push({...form, id:uid("OUT")});
+            }else{
+              const idx = outcomes.findIndex(o=>o.id===outcomeModal.outcomeId);
+              if(idx>=0) outcomes[idx] = {...outcomes[idx], ...form};
+            }
+            return {...p, outcomes};
+          });
+          return {...m, main_projects};
+        });
+        
+        setData(recomputeAll(newData));
+        setOutcomeModal({...outcomeModal, open:false});
+        toast(outcomeModal.mode==="create"?"เพิ่มผลสัมฤทธิ์สำเร็จ":"อัพเดทผลสัมฤทธิ์สำเร็จ", "success");
+      };
+      
+      return React.createElement("div",{className:"modalOverlay"},
+        React.createElement("div",{className:"modal",style:{width:"min(700px,96vw)"}},
+          React.createElement("div",{className:"modalHead"},
+            React.createElement("div",null,
+              React.createElement("div",{style:{fontWeight:800,fontSize:18}}, outcomeModal.mode==="create"?"เพิ่มผลสัมฤทธิ์":"แก้ไขผลสัมฤทธิ์"),
+              React.createElement("div",{className:"muted"},"เป้าหมายและผลลัพธ์ของโครงการ")
+            ),
+            React.createElement("button",{className:"btnSoft",onClick:()=>setOutcomeModal({...outcomeModal,open:false})},"✕")
+          ),
+          React.createElement("div",{className:"modalBody"},
+            React.createElement("div",{style:{display:"grid",gap:16}},
+              React.createElement("div",null,
+                React.createElement("div",{className:"label"},"ชื่อผลสัมฤทธิ์"),
+                React.createElement("input",{value:form.name,onChange:e=>setForm({...form,name:e.target.value}),placeholder:"เช่น จำนวนนักศึกษาที่สำเร็จการศึกษา"})
+              ),
+              React.createElement("div",null,
+                React.createElement("div",{className:"label"},"คำอธิบาย"),
+                React.createElement("textarea",{value:form.description,onChange:e=>setForm({...form,description:e.target.value}),placeholder:"รายละเอียดผลสัมฤทธิ์..."})
+              ),
+              React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16}},
+                React.createElement("div",null,
+                  React.createElement("div",{className:"label"},"เป้าหมาย (Target)"),
+                  React.createElement("input",{type:"number",value:form.target_value,onChange:e=>setForm({...form,target_value:Number(e.target.value)})})
+                ),
+                React.createElement("div",null,
+                  React.createElement("div",{className:"label"},"ผลจริง (Actual)"),
+                  React.createElement("input",{type:"number",value:form.actual_value,onChange:e=>setForm({...form,actual_value:Number(e.target.value)})})
+                ),
+                React.createElement("div",null,
+                  React.createElement("div",{className:"label"},"หน่วย"),
+                  React.createElement("input",{value:form.unit,onChange:e=>setForm({...form,unit:e.target.value}),placeholder:"คน/ครั้ง/%"})
+                )
+              ),
+              React.createElement("div",null,
+                React.createElement("div",{className:"label"},"วิธีการวัด"),
+                React.createElement("input",{value:form.measurement_method,onChange:e=>setForm({...form,measurement_method:e.target.value}),placeholder:"เช่น สำรวจจากระบบทะเบียน"})
+              ),
+              React.createElement("div",{style:{display:"flex",justifyContent:"flex-end",gap:10,marginTop:10}},
+                React.createElement("button",{className:"btnSoft",onClick:()=>setOutcomeModal({...outcomeModal,open:false})},"Cancel"),
+                React.createElement("button",{className:"btnPrimary",onClick:saveOutcome},"Save")
+              )
+            )
+          )
+        )
+      );
+    }
+
     function ProjectDetailModal(){
       if(!projectModal.open || !currentProject) return null;
+      const [activeTab, setActiveTab] = useState("hierarchy");
+      
+      // Collect all items for Gantt Chart
+      const ganttItems = [];
+      ganttItems.push({...currentProject, level:"Lv.2"});
+      (currentProject.sub_projects||[]).forEach(sp=>{
+        ganttItems.push({...sp, level:"Lv.3"});
+        (sp.topics||[]).forEach(tp=>{
+          ganttItems.push({...tp, level:"Lv.4"});
+          (tp.details||[]).forEach(d=>{
+            ganttItems.push({...d, level:"Lv.5"});
+          });
+        });
+      });
+      
       return React.createElement("div",{className:"modalOverlay"},
         React.createElement("div",{className:"modal"},
           React.createElement("div",{className:"modalHead"},
@@ -1256,15 +2158,50 @@
             ),
             React.createElement("button",{className:"btnSoft",onClick:()=>setProjectModal({open:false,missionId:"",projectId:""})},"✕")
           ),
+          // Tab Navigation
+          React.createElement("div",{style:{display:"flex",gap:8,padding:"0 24px",borderBottom:"2px solid var(--border)",background:"#fff"}},
+            React.createElement("button",{
+              className:"navbtn",
+              style:{
+                background:activeTab==="hierarchy"?"var(--primary)":"transparent",
+                color:activeTab==="hierarchy"?"#fff":"var(--muted)",
+                border:0,borderRadius:"12px 12px 0 0",padding:"12px 20px",
+                fontWeight:700,fontSize:13,cursor:"pointer",transition:"all .2s"
+              },
+              onClick:()=>setActiveTab("hierarchy")
+            },"📋 Hierarchy"),
+            React.createElement("button",{
+              className:"navbtn",
+              style:{
+                background:activeTab==="gantt"?"var(--primary)":"transparent",
+                color:activeTab==="gantt"?"#fff":"var(--muted)",
+                border:0,borderRadius:"12px 12px 0 0",padding:"12px 20px",
+                fontWeight:700,fontSize:13,cursor:"pointer",transition:"all .2s"
+              },
+              onClick:()=>setActiveTab("gantt")
+            },"📅 Gantt Chart"),
+            React.createElement("button",{
+              className:"navbtn",
+              style:{
+                background:activeTab==="outcomes"?"var(--primary)":"transparent",
+                color:activeTab==="outcomes"?"#fff":"var(--muted)",
+                border:0,borderRadius:"12px 12px 0 0",padding:"12px 20px",
+                fontWeight:700,fontSize:13,cursor:"pointer",transition:"all .2s"
+              },
+              onClick:()=>setActiveTab("outcomes")
+            },"🎯 Outcomes")
+          ),
           React.createElement("div",{className:"modalBody"},
-            React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12, marginBottom:16}},
-              canCreate ? React.createElement("button",{className:"btnSoft",style:{border:"2px dashed var(--primary)",color:"var(--primary)"},onClick:openAddLv3},"＋ Add Sub Project (Lv.3)") : null,
-              React.createElement("div",{style:{display:"flex",gap:12,alignItems:"center",flexWrap:"wrap"}},
-                React.createElement("span",{className:"pill red"},"Project KPI"),
-                React.createElement(SemiGauge,{value:currentProject.progress,label:"100% = Completed"})
-              )
-            ),
-            React.createElement("div",{style:{display:"grid",gap:20}},
+            // Hierarchy Tab
+            activeTab==="hierarchy" ? React.createElement("div",null,
+              React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12, marginBottom:16}},
+                canCreate ? React.createElement("button",{className:"btnSoft",style:{border:"2px dashed var(--primary)",color:"var(--primary)"},onClick:openAddLv3},"＋ Add Sub Project (Lv.3)") : null,
+                React.createElement("div",{style:{display:"flex",gap:12,alignItems:"center",flexWrap:"wrap"}},
+                  React.createElement("span",{className:"pill red"},"Project KPI"),
+                  React.createElement(SemiGauge,{value:currentProject.progress,label:"100% = Completed"})
+                )
+              ),
+              React.createElement("div",{style:{display:"grid",gap:20}},
               (currentProject.sub_projects||[]).length===0
                 ? React.createElement("div",{style:{padding:20,border:"2px dashed #e2e8f0",borderRadius:16,color:"#94a3b8",fontWeight:700,textAlign:"center"}},"ยังไม่มี Sub Project (Lv.3)")
                 : null,
@@ -1299,7 +2236,71 @@
                   ))
                 )
               ))
-            )
+              )
+            ) : null,
+            
+            // Gantt Chart Tab
+            activeTab==="gantt" ? React.createElement("div",null,
+              React.createElement("div",{style:{marginBottom:16}},
+                React.createElement("div",{style:{fontWeight:800,fontSize:16,marginBottom:8}},"Project Timeline"),
+                React.createElement("div",{className:"muted",fontSize:13},"แสดง Gantt Chart ของโครงการและกิจกรรมทั้งหมด (Lv.2-5)")
+              ),
+              React.createElement(GanttChart,{items:ganttItems,fiscalYear:"2569",onItemClick:null})
+            ) : null,
+            
+            // Outcomes Tab
+            activeTab==="outcomes" ? React.createElement("div",null,
+              React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}},
+                React.createElement("div",null,
+                  React.createElement("div",{style:{fontWeight:800,fontSize:16}},"ผลสัมฤทธิ์ของโครงการ"),
+                  React.createElement("div",{className:"muted"},"เป้าหมายและผลลัพธ์ที่ต้องการจากโครงการ")
+                ),
+                canCreate ? React.createElement("button",{className:"btnPrimary",onClick:()=>setOutcomeModal({open:true,mode:"create",outcomeId:"",data:null})},"＋ เพิ่มผลสัมฤทธิ์") : null
+              ),
+              (currentProject.outcomes||[]).length===0 ? 
+                React.createElement("div",{style:{padding:40,textAlign:"center",border:"2px dashed var(--border)",borderRadius:16,color:"var(--muted)"}},"ยังไม่มีผลสัมฤทธิ์ที่กำหนด") :
+                React.createElement("div",{style:{display:"grid",gap:12}},
+                  (currentProject.outcomes||[]).map(outcome=>
+                    React.createElement("div",{key:outcome.id,className:"card",style:{padding:16}},
+                      React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"start",gap:16}},
+                        React.createElement("div",{style:{flex:1}},
+                          React.createElement("div",{style:{fontWeight:700,fontSize:15}},outcome.name),
+                          React.createElement("div",{style:{fontSize:13,color:"var(--muted)",marginTop:4}},outcome.description),
+                          React.createElement("div",{style:{marginTop:8,fontSize:12}},
+                            React.createElement("span",{style:{fontWeight:700}},"เป้าหมาย: "),
+                            `${outcome.target_value} ${outcome.unit}`
+                          ),
+                          React.createElement("div",{style:{fontSize:12}},
+                            React.createElement("span",{style:{fontWeight:700}},"ผลจริง: "),
+                            `${outcome.actual_value} ${outcome.unit}`
+                          )
+                        ),
+                        React.createElement("div",{style:{textAlign:"right",display:"flex",flexDirection:"column",gap:8,alignItems:"flex-end"}},
+                          React.createElement("div",{style:{fontSize:24,fontWeight:900,color:outcome.target_value>0?Math.round((outcome.actual_value/outcome.target_value)*100)>=100?"var(--success)":"var(--warning)":"var(--muted)"}},
+                            outcome.target_value>0?Math.round((outcome.actual_value/outcome.target_value)*100)+"%" :"N/A"
+                          ),
+                          canEdit ? React.createElement("div",{style:{display:"flex",gap:8}},
+                            React.createElement("button",{className:"btnSoft",style:{fontSize:11},onClick:()=>setOutcomeModal({open:true,mode:"edit",outcomeId:outcome.id,data:outcome})},"✎"),
+                            React.createElement("button",{className:"btnSoft",style:{fontSize:11,color:"var(--danger)"},onClick:()=>{
+                              if(!confirm("ต้องการลบผลสัมฤทธิ์นี้?")) return;
+                              const newData=data.map(m=>{
+                                if(m.id!==projectModal.missionId) return m;
+                                const main_projects=m.main_projects.map(p=>{
+                                  if(p.id!==projectModal.projectId) return p;
+                                  return {...p,outcomes:(p.outcomes||[]).filter(o=>o.id!==outcome.id)};
+                                });
+                                return {...m,main_projects};
+                              });
+                              setData(recomputeAll(newData));
+                              toast("ลบผลสัมฤทธิ์สำเร็จ","success");
+                            }},"🗑")
+                          ) : null
+                        )
+                      )
+                    )
+                  )
+                )
+            ) : null
           )
         )
       );
@@ -1308,10 +2309,11 @@
     // -- CORRECTED RENDER LOGIC BELOW --
 
     function renderView(){
-      if(view==="dashboard") return Dashboard(); // Changed: Call directly
-      if(view==="explorer") return Explorer();   // Changed: Call directly
-      if(view==="budget") return Budget();       // Changed: Call directly
-      if(view==="reports") return Reports();     // Changed: Call directly
+      if(view==="dashboard") return Dashboard();
+      if(view==="explorer") return Explorer();
+      if(view==="budget") return Budget();
+      if(view==="kpi") return KPIManagement();
+      if(view==="reports") return Reports();
       return React.createElement("div",{className:"card"},"Unknown view");
     }
 
@@ -1324,10 +2326,13 @@
         React.createElement("div",{className:"main"},
           Header(), // Changed: Call directly
           React.createElement("div",{className:"content",onClick:closeSidebar}, renderView()),
-          ProjectFormModal(), // Changed: Call directly
-          ProjectDetailModal(), // Changed: Call directly
-          SimpleAddModal(), // Changed: Call directly
-          ActivityModal() // Changed: Call directly
+          ProjectFormModal(),
+          ProjectDetailModal(),
+          SimpleAddModal(),
+          ActivityModal(),
+          KPIFormModal(),
+          KPIMonthlyTrackingModal(),
+          OutcomesFormModal()
         )
       )
     );
