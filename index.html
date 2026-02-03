@@ -917,125 +917,6 @@
     );
   }
 
-  function MissionGanttModal(){
-    if(!missionGanttModal.open || !missionGanttModal.mission) return null;
-    
-    const m = missionGanttModal.mission;
-    
-    // Collect all items for Gantt chart (mission + all projects + sub-projects + activities)
-    const ganttItems = [];
-    
-    // Add mission
-    ganttItems.push({
-      id: m.id,
-      name: `[Mission] ${m.name}`,
-      level: 1,
-      start_date: m.start_date,
-      end_date: m.end_date,
-      progress: m.progress || 0,
-      responsible: m.responsible || "-"
-    });
-    
-    // Add all main projects
-    m.main_projects.forEach(p=>{
-      ganttItems.push({
-        id: p.id,
-        name: `  [Lv.2] ${p.name}`,
-        level: 2,
-        start_date: p.start_date,
-        end_date: p.end_date,
-        progress: p.progress || 0,
-        responsible: p.responsible || "-"
-      });
-      
-      // Add sub-projects (Lv.3)
-      if(p.sub_projects && p.sub_projects.length > 0){
-        p.sub_projects.forEach(sp=>{
-          ganttItems.push({
-            id: sp.id,
-            name: `    [Lv.3] ${sp.name}`,
-            level: 3,
-            start_date: sp.start_date,
-            end_date: sp.end_date,
-            progress: sp.progress || 0,
-            responsible: sp.responsible || "-"
-          });
-          
-          // Add plans (Lv.4)
-          if(sp.plans && sp.plans.length > 0){
-            sp.plans.forEach(plan=>{
-              ganttItems.push({
-                id: plan.id,
-                name: `      [Lv.4] ${plan.name}`,
-                level: 4,
-                start_date: plan.start_date,
-                end_date: plan.end_date,
-                progress: plan.progress || 0,
-                responsible: plan.responsible || "-"
-              });
-              
-              // Add activities (Lv.5)
-              if(plan.activities && plan.activities.length > 0){
-                plan.activities.forEach(act=>{
-                  ganttItems.push({
-                    id: act.id,
-                    name: `        [Lv.5] ${act.name}`,
-                    level: 5,
-                    start_date: act.start_date,
-                    end_date: act.end_date,
-                    progress: act.progress || 0,
-                    responsible: act.responsible || "-"
-                  });
-                });
-              }
-            });
-          }
-        });
-      }
-    });
-    
-    return React.createElement("div",{className:"modal"},
-      React.createElement("div",{className:"modalContent", style:{maxWidth:1400, width:"90vw", maxHeight:"90vh", overflow:"auto"}},
-        React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}},
-          React.createElement("div",null,
-            React.createElement("div",{style:{fontSize:20,fontWeight:900,marginBottom:4}},`Mission Gantt Chart - ${m.id}`),
-            React.createElement("div",{className:"muted"},m.name)
-          ),
-          React.createElement("div",{style:{display:"flex",gap:10}},
-            React.createElement("button",{
-              className:"btnSoft",
-              onClick:()=>exportGanttTable(ganttItems, m.name)
-            },"📥 Export Excel"),
-            React.createElement("button",{
-              className:"btnSoft",
-              onClick:()=>setMissionGanttModal({...missionGanttModal, open:false})
-            },"✕")
-          )
-        ),
-        
-        React.createElement("div",{style:{marginBottom:16,display:"flex",gap:10,alignItems:"center"}},
-          React.createElement("span",{style:{fontWeight:700,fontSize:14}},"View Mode:"),
-          React.createElement("div",{className:"toggleSwitch",style:{display:"flex",gap:0,border:"1px solid var(--border)",borderRadius:8,overflow:"hidden"}},
-            React.createElement("button",{
-              className: ganttViewMode==="chart"?"btnSoft":"",
-              style: ganttViewMode==="chart" ? {background:"var(--primary)",color:"#fff",border:"none",borderRadius:0} : {background:"transparent",border:"none",borderRadius:0},
-              onClick:()=>setGanttViewMode("chart")
-            },"📊 Bar Chart"),
-            React.createElement("button",{
-              className: ganttViewMode==="table"?"btnSoft":"",
-              style: ganttViewMode==="table" ? {background:"var(--primary)",color:"#fff",border:"none",borderRadius:0} : {background:"transparent",border:"none",borderRadius:0},
-              onClick:()=>setGanttViewMode("table")
-            },"📋 Table View")
-          )
-        ),
-        
-        ganttViewMode === "chart"
-          ? GanttChart({items:ganttItems, fiscalYear:"2569", onItemClick:null})
-          : GanttTableView({items:ganttItems, fiscalYear:"2569", onItemClick:null})
-      )
-    );
-  }
-
   function StatusBadge({ status }){
     if (status==="completed") return React.createElement("span",{className:"pill green"},"เสร็จแล้ว");
     if (status==="in_progress") return React.createElement("span",{className:"pill yellow"},"กำลังทำ");
@@ -2462,6 +2343,125 @@
               )
             )
           )
+        )
+      );
+    }
+
+    function MissionGanttModal(){
+      if(!missionGanttModal.open || !missionGanttModal.mission) return null;
+      
+      const m = missionGanttModal.mission;
+      
+      // Collect all items for Gantt chart (mission + all projects + sub-projects + activities)
+      const ganttItems = [];
+      
+      // Add mission
+      ganttItems.push({
+        id: m.id,
+        name: `[Mission] ${m.name}`,
+        level: 1,
+        start_date: m.start_date,
+        end_date: m.end_date,
+        progress: m.progress || 0,
+        responsible: m.responsible || "-"
+      });
+      
+      // Add all main projects
+      m.main_projects.forEach(p=>{
+        ganttItems.push({
+          id: p.id,
+          name: `  [Lv.2] ${p.name}`,
+          level: 2,
+          start_date: p.start_date,
+          end_date: p.end_date,
+          progress: p.progress || 0,
+          responsible: p.responsible || "-"
+        });
+        
+        // Add sub-projects (Lv.3)
+        if(p.sub_projects && p.sub_projects.length > 0){
+          p.sub_projects.forEach(sp=>{
+            ganttItems.push({
+              id: sp.id,
+              name: `    [Lv.3] ${sp.name}`,
+              level: 3,
+              start_date: sp.start_date,
+              end_date: sp.end_date,
+              progress: sp.progress || 0,
+              responsible: sp.responsible || "-"
+            });
+            
+            // Add plans (Lv.4)
+            if(sp.plans && sp.plans.length > 0){
+              sp.plans.forEach(plan=>{
+                ganttItems.push({
+                  id: plan.id,
+                  name: `      [Lv.4] ${plan.name}`,
+                  level: 4,
+                  start_date: plan.start_date,
+                  end_date: plan.end_date,
+                  progress: plan.progress || 0,
+                  responsible: plan.responsible || "-"
+                });
+                
+                // Add activities (Lv.5)
+                if(plan.activities && plan.activities.length > 0){
+                  plan.activities.forEach(act=>{
+                    ganttItems.push({
+                      id: act.id,
+                      name: `        [Lv.5] ${act.name}`,
+                      level: 5,
+                      start_date: act.start_date,
+                      end_date: act.end_date,
+                      progress: act.progress || 0,
+                      responsible: act.responsible || "-"
+                    });
+                  });
+                }
+              });
+            }
+          });
+        }
+      });
+      
+      return React.createElement("div",{className:"modal"},
+        React.createElement("div",{className:"modalContent", style:{maxWidth:1400, width:"90vw", maxHeight:"90vh", overflow:"auto"}},
+          React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}},
+            React.createElement("div",null,
+              React.createElement("div",{style:{fontSize:20,fontWeight:900,marginBottom:4}},`Mission Gantt Chart - ${m.id}`),
+              React.createElement("div",{className:"muted"},m.name)
+            ),
+            React.createElement("div",{style:{display:"flex",gap:10}},
+              React.createElement("button",{
+                className:"btnSoft",
+                onClick:()=>exportGanttTable(ganttItems, m.name)
+              },"📥 Export Excel"),
+              React.createElement("button",{
+                className:"btnSoft",
+                onClick:()=>setMissionGanttModal({...missionGanttModal, open:false})
+              },"✕")
+            )
+          ),
+          
+          React.createElement("div",{style:{marginBottom:16,display:"flex",gap:10,alignItems:"center"}},
+            React.createElement("span",{style:{fontWeight:700,fontSize:14}},"View Mode:"),
+            React.createElement("div",{className:"toggleSwitch",style:{display:"flex",gap:0,border:"1px solid var(--border)",borderRadius:8,overflow:"hidden"}},
+              React.createElement("button",{
+                className: ganttViewMode==="chart"?"btnSoft":"",
+                style: ganttViewMode==="chart" ? {background:"var(--primary)",color:"#fff",border:"none",borderRadius:0} : {background:"transparent",border:"none",borderRadius:0},
+                onClick:()=>setGanttViewMode("chart")
+              },"📊 Bar Chart"),
+              React.createElement("button",{
+                className: ganttViewMode==="table"?"btnSoft":"",
+                style: ganttViewMode==="table" ? {background:"var(--primary)",color:"#fff",border:"none",borderRadius:0} : {background:"transparent",border:"none",borderRadius:0},
+                onClick:()=>setGanttViewMode("table")
+              },"📋 Table View")
+            )
+          ),
+          
+          ganttViewMode === "chart"
+            ? GanttChart({items:ganttItems, fiscalYear:"2569", onItemClick:null})
+            : GanttTableView({items:ganttItems, fiscalYear:"2569", onItemClick:null})
         )
       );
     }
