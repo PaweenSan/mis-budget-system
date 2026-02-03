@@ -411,6 +411,16 @@
     }
   ];
 
+  const DEFAULT_KPI_FORM = {
+    name:"", description:"", target_value:100, unit:"คน",
+    linked_projects:[], fiscal_year:"2569", status:"active", monthly_data:[]
+  };
+
+  const DEFAULT_OUTCOME = {
+    name:"", description:"", target_value:0, actual_value:0,
+    unit:"คน", measurement_method:""
+  };
+
   const clamp = (n,min=0,max=100)=>Math.max(min,Math.min(max,Number(n??0)));
 
   // Calculate notification status based on end date
@@ -1028,6 +1038,7 @@
     const [selectedProjects, setSelectedProjects] = useState({});
     const [kpiModal, setKpiModal]=useState({open:false, mode:"create", kpiId:"", data:null});
     const [kpiMonthlyModal, setKpiMonthlyModal]=useState({open:false, kpiId:""});
+    const [kpiForm, setKpiForm] = useState(DEFAULT_KPI_FORM);
     const [outcomeModal, setOutcomeModal]=useState({open:false, mode:"create", outcomeId:"", data:null});
     const [projectDetailTab, setProjectDetailTab]=useState("hierarchy");
     const [ganttViewMode, setGanttViewMode]=useState("chart"); // "chart" or "table"
@@ -1039,6 +1050,15 @@
       const notifs = getAllNotifications(data);
       setNotifications(notifs);
     }, [data]);
+
+    // Sync KPI form state with modal
+    useEffect(()=>{
+      if(kpiModal.open && kpiModal.data){
+        setKpiForm(kpiModal.data);
+      }else if(kpiModal.open){
+        setKpiForm(DEFAULT_KPI_FORM);
+      }
+    }, [kpiModal.open, kpiModal.data]);
 
     const overallProgress = useMemo(()=>{
       const arr=data.map(m=>clamp(m.progress));
@@ -2063,30 +2083,15 @@
     }
 
     function KPIFormModal(){
-      const defaultKpi = {
-        name:"", description:"", target_value:100, unit:"คน",
-        linked_projects:[], fiscal_year:"2569", status:"active", monthly_data:[]
-      };
-      
-      const [form, setForm] = useState(defaultKpi);
-      
-      // Update form when kpiModal changes
-      useEffect(()=>{
-        if(kpiModal.open && kpiModal.data){
-          setForm(kpiModal.data);
-        }else if(kpiModal.open){
-          setForm(defaultKpi);
-        }
-      }, [kpiModal.open, kpiModal.data]);
-      
       if(!kpiModal.open) return null;
+      const form = kpiForm;
       
       const distributeMonthly = () => {
         const perMonth = form.target_value / 12;
         const monthly = [];
         for(let i=10; i<=12; i++) monthly.push({month:`2568-${String(i).padStart(2,'0')}`,target:perMonth,actual:0,recorded_date:null});
         for(let i=1; i<=9; i++) monthly.push({month:`2569-${String(i).padStart(2,'0')}`,target:perMonth,actual:0,recorded_date:null});
-        setForm({...form, monthly_data:monthly});
+        setKpiForm({...form, monthly_data:monthly});
         toast("กระจายเป้าหมายรายเดือนสำเร็จ", "success");
       };
       
@@ -2117,25 +2122,25 @@
             React.createElement("div",{style:{display:"grid",gap:16}},
               React.createElement("div",null,
                 React.createElement("div",{className:"label"},"ชื่อ KPI"),
-                React.createElement("input",{value:form.name,onChange:e=>setForm({...form,name:e.target.value}),placeholder:"เช่น อัตราการรับนักศึกษาใหม่"})
+                React.createElement("input",{value:form.name,onChange:e=>setKpiForm({...form,name:e.target.value}),placeholder:"เช่น อัตราการรับนักศึกษาใหม่"})
               ),
               React.createElement("div",null,
                 React.createElement("div",{className:"label"},"คำอธิบาย"),
-                React.createElement("textarea",{value:form.description,onChange:e=>setForm({...form,description:e.target.value}),placeholder:"รายละเอียด KPI..."})
+                React.createElement("textarea",{value:form.description,onChange:e=>setKpiForm({...form,description:e.target.value}),placeholder:"รายละเอียด KPI..."})
               ),
               React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}},
                 React.createElement("div",null,
                   React.createElement("div",{className:"label"},"เป้าหมายรวมทั้งปี"),
-                  React.createElement("input",{type:"number",value:form.target_value,onChange:e=>setForm({...form,target_value:Number(e.target.value)})})
+                  React.createElement("input",{type:"number",value:form.target_value,onChange:e=>setKpiForm({...form,target_value:Number(e.target.value)})})
                 ),
                 React.createElement("div",null,
                   React.createElement("div",{className:"label"},"หน่วย"),
-                  React.createElement("input",{value:form.unit,onChange:e=>setForm({...form,unit:e.target.value}),placeholder:"คน/ครั้ง/%"})
+                  React.createElement("input",{value:form.unit,onChange:e=>setKpiForm({...form,unit:e.target.value}),placeholder:"คน/ครั้ง/%"})
                 )
               ),
               React.createElement("div",null,
                 React.createElement("div",{className:"label"},"สถานะ"),
-                React.createElement("select",{value:form.status,onChange:e=>setForm({...form,status:e.target.value})},
+                React.createElement("select",{value:form.status,onChange:e=>setKpiForm({...form,status:e.target.value})},
                   React.createElement("option",{value:"active"},"Active"),
                   React.createElement("option",{value:"completed"},"Completed"),
                   React.createElement("option",{value:"cancelled"},"Cancelled")
@@ -2240,19 +2245,14 @@
     }
 
     function OutcomesFormModal(){
-      const defaultOutcome = {
-        name:"", description:"", target_value:0, actual_value:0,
-        unit:"คน", measurement_method:""
-      };
-      
-      const [form, setForm] = useState(defaultOutcome);
+      const [form, setForm] = useState(DEFAULT_OUTCOME);
       
       // Update form when outcomeModal changes
       useEffect(()=>{
         if(outcomeModal.open && outcomeModal.data){
           setForm(outcomeModal.data);
         }else if(outcomeModal.open){
-          setForm(defaultOutcome);
+          setForm(DEFAULT_OUTCOME);
         }
       }, [outcomeModal.open, outcomeModal.data]);
       
@@ -2537,30 +2537,30 @@
     // -- CORRECTED RENDER LOGIC BELOW --
 
     function renderView(){
-      if(view==="dashboard") return Dashboard();
-      if(view==="explorer") return Explorer();
-      if(view==="budget") return Budget();
-      if(view==="kpi") return KPIManagement();
-      if(view==="reports") return Reports();
+      if(view==="dashboard") return React.createElement(Dashboard);
+      if(view==="explorer") return React.createElement(Explorer);
+      if(view==="budget") return React.createElement(Budget);
+      if(view==="kpi") return React.createElement(KPIManagement);
+      if(view==="reports") return React.createElement(Reports);
       return React.createElement("div",{className:"card"},"Unknown view");
     }
 
-    if(!user) return LoginPage(); // Changed: Call directly
+    if(!user) return React.createElement(LoginPage);
 
     return React.createElement(ToastProvider, null,
       React.createElement("div",{className:"app"},
         React.createElement("div",{className:"sidebarOverlay" + (sidebarOpen?" show":""),onClick:closeSidebar}),
-        Sidebar(), // Changed: Call directly
+        React.createElement(Sidebar),
         React.createElement("div",{className:"main"},
-          Header(), // Changed: Call directly
+          React.createElement(Header),
           React.createElement("div",{className:"content",onClick:closeSidebar}, renderView()),
-          ProjectFormModal(),
-          ProjectDetailModal(),
-          SimpleAddModal(),
-          ActivityModal(),
-          React.createElement(KPIFormModal, null),
-          KPIMonthlyTrackingModal(),
-          React.createElement(OutcomesFormModal, null)
+          React.createElement(ProjectFormModal),
+          React.createElement(ProjectDetailModal),
+          React.createElement(SimpleAddModal),
+          React.createElement(ActivityModal),
+          React.createElement(KPIFormModal),
+          React.createElement(KPIMonthlyTrackingModal),
+          React.createElement(OutcomesFormModal)
         )
       )
     );
