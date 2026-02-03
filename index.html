@@ -1047,6 +1047,7 @@
     const [projectDetailTab, setProjectDetailTab]=useState("hierarchy");
     const [ganttViewMode, setGanttViewMode]=useState("chart"); // "chart" or "table"
     const [missionGanttModal, setMissionGanttModal]=useState({open:false, mission:null});
+    const [allMissionsGanttModal, setAllMissionsGanttModal]=useState(false);
     
     const toast = useToast();
 
@@ -1635,11 +1636,18 @@
         ),
         React.createElement("div",{className:"row"},
           React.createElement("div",{className:"card half"},
-            React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
-              React.createElement("div",{style:{fontWeight:800}},"Mission KPI Overview"),
-              React.createElement("span",{className:"pill red"},"100% Target")
+            React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}},
+              React.createElement("div",null,
+                React.createElement("div",{style:{fontWeight:800}},"Mission KPI Overview"),
+                React.createElement("div",{className:"muted",style:{fontSize:12}},"คลิกเพื่อดู Gantt แต่ละพันธกิจ")
+              ),
+              React.createElement("button",{
+                className:"btnPrimary",
+                style:{fontSize:13,padding:"8px 16px"},
+                onClick:()=>setAllMissionsGanttModal(true)
+              },"📊 View All Missions")
             ),
-            React.createElement("div",{style:{marginTop:16,display:"grid",gap:12}},
+            React.createElement("div",{style:{display:"grid",gap:12}},
               data.map(m=>React.createElement("div",{
                 key:m.id,
                 style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:16,border:"1px solid var(--border)",borderRadius:16, background:"#fff", cursor:"pointer", transition:"all 0.2s"},
@@ -2109,7 +2117,6 @@
     function KPIFormModal(){
       if(!kpiModal.open) return null;
       const form = kpiForm;
-      const toast = useToast();
       
       const distributeMonthly = () => {
         const perMonth = form.target_value / 12;
@@ -2276,7 +2283,6 @@
     function OutcomesFormModal(){
       if(!outcomeModal.open) return null;
       const form = outcomeForm;
-      const toast = useToast();
       
       const saveOutcome = () => {
         if(!form.name.trim()) return toast("กรุณากรอกชื่อผลสัมฤทธิ์");
@@ -2460,6 +2466,132 @@
                     : {background:"transparent",border:"none",padding:"8px 16px",borderRadius:0,cursor:"pointer"},
                   onClick:()=>setGanttViewMode("table")
                 },"📋 Table View")
+              )
+            ),
+            ganttViewMode === "chart"
+              ? React.createElement(GanttChart,{items:ganttItems, fiscalYear:"2569", onItemClick:null})
+              : React.createElement(GanttTableView,{items:ganttItems, fiscalYear:"2569", onItemClick:null})
+          )
+        )
+      );
+    }
+
+    function AllMissionsGanttModal(){
+      if(!allMissionsGanttModal) return null;
+      
+      // Collect all items from ALL missions (PT1-PT4)
+      const ganttItems = [];
+      
+      data.forEach(m=>{
+        // Add mission
+        ganttItems.push({
+          id: m.id,
+          name: `[Mission] ${m.name}`,
+          level: 1,
+          start_date: m.start_date,
+          end_date: m.end_date,
+          progress: m.progress || 0,
+          responsible: m.responsible || "-"
+        });
+        
+        // Add all main projects
+        m.main_projects.forEach(p=>{
+          ganttItems.push({
+            id: p.id,
+            name: `  [${m.id}] ${p.name}`,
+            level: 2,
+            start_date: p.start_date,
+            end_date: p.end_date,
+            progress: p.progress || 0,
+            responsible: p.responsible || "-"
+          });
+          
+          // Add sub-projects
+          if(p.sub_projects && p.sub_projects.length > 0){
+            p.sub_projects.forEach(sp=>{
+              ganttItems.push({
+                id: sp.id,
+                name: `    [Lv.3] ${sp.name}`,
+                level: 3,
+                start_date: sp.start_date,
+                end_date: sp.end_date,
+                progress: 0,
+                responsible: "-"
+              });
+              
+              // Add topics
+              if(sp.topics && sp.topics.length > 0){
+                sp.topics.forEach(tp=>{
+                  ganttItems.push({
+                    id: tp.id,
+                    name: `      [Lv.4] ${tp.name}`,
+                    level: 4,
+                    start_date: tp.start_date,
+                    end_date: tp.end_date,
+                    progress: 0,
+                    responsible: "-"
+                  });
+                  
+                  // Add activities
+                  if(tp.details && tp.details.length > 0){
+                    tp.details.forEach(act=>{
+                      ganttItems.push({
+                        id: act.id,
+                        name: `        [Lv.5] ${act.name}`,
+                        level: 5,
+                        start_date: act.start_date,
+                        end_date: act.end_date,
+                        progress: act.progress || 0,
+                        responsible: act.responsible || "-"
+                      });
+                    });
+                  }
+                });
+              }
+            });
+          }
+        });
+      });
+      
+      return React.createElement("div",{className:"modalOverlay"},
+        React.createElement("div",{className:"modal",style:{width:"min(1400px,96vw)", maxHeight:"90vh"}},
+          React.createElement("div",{className:"modalHead"},
+            React.createElement("div",null,
+              React.createElement("div",{style:{fontSize:20,fontWeight:900,marginBottom:4}},"All Missions Gantt Chart"),
+              React.createElement("div",{className:"muted"},"PT1, PT2, PT3, PT4 - ทุกโครงการทั้งหมด")
+            ),
+            React.createElement("div",{style:{display:"flex",gap:10}},
+              React.createElement("button",{
+                className:"btnSoft",
+                onClick:()=>exportGanttTable(ganttItems, "All_Missions")
+              },"📥 Export Excel"),
+              React.createElement("button",{
+                className:"btnSoft",
+                onClick:()=>setAllMissionsGanttModal(false)
+              },"✕")
+            )
+          ),
+          React.createElement("div",{className:"modalBody", style:{maxHeight:"calc(90vh - 120px)", overflow:"auto"}},
+            React.createElement("div",{style:{marginBottom:16,display:"flex",gap:10,alignItems:"center",justifyContent:"space-between"}},
+              React.createElement("div",{style:{display:"flex",gap:8,alignItems:"center"}},
+                React.createElement("span",{style:{fontWeight:700,fontSize:14}},"View Mode:"),
+                React.createElement("div",{style:{display:"flex",gap:0,border:"1px solid var(--border)",borderRadius:8,overflow:"hidden"}},
+                  React.createElement("button",{
+                    style: ganttViewMode==="chart" 
+                      ? {background:"var(--primary)",color:"#fff",border:"none",padding:"8px 16px",borderRadius:0,cursor:"pointer"}
+                      : {background:"transparent",border:"none",padding:"8px 16px",borderRadius:0,cursor:"pointer"},
+                    onClick:()=>setGanttViewMode("chart")
+                  },"📊 Bar Chart"),
+                  React.createElement("button",{
+                    style: ganttViewMode==="table" 
+                      ? {background:"var(--primary)",color:"#fff",border:"none",padding:"8px 16px",borderRadius:0,cursor:"pointer"}
+                      : {background:"transparent",border:"none",padding:"8px 16px",borderRadius:0,cursor:"pointer"},
+                    onClick:()=>setGanttViewMode("table")
+                  },"📋 Table View")
+                )
+              ),
+              React.createElement("div",{className:"pill blue",style:{fontWeight:700}},
+                `${ganttItems.length} รายการทั้งหมด`
               )
             ),
             ganttViewMode === "chart"
@@ -2702,7 +2834,8 @@
           KPIFormModal(),
           KPIMonthlyTrackingModal(),
           OutcomesFormModal(),
-          MissionGanttModal()
+          MissionGanttModal(),
+          AllMissionsGanttModal()
         )
       )
     );
