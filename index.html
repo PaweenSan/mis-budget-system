@@ -1040,6 +1040,7 @@
     const [kpiMonthlyModal, setKpiMonthlyModal]=useState({open:false, kpiId:""});
     const [kpiForm, setKpiForm] = useState(DEFAULT_KPI_FORM);
     const [outcomeModal, setOutcomeModal]=useState({open:false, mode:"create", outcomeId:"", data:null});
+    const [outcomeForm, setOutcomeForm] = useState(DEFAULT_OUTCOME);
     const [projectDetailTab, setProjectDetailTab]=useState("hierarchy");
     const [ganttViewMode, setGanttViewMode]=useState("chart"); // "chart" or "table"
     
@@ -1059,6 +1060,15 @@
         setKpiForm(DEFAULT_KPI_FORM);
       }
     }, [kpiModal.open, kpiModal.data]);
+
+    // Sync Outcome form state with modal
+    useEffect(()=>{
+      if(outcomeModal.open && outcomeModal.data){
+        setOutcomeForm(outcomeModal.data);
+      }else if(outcomeModal.open){
+        setOutcomeForm(DEFAULT_OUTCOME);
+      }
+    }, [outcomeModal.open, outcomeModal.data]);
 
     const overallProgress = useMemo(()=>{
       const arr=data.map(m=>clamp(m.progress));
@@ -2245,18 +2255,8 @@
     }
 
     function OutcomesFormModal(){
-      const [form, setForm] = useState(DEFAULT_OUTCOME);
-      
-      // Update form when outcomeModal changes
-      useEffect(()=>{
-        if(outcomeModal.open && outcomeModal.data){
-          setForm(outcomeModal.data);
-        }else if(outcomeModal.open){
-          setForm(DEFAULT_OUTCOME);
-        }
-      }, [outcomeModal.open, outcomeModal.data]);
-      
       if(!outcomeModal.open) return null;
+      const form = outcomeForm;
       
       const saveOutcome = () => {
         if(!form.name.trim()) return toast("กรุณากรอกชื่อผลสัมฤทธิ์");
@@ -2295,29 +2295,29 @@
             React.createElement("div",{style:{display:"grid",gap:16}},
               React.createElement("div",null,
                 React.createElement("div",{className:"label"},"ชื่อผลสัมฤทธิ์"),
-                React.createElement("input",{value:form.name,onChange:e=>setForm({...form,name:e.target.value}),placeholder:"เช่น จำนวนนักศึกษาที่สำเร็จการศึกษา"})
+                React.createElement("input",{value:form.name,onChange:e=>setOutcomeForm({...form,name:e.target.value}),placeholder:"เช่น จำนวนนักศึกษาที่สำเร็จการศึกษา"})
               ),
               React.createElement("div",null,
                 React.createElement("div",{className:"label"},"คำอธิบาย"),
-                React.createElement("textarea",{value:form.description,onChange:e=>setForm({...form,description:e.target.value}),placeholder:"รายละเอียดผลสัมฤทธิ์..."})
+                React.createElement("textarea",{value:form.description,onChange:e=>setOutcomeForm({...form,description:e.target.value}),placeholder:"รายละเอียดผลสัมฤทธิ์..."})
               ),
               React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16}},
                 React.createElement("div",null,
                   React.createElement("div",{className:"label"},"เป้าหมาย (Target)"),
-                  React.createElement("input",{type:"number",value:form.target_value,onChange:e=>setForm({...form,target_value:Number(e.target.value)})})
+                  React.createElement("input",{type:"number",value:form.target_value,onChange:e=>setOutcomeForm({...form,target_value:Number(e.target.value)})})
                 ),
                 React.createElement("div",null,
                   React.createElement("div",{className:"label"},"ผลจริง (Actual)"),
-                  React.createElement("input",{type:"number",value:form.actual_value,onChange:e=>setForm({...form,actual_value:Number(e.target.value)})})
+                  React.createElement("input",{type:"number",value:form.actual_value,onChange:e=>setOutcomeForm({...form,actual_value:Number(e.target.value)})})
                 ),
                 React.createElement("div",null,
                   React.createElement("div",{className:"label"},"หน่วย"),
-                  React.createElement("input",{value:form.unit,onChange:e=>setForm({...form,unit:e.target.value}),placeholder:"คน/ครั้ง/%"})
+                  React.createElement("input",{value:form.unit,onChange:e=>setOutcomeForm({...form,unit:e.target.value}),placeholder:"คน/ครั้ง/%"})
                 )
               ),
               React.createElement("div",null,
                 React.createElement("div",{className:"label"},"วิธีการวัด"),
-                React.createElement("input",{value:form.measurement_method,onChange:e=>setForm({...form,measurement_method:e.target.value}),placeholder:"เช่น สำรวจจากระบบทะเบียน"})
+                React.createElement("input",{value:form.measurement_method,onChange:e=>setOutcomeForm({...form,measurement_method:e.target.value}),placeholder:"เช่น สำรวจจากระบบทะเบียน"})
               ),
               React.createElement("div",{style:{display:"flex",justifyContent:"flex-end",gap:10,marginTop:10}},
                 React.createElement("button",{className:"btnSoft",onClick:()=>setOutcomeModal({...outcomeModal,open:false})},"Cancel"),
@@ -2560,7 +2560,7 @@
           ActivityModal(),
           KPIFormModal(),
           KPIMonthlyTrackingModal(),
-          React.createElement(OutcomesFormModal)
+          OutcomesFormModal()
         )
       )
     );
