@@ -787,6 +787,123 @@
     );
   }
 
+  function GanttTableView({ items, fiscalYear="2569", onItemClick }){
+    // Thai fiscal year: Oct (10) - Sep (9)
+    const months = [
+      {label:"ต.ค.",value:"2568-10"},{label:"พ.ย.",value:"2568-11"},{label:"ธ.ค.",value:"2568-12"},
+      {label:"ม.ค.",value:"2569-01"},{label:"ก.พ.",value:"2569-02"},{label:"มี.ค.",value:"2569-03"},
+      {label:"เม.ย.",value:"2569-04"},{label:"พ.ค.",value:"2569-05"},{label:"มิ.ย.",value:"2569-06"},
+      {label:"ก.ค.",value:"2569-07"},{label:"ส.ค.",value:"2569-08"},{label:"ก.ย.",value:"2569-09"}
+    ];
+    
+    const isInDateRange = (monthValue, startDate, endDate) => {
+      if(!startDate || !endDate) return false;
+      const monthDate = new Date(monthValue + "-01");
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      return monthDate >= new Date(start.getFullYear(), start.getMonth(), 1) && 
+             monthDate <= new Date(end.getFullYear(), end.getMonth() + 1, 0);
+    };
+    
+    const getStatusClass = (item) => {
+      const notif = calculateNotificationStatus(item.end_date);
+      if(notif.status.includes("overdue")) return "overdue";
+      if(item.progress >= 100) return "completed";
+      if(item.progress > 0) return "in-progress";
+      return "pending";
+    };
+    
+    return React.createElement("div",{style:{padding:20,background:"#fff",borderRadius:16,border:"1px solid var(--border)",overflowX:"auto"}},
+      React.createElement("table",{style:{width:"100%",minWidth:1000,borderCollapse:"collapse"}},
+        React.createElement("thead",null,
+          React.createElement("tr",null,
+            React.createElement("th",{style:{
+              padding:"12px 16px",textAlign:"left",borderBottom:"2px solid var(--border)",
+              background:"#f8fafc",fontWeight:800,fontSize:13,whiteSpace:"nowrap",position:"sticky",left:0,zIndex:2
+            }},"โครงการ / กิจกรรม"),
+            React.createElement("th",{style:{
+              padding:"12px 16px",textAlign:"center",borderBottom:"2px solid var(--border)",
+              background:"#f8fafc",fontWeight:800,fontSize:13,whiteSpace:"nowrap"
+            }},"ผู้รับผิดชอบ"),
+            React.createElement("th",{style:{
+              padding:"12px 16px",textAlign:"center",borderBottom:"2px solid var(--border)",
+              background:"#f8fafc",fontWeight:800,fontSize:13
+            }},"สถานะ"),
+            months.map(m=>React.createElement("th",{
+              key:m.value,
+              style:{
+                padding:"8px 4px",textAlign:"center",borderBottom:"2px solid var(--border)",
+                background:"#f8fafc",fontWeight:700,fontSize:11,color:"var(--muted)",whiteSpace:"nowrap"
+              }
+            },m.label))
+          )
+        ),
+        React.createElement("tbody",null,
+          items && items.length > 0 ? items.map((item,idx)=>{
+            const statusClass = getStatusClass(item);
+            const notif = calculateNotificationStatus(item.end_date);
+            
+            return React.createElement("tr",{
+              key:item.id||idx,
+              style:{
+                borderBottom:"1px solid var(--border)",
+                background:notif.status.includes("overdue")?"#fef2f2":"#fff",
+                transition:"all .2s"
+              },
+              onMouseEnter:e=>e.currentTarget.style.background="#f8fafc",
+              onMouseLeave:e=>e.currentTarget.style.background=notif.status.includes("overdue")?"#fef2f2":"#fff"
+            },
+              React.createElement("td",{style:{
+                padding:"12px 16px",fontWeight:600,fontSize:13,
+                borderRight:"1px solid #e2e8f0",position:"sticky",left:0,
+                background:notif.status.includes("overdue")?"#fef2f2":"#fff",zIndex:1
+              }},
+                React.createElement("div",{style:{display:"flex",alignItems:"center",gap:8}},
+                  React.createElement(NotificationIndicator,{status:notif,size:"small"}),
+                  React.createElement("div",{style:{minWidth:0}},
+                    React.createElement("div",{style:{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},item.name || "ไม่มีชื่อ"),
+                    React.createElement("div",{style:{fontSize:10,color:"var(--muted)",marginTop:2}},
+                      item.level ? `${item.level} • ` : "",
+                      `${item.progress||0}%`
+                    )
+                  )
+                )
+              ),
+              React.createElement("td",{style:{
+                padding:"12px 16px",textAlign:"center",fontSize:12,color:"var(--muted)",
+                borderRight:"1px solid #e2e8f0"
+              }},item.responsible||"-"),
+              React.createElement("td",{style:{
+                padding:"12px 16px",textAlign:"center",borderRight:"1px solid #e2e8f0"
+              }},
+                React.createElement("span",{style:{
+                  padding:"4px 8px",borderRadius:6,fontSize:10,fontWeight:700,
+                  background:statusClass==="completed"?"#dcfce7":statusClass==="in-progress"?"#fef9c3":statusClass==="overdue"?"#fee2e2":"#f1f5f9",
+                  color:statusClass==="completed"?"#166534":statusClass==="in-progress"?"#854d0e":statusClass==="overdue"?"#991b1b":"#64748b"
+                }},
+                  statusClass==="completed"?"เสร็จสิ้น":statusClass==="in-progress"?"กำลังดำเนินการ":statusClass==="overdue"?"เลยกำหนด":"รอดำเนินการ"
+                )
+              ),
+              months.map(m=>{
+                const hasWork = isInDateRange(m.value, item.start_date, item.end_date);
+                return React.createElement("td",{
+                  key:m.value,
+                  style:{
+                    padding:"12px 4px",textAlign:"center",fontSize:16,fontWeight:700,
+                    borderRight:"1px solid #e2e8f0",
+                    color:hasWork?"var(--primary)":"#e2e8f0"
+                  }
+                },hasWork?"✓":"");
+              })
+            );
+          }) : React.createElement("tr",null,
+            React.createElement("td",{colSpan:15,style:{padding:40,textAlign:"center",color:"var(--muted)"}},"ไม่มีข้อมูล")
+          )
+        )
+      )
+    );
+  }
+
   function StatusBadge({ status }){
     if (status==="completed") return React.createElement("span",{className:"pill green"},"เสร็จแล้ว");
     if (status==="in_progress") return React.createElement("span",{className:"pill yellow"},"กำลังทำ");
@@ -913,6 +1030,7 @@
     const [kpiMonthlyModal, setKpiMonthlyModal]=useState({open:false, kpiId:""});
     const [outcomeModal, setOutcomeModal]=useState({open:false, mode:"create", outcomeId:"", data:null});
     const [projectDetailTab, setProjectDetailTab]=useState("hierarchy");
+    const [ganttViewMode, setGanttViewMode]=useState("chart"); // "chart" or "table"
     
     const toast = useToast();
 
@@ -1295,6 +1413,65 @@
       
       XLSX.writeFile(wb, `KPI_Report_${new Date().toISOString().split('T')[0]}.xlsx`);
       toast("Export KPI Report สำเร็จ", "success");
+    }
+
+    function exportGanttTable(items, projectName=""){
+      if(!items || items.length===0) return toast("ไม่มีข้อมูลให้ Export","warning");
+      
+      const wb = XLSX.utils.book_new();
+      const months = ["ต.ค.","พ.ย.","ธ.ค.","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย."];
+      const monthValues = [
+        "2568-10","2568-11","2568-12","2569-01","2569-02","2569-03",
+        "2569-04","2569-05","2569-06","2569-07","2569-08","2569-09"
+      ];
+      
+      const isInDateRange = (monthValue, startDate, endDate) => {
+        if(!startDate || !endDate) return false;
+        const monthDate = new Date(monthValue + "-01");
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        return monthDate >= new Date(start.getFullYear(), start.getMonth(), 1) && 
+               monthDate <= new Date(end.getFullYear(), end.getMonth() + 1, 0);
+      };
+      
+      // Header
+      const tableData = [
+        ["แผนปฏิบัติงาน Gantt Chart - " + (projectName || "โครงการ")],
+        ["ปีงบประมาณ 2569 (ตุลาคม 2568 - กันยายน 2569)"],
+        [],
+        ["โครงการ/กิจกรรม", "ผู้รับผิดชอบ", "สถานะ", ...months]
+      ];
+      
+      // Data rows
+      items.forEach(item=>{
+        const row = [
+          item.name || "ไม่มีชื่อ",
+          item.responsible || "-",
+          item.progress >= 100 ? "เสร็จสิ้น" : item.progress > 0 ? "กำลังดำเนินการ" : "รอดำเนินการ"
+        ];
+        
+        // Add x marks for each month
+        monthValues.forEach(monthValue=>{
+          const hasWork = isInDateRange(monthValue, item.start_date, item.end_date);
+          row.push(hasWork ? "x" : "");
+        });
+        
+        tableData.push(row);
+      });
+      
+      const ws = XLSX.utils.aoa_to_sheet(tableData);
+      
+      // Set column widths
+      ws['!cols'] = [
+        {wch:40}, // โครงการ
+        {wch:20}, // ผู้รับผิดชอบ
+        {wch:15}, // สถานะ
+        ...months.map(()=>({wch:6})) // เดือนต่างๆ
+      ];
+      
+      XLSX.utils.book_append_sheet(wb, ws, "Gantt Chart");
+      XLSX.writeFile(wb, `Gantt_Table_${projectName.replace(/[^a-zA-Z0-9ก-๙]/g,'_')}_${new Date().toISOString().split('T')[0]}.xlsx`);
+      toast("Export Gantt Table สำเร็จ", "success");
     }
 
     function Sidebar(){
@@ -1886,13 +2063,23 @@
     }
 
     function KPIFormModal(){
-      if(!kpiModal.open) return null;
-      const kpi = kpiModal.data || {
+      const defaultKpi = {
         name:"", description:"", target_value:100, unit:"คน",
         linked_projects:[], fiscal_year:"2569", status:"active", monthly_data:[]
       };
       
-      const [form, setForm] = useState(kpi);
+      const [form, setForm] = useState(defaultKpi);
+      
+      // Update form when kpiModal changes
+      useEffect(()=>{
+        if(kpiModal.open && kpiModal.data){
+          setForm(kpiModal.data);
+        }else if(kpiModal.open){
+          setForm(defaultKpi);
+        }
+      }, [kpiModal.open, kpiModal.data]);
+      
+      if(!kpiModal.open) return null;
       
       const distributeMonthly = () => {
         const perMonth = form.target_value / 12;
@@ -2053,14 +2240,23 @@
     }
 
     function OutcomesFormModal(){
-      if(!outcomeModal.open) return null;
-      
-      const outcome = outcomeModal.data || {
+      const defaultOutcome = {
         name:"", description:"", target_value:0, actual_value:0,
         unit:"คน", measurement_method:""
       };
       
-      const [form, setForm] = useState(outcome);
+      const [form, setForm] = useState(defaultOutcome);
+      
+      // Update form when outcomeModal changes
+      useEffect(()=>{
+        if(outcomeModal.open && outcomeModal.data){
+          setForm(outcomeModal.data);
+        }else if(outcomeModal.open){
+          setForm(defaultOutcome);
+        }
+      }, [outcomeModal.open, outcomeModal.data]);
+      
+      if(!outcomeModal.open) return null;
       
       const saveOutcome = () => {
         if(!form.name.trim()) return toast("กรุณากรอกชื่อผลสัมฤทธิ์");
@@ -2241,11 +2437,43 @@
             
             // Gantt Chart Tab
             projectDetailTab==="gantt" ? React.createElement("div",null,
-              React.createElement("div",{style:{marginBottom:16}},
-                React.createElement("div",{style:{fontWeight:800,fontSize:16,marginBottom:8}},"Project Timeline"),
-                React.createElement("div",{className:"muted",fontSize:13},"แสดง Gantt Chart ของโครงการและกิจกรรมทั้งหมด (Lv.2-5)")
+              React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16,flexWrap:"wrap",gap:12}},
+                React.createElement("div",null,
+                  React.createElement("div",{style:{fontWeight:800,fontSize:16,marginBottom:8}},"Project Timeline"),
+                  React.createElement("div",{className:"muted",fontSize:13},"แสดง Gantt Chart ของโครงการและกิจกรรมทั้งหมด (Lv.2-5)")
+                ),
+                React.createElement("div",{style:{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}},
+                  React.createElement("button",{
+                    className:"btnSoft",
+                    style:{
+                      background:ganttViewMode==="chart"?"var(--primary)":"transparent",
+                      color:ganttViewMode==="chart"?"#fff":"var(--text)",
+                      border:ganttViewMode==="chart"?"none":"1px solid var(--border)",
+                      padding:"8px 16px",fontSize:12,fontWeight:700
+                    },
+                    onClick:()=>setGanttViewMode("chart")
+                  },"📊 Bar Chart"),
+                  React.createElement("button",{
+                    className:"btnSoft",
+                    style:{
+                      background:ganttViewMode==="table"?"var(--primary)":"transparent",
+                      color:ganttViewMode==="table"?"#fff":"var(--text)",
+                      border:ganttViewMode==="table"?"none":"1px solid var(--border)",
+                      padding:"8px 16px",fontSize:12,fontWeight:700
+                    },
+                    onClick:()=>setGanttViewMode("table")
+                  },"📋 Table View"),
+                  React.createElement("div",{style:{width:1,height:24,background:"var(--border)"}}),
+                  React.createElement("button",{
+                    className:"btnSoft",
+                    style:{padding:"8px 16px",fontSize:12,fontWeight:700,color:"var(--success)"},
+                    onClick:()=>exportGanttTable(ganttItems, currentProject.name)
+                  },"📥 Export Excel")
+                )
               ),
-              React.createElement(GanttChart,{items:ganttItems,fiscalYear:"2569",onItemClick:null})
+              ganttViewMode==="chart" 
+                ? React.createElement(GanttChart,{items:ganttItems,fiscalYear:"2569",onItemClick:null})
+                : React.createElement(GanttTableView,{items:ganttItems,fiscalYear:"2569",onItemClick:null})
             ) : null,
             
             // Outcomes Tab
