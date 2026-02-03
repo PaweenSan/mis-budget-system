@@ -374,6 +374,7 @@
       description:"วัดจำนวนนักศึกษาใหม่ที่รับเข้าเทียบกับเป้าหมาย",
       target_value:1000, actual_value:0, unit:"คน",
       linked_projects:["PT1-2569-001"], fiscal_year:"2569", status:"active",
+      responsible_person:"คุณสมชาย ใจดี",
       monthly_data:[
         {month:"2568-10",target:83.33,actual:0,recorded_date:null},
         {month:"2568-11",target:83.33,actual:0,recorded_date:null},
@@ -394,6 +395,7 @@
       description:"วัดจำนวนงานวิจัยที่ได้รับการตีพิมพ์หรือนำเสนอ",
       target_value:50, actual_value:0, unit:"เรื่อง",
       linked_projects:["PT2-2569-001"], fiscal_year:"2569", status:"active",
+      responsible_person:"ผศ.ดร.วิทยา วิจิตร",
       monthly_data:[
         {month:"2568-10",target:4.17,actual:0,recorded_date:null},
         {month:"2568-11",target:4.17,actual:0,recorded_date:null},
@@ -413,7 +415,8 @@
 
   const DEFAULT_KPI_FORM = {
     name:"", description:"", target_value:100, unit:"คน",
-    linked_projects:[], fiscal_year:"2569", status:"active", monthly_data:[]
+    linked_projects:[], fiscal_year:"2569", status:"active", monthly_data:[],
+    responsible_person:""
   };
 
   const DEFAULT_OUTCOME = {
@@ -914,6 +917,125 @@
     );
   }
 
+  function MissionGanttModal(){
+    if(!missionGanttModal.open || !missionGanttModal.mission) return null;
+    
+    const m = missionGanttModal.mission;
+    
+    // Collect all items for Gantt chart (mission + all projects + sub-projects + activities)
+    const ganttItems = [];
+    
+    // Add mission
+    ganttItems.push({
+      id: m.id,
+      name: `[Mission] ${m.name}`,
+      level: 1,
+      start_date: m.start_date,
+      end_date: m.end_date,
+      progress: m.progress || 0,
+      responsible: m.responsible || "-"
+    });
+    
+    // Add all main projects
+    m.main_projects.forEach(p=>{
+      ganttItems.push({
+        id: p.id,
+        name: `  [Lv.2] ${p.name}`,
+        level: 2,
+        start_date: p.start_date,
+        end_date: p.end_date,
+        progress: p.progress || 0,
+        responsible: p.responsible || "-"
+      });
+      
+      // Add sub-projects (Lv.3)
+      if(p.sub_projects && p.sub_projects.length > 0){
+        p.sub_projects.forEach(sp=>{
+          ganttItems.push({
+            id: sp.id,
+            name: `    [Lv.3] ${sp.name}`,
+            level: 3,
+            start_date: sp.start_date,
+            end_date: sp.end_date,
+            progress: sp.progress || 0,
+            responsible: sp.responsible || "-"
+          });
+          
+          // Add plans (Lv.4)
+          if(sp.plans && sp.plans.length > 0){
+            sp.plans.forEach(plan=>{
+              ganttItems.push({
+                id: plan.id,
+                name: `      [Lv.4] ${plan.name}`,
+                level: 4,
+                start_date: plan.start_date,
+                end_date: plan.end_date,
+                progress: plan.progress || 0,
+                responsible: plan.responsible || "-"
+              });
+              
+              // Add activities (Lv.5)
+              if(plan.activities && plan.activities.length > 0){
+                plan.activities.forEach(act=>{
+                  ganttItems.push({
+                    id: act.id,
+                    name: `        [Lv.5] ${act.name}`,
+                    level: 5,
+                    start_date: act.start_date,
+                    end_date: act.end_date,
+                    progress: act.progress || 0,
+                    responsible: act.responsible || "-"
+                  });
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+    
+    return React.createElement("div",{className:"modal"},
+      React.createElement("div",{className:"modalContent", style:{maxWidth:1400, width:"90vw", maxHeight:"90vh", overflow:"auto"}},
+        React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}},
+          React.createElement("div",null,
+            React.createElement("div",{style:{fontSize:20,fontWeight:900,marginBottom:4}},`Mission Gantt Chart - ${m.id}`),
+            React.createElement("div",{className:"muted"},m.name)
+          ),
+          React.createElement("div",{style:{display:"flex",gap:10}},
+            React.createElement("button",{
+              className:"btnSoft",
+              onClick:()=>exportGanttTable(ganttItems, m.name)
+            },"📥 Export Excel"),
+            React.createElement("button",{
+              className:"btnSoft",
+              onClick:()=>setMissionGanttModal({...missionGanttModal, open:false})
+            },"✕")
+          )
+        ),
+        
+        React.createElement("div",{style:{marginBottom:16,display:"flex",gap:10,alignItems:"center"}},
+          React.createElement("span",{style:{fontWeight:700,fontSize:14}},"View Mode:"),
+          React.createElement("div",{className:"toggleSwitch",style:{display:"flex",gap:0,border:"1px solid var(--border)",borderRadius:8,overflow:"hidden"}},
+            React.createElement("button",{
+              className: ganttViewMode==="chart"?"btnSoft":"",
+              style: ganttViewMode==="chart" ? {background:"var(--primary)",color:"#fff",border:"none",borderRadius:0} : {background:"transparent",border:"none",borderRadius:0},
+              onClick:()=>setGanttViewMode("chart")
+            },"📊 Bar Chart"),
+            React.createElement("button",{
+              className: ganttViewMode==="table"?"btnSoft":"",
+              style: ganttViewMode==="table" ? {background:"var(--primary)",color:"#fff",border:"none",borderRadius:0} : {background:"transparent",border:"none",borderRadius:0},
+              onClick:()=>setGanttViewMode("table")
+            },"📋 Table View")
+          )
+        ),
+        
+        ganttViewMode === "chart"
+          ? GanttChart({items:ganttItems, fiscalYear:"2569", onItemClick:null})
+          : GanttTableView({items:ganttItems, fiscalYear:"2569", onItemClick:null})
+      )
+    );
+  }
+
   function StatusBadge({ status }){
     if (status==="completed") return React.createElement("span",{className:"pill green"},"เสร็จแล้ว");
     if (status==="in_progress") return React.createElement("span",{className:"pill yellow"},"กำลังทำ");
@@ -1043,6 +1165,7 @@
     const [outcomeForm, setOutcomeForm] = useState(DEFAULT_OUTCOME);
     const [projectDetailTab, setProjectDetailTab]=useState("hierarchy");
     const [ganttViewMode, setGanttViewMode]=useState("chart"); // "chart" or "table"
+    const [missionGanttModal, setMissionGanttModal]=useState({open:false, mission:null});
     
     const toast = useToast();
 
@@ -1636,7 +1759,13 @@
               React.createElement("span",{className:"pill red"},"100% Target")
             ),
             React.createElement("div",{style:{marginTop:16,display:"grid",gap:12}},
-              data.map(m=>React.createElement("div",{key:m.id,style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:16,border:"1px solid var(--border)",borderRadius:16, background:"#fff"}},
+              data.map(m=>React.createElement("div",{
+                key:m.id,
+                style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:16,border:"1px solid var(--border)",borderRadius:16, background:"#fff", cursor:"pointer", transition:"all 0.2s"},
+                onClick:()=>setMissionGanttModal({open:true, mission:m}),
+                onMouseEnter:e=>e.currentTarget.style.boxShadow="0 4px 12px rgba(0,0,0,0.1)",
+                onMouseLeave:e=>e.currentTarget.style.boxShadow="none"
+              },
                 React.createElement("div",null,
                   React.createElement("div",{style:{fontWeight:700,color:"var(--primary)",fontSize:12}}, m.id),
                   React.createElement("div",{style:{fontWeight:800,marginBottom:4}},m.name.split(" (")[0]),
@@ -1796,6 +1925,7 @@
             React.createElement("thead",null,
               React.createElement("tr",null,
                 React.createElement("th",null,"KPI Name"),
+                React.createElement("th",null,"ผู้รับผิดชอบ"),
                 React.createElement("th",{style:{textAlign:"right"}},"Target"),
                 React.createElement("th",{style:{textAlign:"right"}},"Actual"),
                 React.createElement("th",{style:{textAlign:"center"}},"Achievement"),
@@ -1805,7 +1935,7 @@
             ),
             React.createElement("tbody",null,
               kpiData.length===0 ? React.createElement("tr",null,
-                React.createElement("td",{colSpan:6,style:{textAlign:"center",padding:40,color:"var(--muted)"}},"ยังไม่มี KPI")
+                React.createElement("td",{colSpan:7,style:{textAlign:"center",padding:40,color:"var(--muted)"}},"ยังไม่มี KPI")
               ) : null,
               kpiData.map(kpi=>{
                 const cumulative = calculateCumulativeKPI(kpi.monthly_data);
@@ -1813,6 +1943,9 @@
                   React.createElement("td",null,
                     React.createElement("div",{style:{fontWeight:700}},kpi.name),
                     React.createElement("div",{className:"muted",style:{fontSize:11}},kpi.description)
+                  ),
+                  React.createElement("td",null,
+                    React.createElement("div",{style:{fontSize:13}},kpi.responsible_person || "-")
                   ),
                   React.createElement("td",{style:{textAlign:"right",fontWeight:700}},`${kpi.target_value} ${kpi.unit}`),
                   React.createElement("td",{style:{textAlign:"right",fontWeight:700}},`${cumulative.actual.toFixed(2)} ${kpi.unit}`),
@@ -2137,6 +2270,10 @@
               React.createElement("div",null,
                 React.createElement("div",{className:"label"},"คำอธิบาย"),
                 React.createElement("textarea",{value:form.description,onChange:e=>setKpiForm({...form,description:e.target.value}),placeholder:"รายละเอียด KPI..."})
+              ),
+              React.createElement("div",null,
+                React.createElement("div",{className:"label"},"ผู้รับผิดชอบ"),
+                React.createElement("input",{value:form.responsible_person||"",onChange:e=>setKpiForm({...form,responsible_person:e.target.value}),placeholder:"เช่น คุณสมชาย ใจดี"})
               ),
               React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}},
                 React.createElement("div",null,
@@ -2560,7 +2697,8 @@
           ActivityModal(),
           KPIFormModal(),
           KPIMonthlyTrackingModal(),
-          OutcomesFormModal()
+          OutcomesFormModal(),
+          MissionGanttModal()
         )
       )
     );
