@@ -2545,7 +2545,7 @@
       return React.createElement("div",{className:"card"},"Unknown view");
     }
 
-    if(!user) return React.createElement(LoginPage);
+    if(!user) return LoginPage();
 
     return React.createElement(ToastProvider, null,
       React.createElement("div",{className:"app"},
