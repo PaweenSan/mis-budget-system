@@ -2109,6 +2109,7 @@
     function KPIFormModal(){
       if(!kpiModal.open) return null;
       const form = kpiForm;
+      const toast = useToast();
       
       const distributeMonthly = () => {
         const perMonth = form.target_value / 12;
@@ -2275,6 +2276,7 @@
     function OutcomesFormModal(){
       if(!outcomeModal.open) return null;
       const form = outcomeForm;
+      const toast = useToast();
       
       const saveOutcome = () => {
         if(!form.name.trim()) return toast("กรุณากรอกชื่อผลสัมฤทธิ์");
