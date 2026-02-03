@@ -2352,7 +2352,7 @@
       
       const m = missionGanttModal.mission;
       
-      // Collect all items for Gantt chart (mission + all projects + sub-projects + activities)
+      // Collect all items for Gantt chart
       const ganttItems = [];
       
       // Add mission
@@ -2378,7 +2378,7 @@
           responsible: p.responsible || "-"
         });
         
-        // Add sub-projects (Lv.3)
+        // Add sub-projects
         if(p.sub_projects && p.sub_projects.length > 0){
           p.sub_projects.forEach(sp=>{
             ganttItems.push({
@@ -2387,26 +2387,26 @@
               level: 3,
               start_date: sp.start_date,
               end_date: sp.end_date,
-              progress: sp.progress || 0,
-              responsible: sp.responsible || "-"
+              progress: 0,
+              responsible: "-"
             });
             
-            // Add plans (Lv.4)
-            if(sp.plans && sp.plans.length > 0){
-              sp.plans.forEach(plan=>{
+            // Add topics
+            if(sp.topics && sp.topics.length > 0){
+              sp.topics.forEach(tp=>{
                 ganttItems.push({
-                  id: plan.id,
-                  name: `      [Lv.4] ${plan.name}`,
+                  id: tp.id,
+                  name: `      [Lv.4] ${tp.name}`,
                   level: 4,
-                  start_date: plan.start_date,
-                  end_date: plan.end_date,
-                  progress: plan.progress || 0,
-                  responsible: plan.responsible || "-"
+                  start_date: tp.start_date,
+                  end_date: tp.end_date,
+                  progress: 0,
+                  responsible: "-"
                 });
                 
-                // Add activities (Lv.5)
-                if(plan.activities && plan.activities.length > 0){
-                  plan.activities.forEach(act=>{
+                // Add activities
+                if(tp.details && tp.details.length > 0){
+                  tp.details.forEach(act=>{
                     ganttItems.push({
                       id: act.id,
                       name: `        [Lv.5] ${act.name}`,
@@ -2424,9 +2424,9 @@
         }
       });
       
-      return React.createElement("div",{className:"modal"},
-        React.createElement("div",{className:"modalContent", style:{maxWidth:1400, width:"90vw", maxHeight:"90vh", overflow:"auto"}},
-          React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}},
+      return React.createElement("div",{className:"modalOverlay"},
+        React.createElement("div",{className:"modal",style:{width:"min(1200px,96vw)"}},
+          React.createElement("div",{className:"modalHead"},
             React.createElement("div",null,
               React.createElement("div",{style:{fontSize:20,fontWeight:900,marginBottom:4}},`Mission Gantt Chart - ${m.id}`),
               React.createElement("div",{className:"muted"},m.name)
@@ -2438,30 +2438,32 @@
               },"📥 Export Excel"),
               React.createElement("button",{
                 className:"btnSoft",
-                onClick:()=>setMissionGanttModal({...missionGanttModal, open:false})
+                onClick:()=>setMissionGanttModal({open:false, mission:null})
               },"✕")
             )
           ),
-          
-          React.createElement("div",{style:{marginBottom:16,display:"flex",gap:10,alignItems:"center"}},
-            React.createElement("span",{style:{fontWeight:700,fontSize:14}},"View Mode:"),
-            React.createElement("div",{className:"toggleSwitch",style:{display:"flex",gap:0,border:"1px solid var(--border)",borderRadius:8,overflow:"hidden"}},
-              React.createElement("button",{
-                className: ganttViewMode==="chart"?"btnSoft":"",
-                style: ganttViewMode==="chart" ? {background:"var(--primary)",color:"#fff",border:"none",borderRadius:0} : {background:"transparent",border:"none",borderRadius:0},
-                onClick:()=>setGanttViewMode("chart")
-              },"📊 Bar Chart"),
-              React.createElement("button",{
-                className: ganttViewMode==="table"?"btnSoft":"",
-                style: ganttViewMode==="table" ? {background:"var(--primary)",color:"#fff",border:"none",borderRadius:0} : {background:"transparent",border:"none",borderRadius:0},
-                onClick:()=>setGanttViewMode("table")
-              },"📋 Table View")
-            )
-          ),
-          
-          ganttViewMode === "chart"
-            ? GanttChart({items:ganttItems, fiscalYear:"2569", onItemClick:null})
-            : GanttTableView({items:ganttItems, fiscalYear:"2569", onItemClick:null})
+          React.createElement("div",{className:"modalBody"},
+            React.createElement("div",{style:{marginBottom:16,display:"flex",gap:10,alignItems:"center"}},
+              React.createElement("span",{style:{fontWeight:700,fontSize:14}},"View Mode:"),
+              React.createElement("div",{style:{display:"flex",gap:0,border:"1px solid var(--border)",borderRadius:8,overflow:"hidden"}},
+                React.createElement("button",{
+                  style: ganttViewMode==="chart" 
+                    ? {background:"var(--primary)",color:"#fff",border:"none",padding:"8px 16px",borderRadius:0,cursor:"pointer"}
+                    : {background:"transparent",border:"none",padding:"8px 16px",borderRadius:0,cursor:"pointer"},
+                  onClick:()=>setGanttViewMode("chart")
+                },"📊 Bar Chart"),
+                React.createElement("button",{
+                  style: ganttViewMode==="table" 
+                    ? {background:"var(--primary)",color:"#fff",border:"none",padding:"8px 16px",borderRadius:0,cursor:"pointer"}
+                    : {background:"transparent",border:"none",padding:"8px 16px",borderRadius:0,cursor:"pointer"},
+                  onClick:()=>setGanttViewMode("table")
+                },"📋 Table View")
+              )
+            ),
+            ganttViewMode === "chart"
+              ? React.createElement(GanttChart,{items:ganttItems, fiscalYear:"2569", onItemClick:null})
+              : React.createElement(GanttTableView,{items:ganttItems, fiscalYear:"2569", onItemClick:null})
+          )
         )
       );
     }
