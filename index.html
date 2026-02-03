@@ -2537,11 +2537,11 @@
     // -- CORRECTED RENDER LOGIC BELOW --
 
     function renderView(){
-      if(view==="dashboard") return React.createElement(Dashboard);
-      if(view==="explorer") return React.createElement(Explorer);
-      if(view==="budget") return React.createElement(Budget);
-      if(view==="kpi") return React.createElement(KPIManagement);
-      if(view==="reports") return React.createElement(Reports);
+      if(view==="dashboard") return Dashboard();
+      if(view==="explorer") return Explorer();
+      if(view==="budget") return Budget();
+      if(view==="kpi") return KPIManagement();
+      if(view==="reports") return Reports();
       return React.createElement("div",{className:"card"},"Unknown view");
     }
 
@@ -2550,16 +2550,16 @@
     return React.createElement(ToastProvider, null,
       React.createElement("div",{className:"app"},
         React.createElement("div",{className:"sidebarOverlay" + (sidebarOpen?" show":""),onClick:closeSidebar}),
-        React.createElement(Sidebar),
+        Sidebar(),
         React.createElement("div",{className:"main"},
-          React.createElement(Header),
+          Header(),
           React.createElement("div",{className:"content",onClick:closeSidebar}, renderView()),
-          React.createElement(ProjectFormModal),
-          React.createElement(ProjectDetailModal),
-          React.createElement(SimpleAddModal),
-          React.createElement(ActivityModal),
-          React.createElement(KPIFormModal),
-          React.createElement(KPIMonthlyTrackingModal),
+          ProjectFormModal(),
+          ProjectDetailModal(),
+          SimpleAddModal(),
+          ActivityModal(),
+          KPIFormModal(),
+          KPIMonthlyTrackingModal(),
           React.createElement(OutcomesFormModal)
         )
       )
